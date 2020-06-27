@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/QuickChat.iml" filepath="$PROJECT_DIR$/QuickChat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/QuickChatClient/QuickChatClient.iml" filepath="$PROJECT_DIR$/src/QuickChatClient/QuickChatClient.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/QuickChatServer/QuickChatServer.iml" filepath="$PROJECT_DIR$/src/QuickChatServer/QuickChatServer.iml" />
+    </modules>
+  </component>
+</project>
