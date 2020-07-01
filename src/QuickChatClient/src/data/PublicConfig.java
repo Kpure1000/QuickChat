@@ -6,15 +6,45 @@ import java.util.ArrayList;
 
 public class PublicConfig implements Serializable {
 
-    private static final long serialVersionUID = 1000L;
+    private static final long serialVersionUID = 1L;
 
-    public class ServerInfo implements Serializable{
-        String Host;
-        int Port;
+    /**
+     * 加入服务器
+     * @param serverInfo
+     */
+    public void addServerList(ServerInfo serverInfo){
+        serverInfoList.add(serverInfo);
     }
 
-    private ArrayList<ServerInfo> serverInfoList;
+    /**
+     * 加入ID记录
+     * @param id
+     */
+    public void addIdList(BigInteger id){
+        idList.add(id);
+    }
 
-    /** */
-    private ArrayList<String> idList;
+    /**
+     * 获取服务器列表
+     * @return
+     */
+    @Deprecated
+    public ArrayList<ServerInfo> getServerInfoList() {
+        return serverInfoList;
+    }
+
+    /**
+     * 获取ID记录
+     * @return
+     */
+    @Deprecated
+    public ArrayList<BigInteger> getIdList() {
+        return idList;
+    }
+
+    /** 服务器列表*/
+    private ArrayList<ServerInfo> serverInfoList = new ArrayList<ServerInfo>();
+
+    /** ID列表*/
+    private ArrayList<BigInteger> idList = new ArrayList<BigInteger>();
 }
