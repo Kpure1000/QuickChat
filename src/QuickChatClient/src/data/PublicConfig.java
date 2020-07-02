@@ -26,6 +26,9 @@ public class PublicConfig implements Serializable {
 
     /**
      * 获取服务器列表
+     * <p>
+     *     这个是给FastJson序列化用的
+     * </p>
      * @return
      */
     @Deprecated
@@ -35,6 +38,9 @@ public class PublicConfig implements Serializable {
 
     /**
      * 获取ID记录
+     * <p>
+     *     这个是给FastJson序列化用的
+     * </p>
      * @return
      */
     @Deprecated

@@ -2,17 +2,50 @@ package data;
 
 import java.io.Serializable;
 
+/**
+ * 服务器信息
+ * <p>
+ *     这是服务器列表的基础数据结构
+ * </p>
+ */
 public class ServerInfo implements Serializable {
 
-    //private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-    private String Host;
+    /**主机号*/
+    private final String Host;
 
-    private int Port;
+    /**端口号*/
+    private final int Port;
 
-    public ServerInfo(String host,int port){
+    public ServerInfo(String host, int port){
         Host=host;
         Port=port;
+    }
+
+
+    /**
+     * 获取Port
+     * <p>
+     *     这个是给FastJson序列化用的
+     * </p>
+     * @return
+     */
+    @Deprecated
+    public int getPort() {
+        return Port;
+    }
+
+    /**
+     * 获取Host
+     * <p>
+     *     这个是给FastJson序列化用的
+     * </p>
+     * @return
+     */
+    @Deprecated
+    public String getHost() {
+        return Host;
     }
 
     public String toString(){

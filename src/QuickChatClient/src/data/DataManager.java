@@ -1,14 +1,12 @@
 package data;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializeConfig;
 import function.Debug;
-import data.PublicConfig.*;
 
 import java.io.*;
-import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -23,7 +21,7 @@ public class DataManager {
 
     private DataManager(){
         //TODO 临时写入配置
-        wirtePublic();
+        //writePublic();
         //从文件读取公共配置
         readPublic();
     }
@@ -74,7 +72,7 @@ public class DataManager {
         }
     }
 
-    public void wirtePublic(){
+    public void writePublic(){
         try {
             File file = new File(publicConfigPath);
             if(!file.getParentFile().exists()){
@@ -87,46 +85,53 @@ public class DataManager {
                 file.createNewFile();
             }
             if(file.exists()) {
-                Debug.Log("创建文件: " + publicConfigPath);
-                BufferedWriter bufferedWriter = new BufferedWriter(
-                        new FileWriter(file)
-                );
-                publicConfig = new PublicConfig();
-                publicConfig.addServerList(new ServerInfo("127.0.0.1", 12345));
-                publicConfig.addServerList(new ServerInfo("127.0.0.2", 11111));
-                publicConfig.addServerList(new ServerInfo("127.0.0.2", 12121));
-                publicConfig.addServerList(new ServerInfo("127.0.0.2", 11115));
-                publicConfig.addIdList(new BigInteger("1212121212"));
-                publicConfig.addIdList(new BigInteger("123123123"));
-                publicConfig.addIdList(new BigInteger("82364872634"));
-                //  Debug
-                for (BigInteger item:
-                        publicConfig.getIdList()) {
-                    if(item!=null)Debug.Log(item.toString());
-                }
-                for (ServerInfo item :
-                        publicConfig.getServerInfoList()) {
-                    if(item!=null)Debug.Log(item.toString());
-                }
-                ////
-                //转为JSON字符串
-                // TODO 序列化时，ServerInfo没能序列化
-                bufferedWriter.write(JSON.toJSONString(publicConfig));
-                bufferedWriter.flush();
-                //关闭输出
-                bufferedWriter.close();
+                //新建一个文件
+                CreatePublicConfig(file);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-//    public ArrayList<BigInteger> getIDRecord(){
-//        return
-//    }
+    public ArrayList<BigInteger> getIDRecord(){
+        return publicConfig.getIdList();
+    }
 
     public void addIDRecord(){
 
+    }
+
+    private void CreatePublicConfig(File file) throws IOException {
+        Debug.Log("创建文件: " + publicConfigPath);
+        BufferedWriter bufferedWriter = new BufferedWriter(
+                new FileWriter(file)
+        );
+        publicConfig = new PublicConfig();
+        publicConfig.addServerList(new ServerInfo("127.0.0.1", 12345));
+        publicConfig.addServerList(new ServerInfo("127.0.0.2", 11111));
+        publicConfig.addServerList(new ServerInfo("127.0.0.2", 12121));
+        publicConfig.addServerList(new ServerInfo("127.0.0.2", 11115));
+        publicConfig.addIdList(new BigInteger("1212121212"));
+        publicConfig.addIdList(new BigInteger("123123123"));
+        publicConfig.addIdList(new BigInteger("82364872634"));
+        //  Debug
+        for (BigInteger item:
+                publicConfig.getIdList()) {
+            if(item!=null)Debug.Log(item.toString());
+        }
+        for (ServerInfo item :
+                publicConfig.getServerInfoList()) {
+            if(item!=null)Debug.Log(item.toString());
+        }
+        ////
+        //转为JSON字符串
+        var jsonStr = JSON.toJSONString(publicConfig, true);
+        // TODO 序列化时，ServerInfo没能序列化
+        Debug.Log(jsonStr);
+        bufferedWriter.write(jsonStr);
+        bufferedWriter.flush();
+        //关闭输出
+        bufferedWriter.close();
     }
 
     private PublicConfig publicConfig;
