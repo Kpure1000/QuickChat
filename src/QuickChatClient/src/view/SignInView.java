@@ -28,8 +28,8 @@ public class SignInView extends JFrame {
 
         JLabel idLabel = new JLabel("ID:");
         idLabel.setForeground(Color.BLACK);
-        idLabel.setFont(new Font("微软雅黑",Font.PLAIN,22));
-        idLabel.setBounds(leftX,topY,50,30);
+        idLabel.setFont(new Font("宋体",Font.PLAIN,22));
+        idLabel.setBounds(leftX,topY,80,30);
         idText = new JTextField();
         idText.setForeground(Color.BLACK);
         idText.setBackground(Color.GREEN);
@@ -44,8 +44,8 @@ public class SignInView extends JFrame {
 
         JLabel passLabel = new JLabel("密码:");
         passLabel.setForeground(Color.BLACK);
-        passLabel.setFont(new Font("微软雅黑",Font.PLAIN,22));
-        passLabel.setBounds(leftX,topY+50+50,50,30);
+        passLabel.setFont(new Font("宋体",Font.PLAIN,22));
+        passLabel.setBounds(leftX,topY+50+50,80,30);
         passText = new JPasswordField();
         passText.setForeground(Color.BLACK);
         passText.setBackground(Color.GREEN);

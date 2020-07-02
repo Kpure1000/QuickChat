@@ -109,11 +109,8 @@ public class DataManager {
         publicConfig = new PublicConfig();
         publicConfig.addServerList(new ServerInfo("127.0.0.1", 12345));
         publicConfig.addServerList(new ServerInfo("127.0.0.2", 11111));
-        publicConfig.addServerList(new ServerInfo("127.0.0.2", 12121));
-        publicConfig.addServerList(new ServerInfo("127.0.0.2", 11115));
         publicConfig.addIdList(new BigInteger("1212121212"));
         publicConfig.addIdList(new BigInteger("123123123"));
-        publicConfig.addIdList(new BigInteger("82364872634"));
         //  Debug
         for (BigInteger item:
                 publicConfig.getIdList()) {
@@ -136,9 +133,9 @@ public class DataManager {
 
     private PublicConfig publicConfig;
 
-    private String publicConfigPath = "Common\\config.json";
+    private String publicConfigPath = "Common/config.json";
 
     private PrivateConfig privateConfig;
 
-    private String privateConfigPath = "ChatData\\config.data";
+    private String privateConfigPath = "ChatData/config.data";
 }
