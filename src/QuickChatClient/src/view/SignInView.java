@@ -20,24 +20,22 @@ public class SignInView extends JFrame {
     private JButton signUpButton;
     ////
 
-    private int leftX = 150;
-    private int topY = 250;
-
     public SignInView(){
-
+        int topY = 250;
+        int leftX = 150;
 
         JLabel idLabel = new JLabel("ID:");
         idLabel.setForeground(Color.BLACK);
         idLabel.setFont(new Font("宋体",Font.PLAIN,22));
-        idLabel.setBounds(leftX,topY,80,30);
+        idLabel.setBounds(leftX, topY,80,30);
         idText = new JTextField();
         idText.setForeground(Color.BLACK);
         idText.setBackground(Color.GREEN);
-        idText.setBounds(leftX+30+40,topY,280,30);
+        idText.setBounds(leftX +30+40, topY,280,30);
         idBox = new JComboBox<BigInteger>();
         idBox.setForeground(Color.BLACK);
         idBox.setBackground(Color.GREEN);
-        idBox.setBounds(leftX+30+40+280+10,topY,110,30);
+        idBox.setBounds(leftX +30+40+280+10, topY,110,30);
         this.add(idLabel);
         this.add(idText);
         this.add(idBox);
@@ -45,11 +43,11 @@ public class SignInView extends JFrame {
         JLabel passLabel = new JLabel("密码:");
         passLabel.setForeground(Color.BLACK);
         passLabel.setFont(new Font("宋体",Font.PLAIN,22));
-        passLabel.setBounds(leftX,topY+50+50,80,30);
+        passLabel.setBounds(leftX, topY +50+50,80,30);
         passText = new JPasswordField();
         passText.setForeground(Color.BLACK);
         passText.setBackground(Color.GREEN);
-        passText.setBounds(leftX+30+40,topY+50+50,400,30);
+        passText.setBounds(leftX +30+40, topY +50+50,400,30);
         this.add(passLabel);
         this.add(passText);
 
