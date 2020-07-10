@@ -20,10 +20,8 @@ public class SignInView extends JFrame {
     private JButton signUpButton;
 
 
-    private final int MyLightRgb = 0x5c9258;
+    private final int MyLightRgb = 0x89FF57;
     private final int MyDarkRgb = 0x3d3f41;
-    private Color MyLight = new Color(MyLightRgb);
-    private Color MyDark = new Color(MyDarkRgb);
     ////
 
     public SignInView(){
@@ -59,13 +57,17 @@ public class SignInView extends JFrame {
         //第三层
         signInButton = new JButton("登录");
         signInButton.setBackground(new Color(MyLightRgb));
+        signInButton.setForeground(new Color(MyDarkRgb));
+        signInButton.setBounds(leftX + 100,topY + 200,160,60);
+        this.add(signInButton);
         //总
         this.setTitle("登录");
         this.setLayout(null);//绝对布局
         this.setVisible(true);
         this.setResizable(false);
         this.setBounds(800,400,800,600);
-        this.setBackground(new Color(MyDarkRgb));
+        //this.setBackground(new Color(MyDarkRgb));
+        this.getContentPane().setBackground(new Color(MyDarkRgb));
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         //初始化登录功能
