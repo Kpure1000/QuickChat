@@ -1,5 +1,11 @@
 package information;
 
+/**
+ * 用户信息类
+ * <p>
+ *     继承自基础信息类，有一些扩展信息
+ * </p>
+ */
 public class UserInfo extends BasicInfo {
 
     private static final long serialVersionUID = 100101L;
