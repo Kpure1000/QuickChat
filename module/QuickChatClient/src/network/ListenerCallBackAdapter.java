@@ -7,13 +7,13 @@ import java.math.BigInteger;
  *
  * @author Kpurek
  * @version 1.0
- *
  * @see network.ListenerCallBack
  */
 public abstract class ListenerCallBackAdapter implements ListenerCallBack {
 
     /**
      * {@inheritDoc}
+     *
      * @param fbState
      */
     public void OnSignInCallBack(boolean fbState) {

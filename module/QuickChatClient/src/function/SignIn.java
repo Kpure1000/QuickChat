@@ -33,7 +33,7 @@ public class SignIn {
             ClientNetwork.getInstance().addListener(new ListenerCallBackAdapter() {
                 @Override
                 public void OnSignInCallBack(boolean fbState) {
-                    Debug.Log("获取到了值: "+fbState);
+                    Debug.Log("获取到了值: " + fbState);
                 }
             });
         }

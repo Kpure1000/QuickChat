@@ -70,7 +70,7 @@ public class ClientNetwork {
      * 创建监听线程
      */
     public void addListener(ListenerCallBack listenerCallBack) {
-        ListenManager.getInstance().getListenPool().submit(new Listener(socket,listenerCallBack));
+        ListenManager.getInstance().getListenPool().submit(new Listener(socket, listenerCallBack));
     }
 
     /**

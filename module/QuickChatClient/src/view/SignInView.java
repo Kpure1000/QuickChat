@@ -69,8 +69,8 @@ public class SignInView extends JFrame {
         errorLabel = new JLabel("");
         errorLabel.setBackground(new Color(MyDarkRgb));
         errorLabel.setForeground(Color.RED);
-        errorLabel.setFont(new Font("微软雅黑",Font.BOLD|Font.ITALIC,13));
-        errorLabel.setBounds(leftX+30+40+400+10,topY+50+50,200,30);
+        errorLabel.setFont(new Font("微软雅黑", Font.BOLD | Font.ITALIC, 13));
+        errorLabel.setBounds(leftX + 30 + 40 + 400 + 10, topY + 50 + 50, 200, 30);
         this.add(errorLabel);
         //第三层
         JButton signInButton = new JButton("登录");
@@ -179,6 +179,7 @@ public class SignInView extends JFrame {
 
     /**
      * 登录事件内容
+     *
      * @param signIn
      */
     void SignInAction(SignIn signIn) {
@@ -191,7 +192,7 @@ public class SignInView extends JFrame {
                 errorLabel.setText("密码不少于6位");
                 passText.setText("");
             }
-        }else{
+        } else {
             errorLabel.setText("ID输入/选择有误");
         }
     }
