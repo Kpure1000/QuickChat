@@ -29,7 +29,7 @@ public class SignInView extends JFrame {
         int leftX = 150;
         //第一层
         JLabel idLabel = new JLabel("ID:");
-        idLabel.setForeground(Color.BLACK);
+        idLabel.setForeground(new Color(MyLightRgb));
         idLabel.setFont(new Font("宋体",Font.PLAIN,22));
         idLabel.setBounds(leftX, topY,80,30);
         idText = new JTextField();
@@ -45,7 +45,7 @@ public class SignInView extends JFrame {
         this.add(idBox);
         //第二层
         JLabel passLabel = new JLabel("密码:");
-        passLabel.setForeground(Color.BLACK);
+        passLabel.setForeground(new Color(MyLightRgb));
         passLabel.setFont(new Font("宋体",Font.PLAIN,22));
         passLabel.setBounds(leftX, topY +50+50,80,30);
         passText = new JPasswordField();
