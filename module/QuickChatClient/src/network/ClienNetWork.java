@@ -6,42 +6,22 @@ import java.net.Socket;
 /**
  * clientNetwork
  * <p>
- *      网络层，
- *      负责与服务器通讯，
- *      确保连接，
- *      处理连接异常，
- *      不含任何业务逻辑，（接口不算）
- *      放心食用
+ *      网络层，负责与服务器通讯，确保连接，处理连接异常
  * </p>
  * @author Kpurek
  * @version 1.0
  */
 public class ClienNetWork {
 
-    /**
-     * 单例
-     */
-    private static ClienNetWork instance;
 
-    private ClienNetWork(){
+    public ClienNetWork(){
         isConnected=false;
     }
 
-    /**
-     * 获取单例，懒加载（这里无所谓）
-     * @return 实例
-     */
-    public static ClienNetWork getInstance(){
-        if(instance == null){
-            instance = new ClienNetWork();
-            return instance;
-        }
-        return instance;
-    }
 
     /**
      * 传入回调实例
-     * @param netCallBack
+     * @param netCallBack 回调接口
      */
     public void setNetCallBack(NetCallBack netCallBack){
         this.netCallBack = netCallBack;
