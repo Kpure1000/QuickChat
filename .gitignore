@@ -16,6 +16,7 @@
 #out file
 */out/
 */bin/
+*bin/
 
 # BlueJ files
 *.ctxt
