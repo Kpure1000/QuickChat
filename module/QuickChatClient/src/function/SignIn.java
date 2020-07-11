@@ -1,6 +1,8 @@
 package function;
 
 import data.DataManager;
+import network.ClientNetwork;
+import network.ListenerCallBackAdapter;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -24,12 +26,20 @@ public class SignIn {
      * @param ID
      * @param password
      */
-    public void inputInfomation(BigInteger ID, String password) {
-
+    public void inputInformation(BigInteger ID, String password) {
+        if (ID != null && password != null) {
+            Debug.Log("ID:" + ID + ", PASS: " + password);
+            //添加监听来获取登录反馈
+            ClientNetwork.getInstance().addListener(new ListenerCallBackAdapter() {
+                @Override
+                public void OnSignInCallBack(boolean fbState) {
+                    Debug.Log("获取到了值: "+fbState);
+                }
+            });
+        }
     }
 
-    // TODO 要把这里的回调去掉，function应该只负责处理请求，不负责反馈
-    @Deprecated
+    // TODO 要把这里的部分回调去掉，function应该只负责处理请求，不负责反馈
     public interface SignInCallBack {
         /**
          * on function getting id record from local

@@ -5,20 +5,22 @@ import message.ServerMessage;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.math.BigInteger;
 import java.net.Socket;
 
 /**
  * 监听线程，接收服务器消息
  */
-public class Listener extends Thread {
+public class Listener implements Runnable {
 
     /**
      * 构造一个监听线程
      *
      * @param socket 唯一套接字
      */
-    public Listener(Socket socket) {
+    public Listener(Socket socket, ListenerCallBack listenerCallBack) {
         this.socket = socket;
+        this.listenerCallBack = listenerCallBack;
     }
 
     @Override
@@ -32,9 +34,15 @@ public class Listener extends Thread {
                     case Fb_SignIn -> {
                         // TODO 当收到服务器关于登录的反馈时，只需返回给唯一的登录功能对象即可
                         // 在这里调用有关回调即可
+                        if (String.valueOf(sM.getMessage()).equals(String.valueOf("true"))) {
+                            listenerCallBack.OnSignInCallBack(true);
+                        } else {
+                            listenerCallBack.OnSignInCallBack(false);
+                        }
                     }
                     case Fb_SignUp -> {
                         // TODO 同上
+                        listenerCallBack.OnSignUpCallBack(new BigInteger(sM.getMessage()));
                     }
                     case Fb_OnlineList -> {
                     }

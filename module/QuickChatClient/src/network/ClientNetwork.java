@@ -1,5 +1,6 @@
 package network;
 
+import function.Debug;
 import information.BasicInfo;
 
 import java.io.IOException;
@@ -16,7 +17,13 @@ import java.net.Socket;
  */
 public class ClientNetwork {
 
-    public ClientNetwork() {
+    private static ClientNetwork instance = new ClientNetwork();
+
+    public static ClientNetwork getInstance() {
+        return instance;
+    }
+
+    private ClientNetwork() {
         isConnected = false;
     }
 
@@ -62,8 +69,8 @@ public class ClientNetwork {
     /**
      * 创建监听线程
      */
-    public void beginListening() {
-        new Listener(socket).start();
+    public void addListener(ListenerCallBack listenerCallBack) {
+        ListenManager.getInstance().getListenPool().submit(new Listener(socket,listenerCallBack));
     }
 
     /**

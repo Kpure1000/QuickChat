@@ -1,7 +1,5 @@
 package network;
 
-import message.ServerMessage;
-
 import java.math.BigInteger;
 
 public interface ListenerCallBack {
