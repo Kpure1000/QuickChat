@@ -30,7 +30,7 @@ public class SignIn {
         if (ID != null && password != null) {
             Debug.Log("ID:" + ID + ", PASS: " + password);
             //添加监听来获取登录反馈
-            ClientNetwork.getInstance().addListener(new ListenerCallBackAdapter() {
+            ClientNetwork.getInstance().addListenerCallBack(new ListenerCallBackAdapter() {
                 @Override
                 public void OnSignInCallBack(boolean fbState) {
                     Debug.Log("获取到了值: " + fbState);

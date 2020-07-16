@@ -67,10 +67,18 @@ public class ClientNetwork {
     }
 
     /**
-     * 创建监听线程
+     * 开启监听
+     * @param socket 唯一套接字
      */
-    public void addListener(ListenerCallBack listenerCallBack) {
-        ListenManager.getInstance().getListenPool().submit(new Listener(socket, listenerCallBack));
+    private void beginListening(Socket socket){
+        new Thread(listener = new Listener(socket));
+    }
+
+    /**
+     * 添加监听回调
+     */
+    public void addListenerCallBack(ListenerCallBack listenerCallBack) {
+        listener.addListenerCallBack(listenerCallBack);
     }
 
     /**
@@ -106,5 +114,7 @@ public class ClientNetwork {
 
         void OnDisconnect();
     }
+
+    private Listener listener;
 
 }

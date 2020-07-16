@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.math.BigInteger;
 import java.net.Socket;
+import java.util.ArrayList;
 
 /**
  * 监听线程，接收服务器消息
@@ -18,9 +19,14 @@ public class Listener implements Runnable {
      *
      * @param socket 唯一套接字
      */
-    public Listener(Socket socket, ListenerCallBack listenerCallBack) {
+    public Listener(Socket socket) {
         this.socket = socket;
-        this.listenerCallBack = listenerCallBack;
+    }
+
+    public synchronized void addListenerCallBack(ListenerCallBack listenerCallBack){
+        if(listenerCallBack!=null) {
+            callBacks.add(listenerCallBack);
+        }
     }
 
     @Override
@@ -31,18 +37,17 @@ public class Listener implements Runnable {
                 ServerMessage sM = (ServerMessage) objIn.readObject(); //  获取消息对象
                 switch (sM.getMessageType()) {
                     // TODO 补全行为，要考虑线程安全问题
-                    case Fb_SignIn -> {
+                    case Fb_SignIn -> { //  登录反馈
                         // TODO 当收到服务器关于登录的反馈时，只需返回给唯一的登录功能对象即可
                         // 在这里调用有关回调即可
                         if (String.valueOf(sM.getMessage()).equals(String.valueOf("true"))) {
-                            listenerCallBack.OnSignInCallBack(true);
+                            // TODO 登录成功
                         } else {
-                            listenerCallBack.OnSignInCallBack(false);
+                            //  TODO 登录失败
                         }
                     }
                     case Fb_SignUp -> {
                         // TODO 同上
-                        listenerCallBack.OnSignUpCallBack(new BigInteger(sM.getMessage()));
                     }
                     case Fb_OnlineList -> {
                     }
@@ -51,7 +56,7 @@ public class Listener implements Runnable {
                         // 可能需要调用聊天对象管理对象来获取，线程应该安全
                     }
                     case Msg_Group -> {
-                        // TODO 同上
+                        // TODO 同上群聊
                     }
                     case Msg_Test -> {
                         // TODO 同上，只不过可能通过弹窗显示（阻塞主线程）
@@ -67,7 +72,7 @@ public class Listener implements Runnable {
         }
     }
 
-    private ListenerCallBack listenerCallBack;
+    private ArrayList<ListenerCallBack> callBacks;
 
     private Socket socket;
 }
