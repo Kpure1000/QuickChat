@@ -186,6 +186,7 @@ public class SignInView extends JFrame {
         if (idText.getText() != null && idText.getText().length() > 0) {
             if (passText.getPassword().length >= 6) {
                 errorLabel.setText("");
+                // TODO 这里要加一个判断ID输入是否合法的方法
                 signIn.inputInformation(new BigInteger(idText.getText()),
                         String.valueOf(passText.getPassword()));
             } else {

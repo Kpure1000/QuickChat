@@ -27,23 +27,23 @@ public class Listener implements Runnable {
     /**
      * 添加监听回调
      *
-     * @param flag
-     * @param listenerCallBack
+     * @param receiver 接受者
+     * @param listenerCallBack 回调
      */
-    public synchronized void addListenerCallBack(Object flag, ListenerCallBack listenerCallBack) {
+    public synchronized void addListenerCallBack(Object receiver, ListenerCallBack listenerCallBack) {
         if (listenerCallBack != null) {
-            callBackMap.put(flag, listenerCallBack);
+            callBackMap.put(receiver, listenerCallBack);
         }
     }
 
     /**
      * 删除监听回调
      *
-     * @param flag
+     * @param receiver 接受者
      */
-    public synchronized void removeListenerCallBack(Object flag) {
-        if (flag != null) {
-            callBackMap.remove(flag);
+    public synchronized void removeListenerCallBack(Object receiver) {
+        if (receiver != null) {
+            callBackMap.remove(receiver);
         }
     }
 

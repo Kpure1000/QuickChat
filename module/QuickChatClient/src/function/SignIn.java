@@ -31,13 +31,14 @@ public class SignIn {
         if (ID != null && password != null) {
             Debug.Log("ID:" + ID + ", PASS: " + password);
             //添加监听来获取登录反馈
-            ClientNetwork.getInstance().addListenerCallBack(new ListenerCallBackAdapter() {
+            ListenerCallBack listenerCallBack = new ListenerCallBackAdapter() {
                 @Override
                 public ListenerCallBack OnSignInCallBack(boolean fbState) {
                     Debug.Log("获取到了值: " + fbState);
                     return this;
                 }
-            });
+            };
+            ClientNetwork.getInstance().addListenerCallBack(listenerCallBack, listenerCallBack);
         }
     }
 

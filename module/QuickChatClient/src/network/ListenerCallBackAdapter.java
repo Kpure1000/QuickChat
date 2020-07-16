@@ -36,4 +36,8 @@ public abstract class ListenerCallBackAdapter implements ListenerCallBack {
     public ListenerCallBack OnReceiveTestMsg() {
         return this;
     }
+
+    public ListenerCallBack OnReceiveOnLineList(){
+        return this;
+    }
 }

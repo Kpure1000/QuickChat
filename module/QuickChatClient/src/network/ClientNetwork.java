@@ -68,17 +68,18 @@ public class ClientNetwork {
 
     /**
      * 开启监听
+     *
      * @param socket 唯一套接字
      */
-    private void beginListening(Socket socket){
+    private void beginListening(Socket socket) {
         new Thread(listener = new Listener(socket));
     }
 
     /**
      * 添加监听回调
      */
-    public void addListenerCallBack(ListenerCallBack listenerCallBack) {
-        listener.addListenerCallBack(listenerCallBack);
+    public void addListenerCallBack(Object receiver, ListenerCallBack listenerCallBack) {
+        listener.addListenerCallBack(receiver, listenerCallBack);
     }
 
     /**
