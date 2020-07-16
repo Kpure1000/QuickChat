@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * 监听线程，接收服务器消息
@@ -23,9 +24,26 @@ public class Listener implements Runnable {
         this.socket = socket;
     }
 
-    public synchronized void addListenerCallBack(ListenerCallBack listenerCallBack){
-        if(listenerCallBack!=null) {
-            callBacks.add(listenerCallBack);
+    /**
+     * 添加监听回调
+     *
+     * @param flag
+     * @param listenerCallBack
+     */
+    public synchronized void addListenerCallBack(Object flag, ListenerCallBack listenerCallBack) {
+        if (listenerCallBack != null) {
+            callBackMap.put(flag, listenerCallBack);
+        }
+    }
+
+    /**
+     * 删除监听回调
+     *
+     * @param flag
+     */
+    public synchronized void removeListenerCallBack(Object flag) {
+        if (flag != null) {
+            callBackMap.remove(flag);
         }
     }
 
@@ -35,31 +53,69 @@ public class Listener implements Runnable {
             while (true) {
                 ObjectInputStream objIn = new ObjectInputStream(socket.getInputStream());
                 ServerMessage sM = (ServerMessage) objIn.readObject(); //  获取消息对象
-                switch (sM.getMessageType()) {
-                    // TODO 补全行为，要考虑线程安全问题
-                    case Fb_SignIn -> { //  登录反馈
-                        // TODO 当收到服务器关于登录的反馈时，只需返回给唯一的登录功能对象即可
-                        // 在这里调用有关回调即可
-                        if (String.valueOf(sM.getMessage()).equals(String.valueOf("true"))) {
-                            // TODO 登录成功
-                        } else {
-                            //  TODO 登录失败
+                if (sM.getMessage() != null) {
+                    switch (sM.getMessageType()) {
+                        case Fb_SignIn -> { //  登录反馈
+                            // 在这里调用有关回调即可
+                            for (Object Key :
+                                    callBackMap.keySet()) {
+                                if (callBackMap.get(Key) != null) {
+                                    callBackMap.get(Key).OnSignInCallBack(
+                                            Boolean.parseBoolean(sM.getMessage()) //  获取是否登录成功
+                                    );
+                                }
+                            }
                         }
-                    }
-                    case Fb_SignUp -> {
-                        // TODO 同上
-                    }
-                    case Fb_OnlineList -> {
-                    }
-                    case Msg_Private -> {
-                        // TODO 私聊消息，要通知聊天对象进行记录
-                        // 可能需要调用聊天对象管理对象来获取，线程应该安全
-                    }
-                    case Msg_Group -> {
-                        // TODO 同上群聊
-                    }
-                    case Msg_Test -> {
-                        // TODO 同上，只不过可能通过弹窗显示（阻塞主线程）
+                        case Fb_SignUp -> { //  注册反馈
+                            for (Object Key :
+                                    callBackMap.keySet()) {
+                                if (callBackMap.get(Key) != null) {
+                                    callBackMap.get(Key).OnSignUpCallBack(
+                                            sM.getSenderID() //  获取注册者的ID（新生成的）
+                                    );
+                                }
+                            }
+                        }
+                        case Fb_OnlineList -> {
+                            for (Object Key :
+                                    callBackMap.keySet()) {
+                                if (callBackMap.get(Key) != null) {
+                                    callBackMap.get(Key).OnReceiveOnLineList(
+                                            // TODO 应该是缺少一个ArrayList
+                                    );
+                                }
+                            }
+                        }
+                        case Msg_Private -> {
+                            for (Object Key :
+                                    callBackMap.keySet()) {
+                                if (callBackMap.get(Key) != null) {
+                                    callBackMap.get(Key).OnReceivePrivateMsg(
+                                            // TODO 缺少生产的消息
+                                    );
+                                }
+                            }
+                        }
+                        case Msg_Group -> {
+                            for (Object Key :
+                                    callBackMap.keySet()) {
+                                if (callBackMap.get(Key) != null) {
+                                    callBackMap.get(Key).OnReceiveGroupMsg(
+                                            // TODO 缺少参数
+                                    );
+                                }
+                            }
+                        }
+                        case Msg_Test -> {
+                            for (Object Key :
+                                    callBackMap.keySet()) {
+                                if (callBackMap.get(Key) != null) {
+                                    callBackMap.get(Key).OnReceiveTestMsg(
+                                            // TODO 缺少参数
+                                    );
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -72,7 +128,8 @@ public class Listener implements Runnable {
         }
     }
 
-    private ArrayList<ListenerCallBack> callBacks;
+    // 回调的Hash表
+    private HashMap<Object, ListenerCallBack> callBackMap;
 
     private Socket socket;
 }

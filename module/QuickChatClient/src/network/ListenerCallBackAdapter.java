@@ -16,19 +16,24 @@ public abstract class ListenerCallBackAdapter implements ListenerCallBack {
      *
      * @param fbState
      */
-    public void OnSignInCallBack(boolean fbState) {
+    public ListenerCallBack OnSignInCallBack(boolean fbState) {
+        return this;
     }
 
-    public void OnSignUpCallBack(BigInteger fbID) {
+    public ListenerCallBack OnSignUpCallBack(BigInteger fbID) {
+        return this;
     }
 
     //  TODO 缺少参数
-    public void OnReceivePrivateMsg() {
+    public ListenerCallBack OnReceivePrivateMsg() {
+        return this;
     }
 
-    public void OnReceiveGroupMsg() {
+    public ListenerCallBack OnReceiveGroupMsg() {
+        return this;
     }
 
-    public void OnReceiveTestMsg() {
+    public ListenerCallBack OnReceiveTestMsg() {
+        return this;
     }
 }

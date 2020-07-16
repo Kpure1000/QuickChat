@@ -2,6 +2,7 @@ package function;
 
 import data.DataManager;
 import network.ClientNetwork;
+import network.ListenerCallBack;
 import network.ListenerCallBackAdapter;
 
 import java.math.BigInteger;
@@ -32,8 +33,9 @@ public class SignIn {
             //添加监听来获取登录反馈
             ClientNetwork.getInstance().addListenerCallBack(new ListenerCallBackAdapter() {
                 @Override
-                public void OnSignInCallBack(boolean fbState) {
+                public ListenerCallBack OnSignInCallBack(boolean fbState) {
                     Debug.Log("获取到了值: " + fbState);
+                    return this;
                 }
             });
         }

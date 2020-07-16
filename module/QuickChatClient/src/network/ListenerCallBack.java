@@ -3,13 +3,15 @@ package network;
 import java.math.BigInteger;
 
 public interface ListenerCallBack {
-    public void OnSignInCallBack(boolean fbState);
+    public ListenerCallBack OnSignInCallBack(boolean fbState);
 
-    public void OnSignUpCallBack(BigInteger fbID);
+    public ListenerCallBack OnSignUpCallBack(BigInteger fbID);
 
-    public void OnReceivePrivateMsg(); //  TODO 缺少参数
+    public ListenerCallBack OnReceivePrivateMsg(); //  TODO 缺少参数
 
-    public void OnReceiveGroupMsg();
+    public ListenerCallBack OnReceiveGroupMsg();
 
-    public void OnReceiveTestMsg();
+    public ListenerCallBack OnReceiveTestMsg();
+
+    public ListenerCallBack OnReceiveOnLineList(); //  TODO 缺参数
 }
