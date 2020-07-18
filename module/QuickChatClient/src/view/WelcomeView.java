@@ -30,17 +30,10 @@ public class WelcomeView extends JFrame {
     private Point pressedPoint;
 
     public WelcomeView() {
-        //总设置
-        this.setUndecorated(true);// 取消窗体修饰效果
-        this.getContentPane().setLayout(null);// 窗体使用绝对布局
-        this.setAlwaysOnTop(true); //窗体最顶层显示
-        this.setLayout(null);//绝对布局
-        this.setVisible(true);
-        this.setResizable(false);
+        //窗体初设置
         this.setSize(400, 300);
         this.setLocationRelativeTo(null);// 窗体居中
         this.getContentPane().setBackground(new Color(MyDarkRgb));
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         //第零行
         JLabel closeLabel = new JLabel("X");
         closeLabel.setBackground(new Color(MyDarkRgb));
@@ -82,6 +75,14 @@ public class WelcomeView extends JFrame {
         this.add(errorLabel);
         // TODO 第三行
 
+        //窗体最后设置
+        this.setUndecorated(true);// 取消窗体修饰效果
+        this.getContentPane().setLayout(null);// 窗体使用绝对布局
+        this.setAlwaysOnTop(true); //窗体最顶层显示
+        this.setLayout(null);//绝对布局
+        this.setVisible(true);
+        this.setResizable(false);
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         //配置
         hostCombo.addItemListener(new ItemListener() {
