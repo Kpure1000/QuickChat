@@ -8,11 +8,21 @@ import network.ListenerCallBackAdapter;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
-public class SignIn {
+public class SignIn extends BasicFunction{
     public SignIn() {
         idListTmp = DataManager.getInstance().getIDRecord();
     }
 
+    @Override
+    public void Close() {
+        //删除监听回调
+        ClientNetwork.getInstance().removeListenerCallBacl(listenerCallBack);
+    }
+
+    /**
+     * 设置登录功能回调
+     * @param callBack 登录时直接反馈的回调（V-C)
+     */
     public void setCallBack(SignInCallBack callBack) {
         this.callBack = callBack;
         callBack.OnGetIDConfig(idListTmp);
@@ -31,36 +41,39 @@ public class SignIn {
         if (ID != null && password != null) {
             Debug.Log("ID:" + ID + ", PASS: " + password);
             //添加监听来获取登录反馈
-            ListenerCallBack listenerCallBack = new ListenerCallBackAdapter() {
+            listenerCallBack = new ListenerCallBackAdapter() {
                 @Override
                 public ListenerCallBack OnSignInCallBack(boolean fbState) {
                     Debug.Log("获取到了值: " + fbState);
                     return this;
                 }
             };
-            ClientNetwork.getInstance().addListenerCallBack(listenerCallBack, listenerCallBack);
+            ClientNetwork.getInstance().addListenerCallBack(listenerCallBack);
         }
     }
 
-    // TODO 要把这里的部分回调去掉，function应该只负责处理请求，不负责反馈
+    /**
+     * 登录功能回调，功能与UI交互
+     */
     public interface SignInCallBack {
         /**
-         * on function getting id record from local
+         * 获取ID列表
+         * @param ids
          */
         void OnGetIDConfig(ArrayList<BigInteger> ids);
 
         /**
-         * on function getting password config form local
+         * 获取密码配置
+         * @param password
          */
         void OnGetPassConfig(String password);
-
-        /**
-         * on function receive feed back, including ID and password
-         */
-        void OnReceiveFeedBack(boolean feedback);
     }
 
+    //本登录功能回调
     SignInCallBack callBack;
+
+    //监听回调
+    ListenerCallBackAdapter listenerCallBack;
 
     String idInputTmp;// the temp of id, from input
 

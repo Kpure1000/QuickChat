@@ -97,6 +97,10 @@ public class DataManager {
         return publicConfig.getIdList();
     }
 
+    public ArrayList<ServerInfo> getServerList(){
+        return publicConfig.getServerInfoList();
+    }
+
     public void addIDRecord(){
 
     }

@@ -49,6 +49,6 @@ public class ServerInfo implements Serializable {
     }
 
     public String toString(){
-        return Host + ", " + Port;
+        return Host + ":" + Port;
     }
 }

@@ -1,5 +1,6 @@
 package view;
 
+import function.Debug;
 import function.SignIn;
 
 import javax.swing.*;
@@ -24,6 +25,18 @@ public class SignInView extends JFrame {
     public SignInView() {
         int topY = 220;
         int leftX = 110;
+        //窗体
+        this.setUndecorated(true);// 取消窗体修饰效果
+        this.getContentPane().setLayout(null);// 窗体使用绝对布局
+        //this.setAlwaysOnTop(true); //窗体最顶层显示
+        this.setTitle("登录");
+        this.setLayout(null);//绝对布局
+        this.setVisible(true);
+        this.setResizable(false);
+        this.setBounds(800, 400, 700, 525);
+        this.setLocationRelativeTo(null);// 窗体居中
+        this.getContentPane().setBackground(new Color(MyDarkRgb));
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         //第零层
         JLabel closeLabel = new JLabel("X");
         closeLabel.setBackground(new Color(MyDarkRgb));
@@ -35,7 +48,7 @@ public class SignInView extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    System.exit(0);
+                    SignInView.this.dispose();
                 }
             }
         });
@@ -85,18 +98,7 @@ public class SignInView extends JFrame {
         signUpButton.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 20));
         signUpButton.setBounds(leftX + 100 + 200, topY + 200, 90, 30);
         this.add(signUpButton);
-        //窗体
-        this.setUndecorated(true);// 取消窗体修饰效果
-        this.getContentPane().setLayout(null);// 窗体使用绝对布局
-        //this.setAlwaysOnTop(true); //窗体最顶层显示
-        this.setTitle("登录");
-        this.setLayout(null);//绝对布局
-        this.setVisible(true);
-        this.setResizable(false);
-        this.setBounds(800, 400, 700, 525);
-        this.setLocationRelativeTo(null);// 窗体居中
-        this.getContentPane().setBackground(new Color(MyDarkRgb));
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
         this.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) { //鼠标按下事件
                 pressedPoint = e.getPoint(); //记录鼠标坐标
@@ -111,9 +113,24 @@ public class SignInView extends JFrame {
                 setLocation(x, y);// 改变窗体位置
             }
         });
+
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                Debug.Log("关闭了登录窗口");
+                // TODO 关闭所有进程之前释放功能资源
+                if(signIn!=null){
+                    signIn.Close();
+                }
+                super.windowClosed(e);
+            }
+        });
+
         /*-------------------------------------------------------*/
         //初始化登录功能
-        SignIn signIn = new SignIn();
+        signIn = new SignIn();
+
+        //设置登录功能回调
         signIn.setCallBack(new SignIn.SignInCallBack() {
             @Override
             public void OnGetIDConfig(ArrayList<BigInteger> ids) {
@@ -126,13 +143,6 @@ public class SignInView extends JFrame {
             @Override
             public void OnGetPassConfig(String password) {
                 passTmp = password;
-            }
-
-            @Override
-            public void OnReceiveFeedBack(boolean feedback) {
-                if (feedback) {
-                    // TODO 登录成功
-                }
             }
         });
 
@@ -182,11 +192,15 @@ public class SignInView extends JFrame {
      *
      * @param signIn
      */
-    void SignInAction(SignIn signIn) {
+    private void SignInAction(SignIn signIn) {
         if (idText.getText() != null && idText.getText().length() > 0) {
             if (passText.getPassword().length >= 6) {
                 errorLabel.setText("");
                 // TODO 这里要加一个判断ID输入是否合法的方法
+                if(signIn==null){
+                    Debug.LogError("登录功能类为空");
+                    return;
+                }
                 signIn.inputInformation(new BigInteger(idText.getText()),
                         String.valueOf(passText.getPassword()));
             } else {
@@ -198,7 +212,23 @@ public class SignInView extends JFrame {
         }
     }
 
-    private ArrayList<BigInteger> idList;
+//    /**
+//     * ID列表
+//     */
+//    private ArrayList<BigInteger> idList;
+
+    /**
+     * 密码缓存
+     */
     private String passTmp;
+
+    /**
+     * 鼠标坐标
+     */
     Point pressedPoint;
+
+    /**
+     * 登录功能
+     */
+    SignIn signIn;
 }

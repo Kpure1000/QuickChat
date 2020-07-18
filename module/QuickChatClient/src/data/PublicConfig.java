@@ -29,7 +29,7 @@ public class PublicConfig implements Serializable {
      * <p>
      *     这个是给FastJson序列化用的
      * </p>
-     * @return
+     * @return 服务器列表
      */
     @Deprecated
     public ArrayList<ServerInfo> getServerInfoList() {
