@@ -16,7 +16,7 @@ public abstract class ListenerCallBackAdapter implements ListenerCallBack {
      *
      * @param fbState
      */
-    public ListenerCallBack OnSignInCallBack(boolean fbState) {
+    public ListenerCallBack OnSignInCallBack(int fbState) {
         return this;
     }
 

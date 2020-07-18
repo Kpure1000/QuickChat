@@ -4,6 +4,8 @@ import function.Debug;
 import function.SignIn;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.math.BigInteger;
@@ -16,6 +18,7 @@ public class SignInView extends JFrame {
     private JComboBox<BigInteger> idBox;
 
     private JPasswordField passText;
+    private JCheckBox passCheck;
     private JLabel errorLabel;
 
     private final int MyLightRgb = 0x89FF57;
@@ -50,17 +53,18 @@ public class SignInView extends JFrame {
         idLabel.setForeground(new Color(MyLightRgb));
         idLabel.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 22));
         idLabel.setBounds(leftX, topY, 80, 30);
+        this.add(idLabel);
         idText = new JTextField();
         idText.setForeground(new Color(MyDarkRgb));
         idText.setBackground(new Color(MyLightRgb));
         idText.setBounds(leftX + 30 + 40, topY, 280, 30);
+        this.add(idText);
         idBox = new JComboBox<BigInteger>();
         idBox.setForeground(new Color(MyDarkRgb));
         idBox.setBackground(new Color(MyLightRgb));
         idBox.setBounds(leftX + 30 + 40 + 280 + 10, topY, 110, 30);
-        this.add(idLabel);
-        this.add(idText);
         this.add(idBox);
+
         //第二层
         JLabel passLabel = new JLabel("密码:");
         passLabel.setForeground(new Color(MyLightRgb));
@@ -79,6 +83,16 @@ public class SignInView extends JFrame {
         errorLabel.setBounds(leftX + 30 + 40 + 400 + 10, topY + 50 + 50, 200, 30);
         this.add(errorLabel);
         //第三层
+        JLabel passConfigText = new JLabel("记住密码");
+        passConfigText.setForeground(new Color(MyLightRgb));
+        passConfigText.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 15));
+        passConfigText.setBounds(leftX, topY + 140, 60, 30);
+        this.add(passConfigText);
+        passCheck = new JCheckBox();
+        passCheck.setBackground(new Color(MyDarkRgb));
+        passCheck.setBounds(leftX + 67, topY + 145, 20, 20);
+        this.add(passCheck);
+        //第四层
         JButton signInButton = new JButton("登录");
         signInButton.setBackground(new Color(MyLightRgb));
         signInButton.setForeground(new Color(MyDarkRgb));
@@ -106,25 +120,60 @@ public class SignInView extends JFrame {
         signIn = new SignIn();
 
         //设置登录功能回调
-        signIn.setCallBack(new SignIn.SignInCallBack() {
+        signIn.setSignInCallBack(new SignIn.SignInCallBack() {
             @Override
             public void OnGetIDConfig(ArrayList<BigInteger> ids) {
-                for (var item :
-                        ids) {
-                    idBox.addItem(item);
+                if (ids != null && ids.size() > 0) {
+                    for (var item :
+                            ids) {
+                        idBox.addItem(item);
+                    }
+                    idText.setText(ids.get(0).toString());
                 }
             }
 
             @Override
             public void OnGetPassConfig(String password) {
-                passTmp = password;
+                if (password != null) {
+                    //勾选记住密码
+                    passCheck.setSelected(true);
+                    passTmp = password;
+                    passText.setText(passTmp);
+                } else {
+                    //取消记住密码
+                    passCheck.setSelected(false);
+                }
+            }
+
+            @Override
+            public void OnIDInputError() {
+                errorLabel.setText("ID格式错误(纯数字)");
+            }
+
+            @Override
+            public void OnPassInputError() {
+                errorLabel.setText("密码格式错误(6-16)");
+                passText.setText("");
             }
         });
 
+        //ID选框变化
         idBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
+                //更新输入框
                 idText.setText(e.getItem().toString());
+                //根据历史ID获取密码配置
+                signIn.getPasswordConfig(e.getItem().toString());
+            }
+        });
+
+        //记住密码勾选变化
+        passCheck.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                //更新密码配置
+                signIn.setPasswordConfig(idText.getText(), passCheck.isSelected());
             }
         });
 
@@ -192,25 +241,12 @@ public class SignInView extends JFrame {
     /**
      * 登录事件内容
      *
-     * @param signIn
+     * @param signIn 登录功能
      */
     private void SignInAction(SignIn signIn) {
-        if (idText.getText() != null && idText.getText().length() > 0) {
-            if (passText.getPassword().length >= 6) {
-                errorLabel.setText("");
-                // TODO 这里要加一个判断ID输入是否合法的方法
-                if (signIn == null) {
-                    Debug.LogError("登录功能类为空");
-                    return;
-                }
-                signIn.inputInformation(new BigInteger(idText.getText()),
-                        String.valueOf(passText.getPassword()));
-            } else {
-                errorLabel.setText("密码不少于6位");
-                passText.setText("");
-            }
-        } else {
-            errorLabel.setText("ID输入/选择有误");
+        passTmp = new String(passText.getPassword());
+        if (signIn != null) {
+            signIn.inputInformation(idText.getText(), passTmp);
         }
     }
 

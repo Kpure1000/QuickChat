@@ -31,7 +31,6 @@ public class PublicConfig implements Serializable {
      * </p>
      * @return 服务器列表
      */
-    @Deprecated
     public ArrayList<ServerInfo> getServerInfoList() {
         return serverInfoList;
     }
@@ -43,7 +42,6 @@ public class PublicConfig implements Serializable {
      * </p>
      * @return
      */
-    @Deprecated
     public ArrayList<BigInteger> getIdList() {
         return idList;
     }

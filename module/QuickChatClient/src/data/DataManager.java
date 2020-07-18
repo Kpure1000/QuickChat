@@ -20,7 +20,7 @@ public class DataManager {
     private static DataManager instance;
 
     private DataManager(){
-        //TODO 临时写入配置
+        //TODO临时写入配置
         //writePublic();
         //从文件读取公共配置
         readPublic();
@@ -36,7 +36,7 @@ public class DataManager {
 
     /*------------------------------------------------------*/
 
-    public void readPublic(){
+    private void readPublic(){
         try {
             BufferedReader bufferedReader = new BufferedReader(
                     new InputStreamReader(new FileInputStream(new File(publicConfigPath)),"UTF-8"));
@@ -72,7 +72,7 @@ public class DataManager {
         }
     }
 
-    public void writePublic(){
+    private void writePublic(){
         try {
             File file = new File(publicConfigPath);
             if(!file.getParentFile().exists()){
@@ -92,6 +92,8 @@ public class DataManager {
             e.printStackTrace();
         }
     }
+
+    private void readPrivate(){}
 
     public ArrayList<BigInteger> getIDRecord(){
         return publicConfig.getIdList();
@@ -141,5 +143,7 @@ public class DataManager {
 
     private PrivateConfig privateConfig;
 
-    private String privateConfigPath = "ChatData/config.data";
+    private String privateConfigPath = "Common/";
+
+    private String privateConfigExtend = ".pri";
 }

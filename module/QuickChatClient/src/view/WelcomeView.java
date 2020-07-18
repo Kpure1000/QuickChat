@@ -1,6 +1,5 @@
 package view;
 
-import data.DataManager;
 import data.ServerInfo;
 import function.Debug;
 import function.Welcome;
@@ -39,7 +38,7 @@ public class WelcomeView extends JFrame {
         closeLabel.setBackground(new Color(MyDarkRgb));
         closeLabel.setForeground(new Color(MyLightRgb));
         closeLabel.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 16));
-        closeLabel.setBounds(365, 15, 30, 30);
+        closeLabel.setBounds(375, 15, 30, 30);
         this.add(closeLabel);
         closeLabel.addMouseListener(new MouseAdapter() {
             @Override
@@ -68,12 +67,29 @@ public class WelcomeView extends JFrame {
         this.add(hostCombo);
 
         // TODO 第二行
-        errorLabel = new JLabel("哈哈哈哈");
+        errorLabel = new JLabel("服务器连接错误");
         errorLabel.setFont(new Font("微软雅黑", Font.PLAIN, 18));
         errorLabel.setForeground(Color.RED);
-        errorLabel.setBounds(this.getBounds().width / 2 - 100, topY+50, 200, 30);
+        errorLabel.setBounds(this.getBounds().width / 2 - 75, topY + 50, 160, 30);
         this.add(errorLabel);
         // TODO 第三行
+        JButton confirm = new JButton("确定");
+        confirm.setForeground(new Color(MyDarkRgb));
+        confirm.setBackground(new Color(MyLightRgb));
+        confirm.setBounds(topX + 200, topY + 140, 80, 30);
+        this.add(confirm);
+        confirm.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO 连接成功
+                Debug.Log("连接成功");
+                //创建登录窗口
+                new SignInView();
+                //关掉自己
+                WelcomeView.this.dispose();
+
+            }
+        });
 
         //窗体最后设置
         this.setUndecorated(true);// 取消窗体修饰效果
@@ -151,7 +167,7 @@ public class WelcomeView extends JFrame {
     //UI
     private final int MyLightRgb = 0x89FF57;
     private final int MyDarkRgb = 0x3d3f41;
-    private int topX = 40, topY = 120;
+    private int topX = 50, topY = 120;
 
     /**
      * 选项框

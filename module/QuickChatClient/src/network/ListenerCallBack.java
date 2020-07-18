@@ -3,7 +3,7 @@ package network;
 import java.math.BigInteger;
 
 public interface ListenerCallBack {
-    public ListenerCallBack OnSignInCallBack(boolean fbState);
+    public ListenerCallBack OnSignInCallBack(int fbState);
 
     public ListenerCallBack OnSignUpCallBack(BigInteger fbID);
 

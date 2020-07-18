@@ -50,16 +50,16 @@ public class ClientNetwork {
      * @param netCallBack 网络回调
      */
     public synchronized void addNetCallBack(NetCallBack netCallBack) {
-        if (netCallBack == null) {
-            return;
-        }
-        for (var item :
-                netCallBackList) {
-            if (item == netCallBack) { //  如果已存在
-                return;
+        if (netCallBack != null) {
+            for (var item :
+                    netCallBackList) {
+                if (item == netCallBack) {
+                    return;
+                }
             }
+            this.netCallBackList.add(netCallBack);
         }
-        this.netCallBackList.add(netCallBack);
+
     }
 
     /**
@@ -68,10 +68,9 @@ public class ClientNetwork {
      * @param netCallBack 目标回调
      */
     public synchronized void removeNetCallBack(NetCallBack netCallBack) {
-        if (netCallBack == null) {
-            return;
+        if (netCallBack != null) {
+            this.netCallBackList.removeIf(item -> item.equals(netCallBack));
         }
-        this.netCallBackList.removeIf(item -> item.equals(netCallBack));
     }
 
     /**
@@ -90,6 +89,7 @@ public class ClientNetwork {
             //netCallBack.OnConnectSuccess();
             for (var item :
                     netCallBackList) {
+                //连接成功回调
                 item.OnConnectSuccess();
             }
             isConnected = true;
@@ -99,6 +99,7 @@ public class ClientNetwork {
             //netCallBack.OnConnectFailed();
             for (var item :
                     netCallBackList) {
+                //连接失败回调
                 item.OnConnectFailed();
             }
             isConnected = false;
@@ -121,7 +122,15 @@ public class ClientNetwork {
         if (socket != null) {
             if (isConnected) {
                 try {
+                    //关闭监听
+                    listener.Close();
+                    //关闭Socket
                     socket.close();
+                    for (var item :
+                            netCallBackList) {
+                        //断开连接回调
+                        item.OnDisconnect();
+                    }
                 } catch (IOException e) {
                     Debug.LogError("Socket关闭失败");
                     e.printStackTrace();
