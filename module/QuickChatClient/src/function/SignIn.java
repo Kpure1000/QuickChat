@@ -29,6 +29,12 @@ public class SignIn extends BasicFunction {
         signInCallBack.OnGetIDConfig(idListTmp);
     }
 
+    /**
+     * 输入ID与密码
+     *
+     * @param ID
+     * @param password
+     */
     public void inputInformation(String ID, String password) {
         if (judgeID(ID)) {
             if (judgePass(password)) {
@@ -94,11 +100,21 @@ public class SignIn extends BasicFunction {
     private void sendSignInMessage(BigInteger ID, String password) {
         if (ID != null && password != null) {
             Debug.Log("ID:" + ID + ", PASS: " + password);
-            //添加监听来获取登录反馈
+
+            // 添加监听来获取登录反馈
             listenerCallBack = new ListenerCallBackAdapter() {
                 @Override
                 public ListenerCallBack OnSignInCallBack(int fbState) {
                     Debug.Log("监听回调获取到了-登陆请求的反馈: " + fbState);
+                    if (fbState == 1) {
+                        //登录成功
+                        //更新ID记录
+                        if(signInCallBack.OnNeedPassConfigUpdate()) {
+                            DataManager.getInstance().updateIDRecord(ID, password);
+                        }else {
+                            DataManager.getInstance().updateIDRecord(ID, null);
+                        }
+                    }
                     return this;
                 }
             };
@@ -106,15 +122,29 @@ public class SignIn extends BasicFunction {
         }
     }
 
-    public boolean getPasswordConfig(String targetID) {
-        // TODO 从私人配置加载密码配置
-        //DataManager.getInstance()
-        return false;
+    /**
+     * 从私人配置加载密码配置，仅当ID下拉菜单变化时调用
+     *
+     * @param targetID 目标ID
+     */
+    public void getPasswordConfig(String targetID) {
+        // TODO从私人配置加载密码配置
+        // 通过回调反馈记住密码配置
+        signInCallBack.OnGetPassConfig(
+                DataManager.getInstance().getPasswordConfig(new BigInteger(targetID)));
     }
 
+    /**
+     * 按ID更新记住密码配置，仅当勾选框变化时调用
+     *
+     * @param targetID 目标ID
+     * @param config 是否记住密码
+     */
     public void setPasswordConfig(String targetID, boolean config) {
-        if (getPasswordConfig(targetID)) {
+        var ID = new BigInteger(targetID);
+        if (DataManager.getInstance().getPasswordConfig(ID) != null) {
             // TODO 修改私人配置
+            DataManager.getInstance().updatePasswordConfig(ID, config);
         }
     }
 
@@ -125,33 +155,52 @@ public class SignIn extends BasicFunction {
         /**
          * 获取ID列表
          *
-         * @param ids
+         * @param ids 登录成功的ID列表
          */
         void OnGetIDConfig(ArrayList<BigInteger> ids);
 
         /**
          * 获取密码配置
          *
-         * @param password
+         * @param password 记住的密码，如果不记住则为null
          */
         void OnGetPassConfig(String password);
 
         void OnIDInputError();
 
         void OnPassInputError();
+
+        /**
+         * 如果用户始终没有变化勾选框，则主动向UI请求记住密码配置
+         *
+         * @return UI记住密码选框的值
+         */
+        boolean OnNeedPassConfigUpdate();
     }
 
-    //本登录功能回调
-    SignInCallBack signInCallBack;
+    /**
+     * 本登录功能的回调
+     */
+    private SignInCallBack signInCallBack;
 
-    //监听回调
-    ListenerCallBackAdapter listenerCallBack;
+    /**
+     * 监听回调
+     */
+    private ListenerCallBackAdapter listenerCallBack;
 
-    String idInputTmp;// the temp of id, from input
+    @Deprecated
+    private String idInputTmp;// the temp of id, from input
 
-    ArrayList<BigInteger> idListTmp;// the temp of IDList, from public config
+    /**
+     * 登录成功的历史ID的列表
+     */
+    private ArrayList<BigInteger> idListTmp;// the temp of IDList, from public config
 
-    String passTmp;// the temp of password, from input or private config
+    /**
+     * 可能用来缓存是否记住密码以及其值，如果不记住则为null
+     */
+    //private String passTmp;// the temp of password, from input or private config
 
-    boolean rememberPass;// pass record config from private config
+    @Deprecated
+    private boolean rememberPass;// pass record config from private config
 }

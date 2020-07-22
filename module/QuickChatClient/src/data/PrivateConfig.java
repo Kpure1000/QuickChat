@@ -80,6 +80,8 @@ public class PrivateConfig implements Serializable {
      * @return 记住的密码
      */
     public String getRememberedPassword() {
+        if (!isRemembered)
+            return null;
         return rememberedPassword;
     }
 
@@ -91,6 +93,14 @@ public class PrivateConfig implements Serializable {
          * 消息对象（位置）
          */
         private BigInteger ChatObjectID;
+
+        public BigInteger getChatObjectID() {
+            return ChatObjectID;
+        }
+
+        public void setChatObjectID(BigInteger chatObjectID) {
+            ChatObjectID = chatObjectID;
+        }
 
         /**
          * 消息内容
@@ -106,11 +116,27 @@ public class PrivateConfig implements Serializable {
         /**
          * 消息内容列表
          */
-        private ArrayList<MessageContent> messageContents;
+        private ArrayList<MessageContent> messageContents = new ArrayList<MessageContent>();
+
+        public ArrayList<MessageContent> getMessageContents() {
+            return messageContents;
+        }
+
+        public void setMessageContents(ArrayList<MessageContent> messageContents) {
+            this.messageContents = messageContents;
+        }
     }
 
     /**
      * 消息列表（对象+内容）
      */
-    private ArrayList<MessageRecord> messageRecords;
+    private ArrayList<MessageRecord> messageRecords = new ArrayList<MessageRecord>();
+
+    public ArrayList<MessageRecord> getMessageRecords() {
+        return messageRecords;
+    }
+
+    public void setMessageRecords(ArrayList<MessageRecord> messageRecords) {
+        this.messageRecords = messageRecords;
+    }
 }

@@ -155,9 +155,15 @@ public class SignInView extends JFrame {
                 errorLabel.setText("密码格式错误(6-16)");
                 passText.setText("");
             }
+
+            @Override
+            public boolean OnNeedPassConfigUpdate() {
+                // TODO 更新密码配置，不知道isSelected能不能用
+                return passCheck.isSelected();
+            }
         });
 
-        //ID选框变化
+        //ID选框变化（该ID一定存在于记录中），获取该ID的记住密码配置
         idBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
@@ -168,11 +174,11 @@ public class SignInView extends JFrame {
             }
         });
 
-        //记住密码勾选变化
+        //勾选变化，更新密码配置
         passCheck.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                //更新密码配置
+                // TODO 更新密码配置，不知道isSelected能不能用
                 signIn.setPasswordConfig(idText.getText(), passCheck.isSelected());
             }
         });
