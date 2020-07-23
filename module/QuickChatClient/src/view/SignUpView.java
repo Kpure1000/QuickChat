@@ -2,6 +2,7 @@ package view;
 
 import function.Debug;
 import function.SignIn;
+import function.SignUp;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -11,7 +12,7 @@ import java.awt.event.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
-public class SignInView extends JFrame {
+public class SignUpView extends JFrame {
 
     //  UI
     private JTextField idText;
@@ -25,7 +26,7 @@ public class SignInView extends JFrame {
     private final int MyDarkRgb = 0x3d3f41;
     ////
 
-    public SignInView() {
+    public SignUpView(){
         int topY = 220;
         int leftX = 110;
 
@@ -44,7 +45,7 @@ public class SignInView extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    SignInView.this.dispose();
+                    SignUpView.this.dispose();
                 }
             }
         });
@@ -59,11 +60,6 @@ public class SignInView extends JFrame {
         idText.setBackground(new Color(MyLightRgb));
         idText.setBounds(leftX + 30 + 40, topY, 280, 30);
         this.add(idText);
-        idBox = new JComboBox<BigInteger>();
-        idBox.setForeground(new Color(MyDarkRgb));
-        idBox.setBackground(new Color(MyLightRgb));
-        idBox.setBounds(leftX + 30 + 40 + 280 + 10, topY, 110, 30);
-        this.add(idBox);
 
         //第二层
         JLabel passLabel = new JLabel("密码:");
@@ -83,22 +79,12 @@ public class SignInView extends JFrame {
         errorLabel.setBounds(leftX + 30 + 40 + 400 + 10, topY + 50 + 50, 200, 30);
         this.add(errorLabel);
         //第三层
-        JLabel passConfigText = new JLabel("记住密码");
-        passConfigText.setForeground(new Color(MyLightRgb));
-        passConfigText.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 15));
-        passConfigText.setBounds(leftX, topY + 140, 60, 30);
-        this.add(passConfigText);
-        passCheck = new JCheckBox();
-        passCheck.setBackground(new Color(MyDarkRgb));
-        passCheck.setBounds(leftX + 67, topY + 145, 20, 20);
-        this.add(passCheck);
-        //第四层
-        JButton signInButton = new JButton("登录");
-        signInButton.setBackground(new Color(MyLightRgb));
-        signInButton.setForeground(new Color(MyDarkRgb));
-        signInButton.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 20));
-        signInButton.setBounds(leftX + 100, topY + 200, 90, 30);
-        this.add(signInButton);
+//        JButton signUpButton = new JButton("登录");
+//        signUpButton.setBackground(new Color(MyLightRgb));
+//        signUpButton.setForeground(new Color(MyDarkRgb));
+//        signUpButton.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 20));
+//        signUpButton.setBounds(leftX + 100, topY + 200, 90, 30);
+//        this.add(signUpButton);
         JButton signUpButton = new JButton("注册");
         signUpButton.setBackground(new Color(MyLightRgb));
         signUpButton.setForeground(new Color(MyDarkRgb));
@@ -117,91 +103,29 @@ public class SignInView extends JFrame {
 
         /*-------------------------------------------------------*/
         //初始化登录功能
-        signIn = new SignIn();
+        signUp = new SignUp();
 
         //设置登录功能回调
-        signIn.setSignInCallBack(new SignIn.SignInCallBack() {
+        signUp.setSignUpCallBack(new SignUp.SignUpCallBack() {
             @Override
-            public void OnGetIDConfig(ArrayList<BigInteger> ids) {
-                if (ids != null && ids.size() > 0) {
-                    for (var item :
-                            ids) {
-                        idBox.addItem(item);
-                    }
-                    idText.setText(ids.get(0).toString());
-                }
-            }
-
-            @Override
-            public void OnGetPassConfig(String password) {
-                if (password != null) {
-                    //勾选记住密码
-                    passCheck.setSelected(true);
-                    passTmp = password;
-                    passText.setText(passTmp);
-                } else {
-                    //取消记住密码
-                    passCheck.setSelected(false);
-                }
-            }
-
-            @Override
-            public void OnIDInputError() {
-                errorLabel.setText("ID格式错误(纯数字)");
+            public void OnNewIDFeedBack(BigInteger newID) {
+                // TODO 当注册成功，反馈了新的ID
+                // 应该是弹窗提示，然后确认后进入登陆界面，自动填充新的ID
+                // 具体如何实现自动填充，详见 https://github.com/Kpure1000/QuickChat/issues/3
             }
 
             @Override
             public void OnPassInputError() {
-                errorLabel.setText("密码格式错误(6-16)");
-                passText.setText("");
+                errorLabel.setText("密码格式错误");
             }
 
-            @Override
-            public boolean OnNeedPassConfigUpdate() {
-                // TODO 更新密码配置，不知道isSelected能不能用
-                return passCheck.isSelected();
-            }
         });
 
-        //ID选框变化（该ID一定存在于记录中），获取该ID的记住密码配置
-        idBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                //更新输入框
-                idText.setText(e.getItem().toString());
-                //根据历史ID获取密码配置
-                signIn.getPasswordConfig(e.getItem().toString());
-            }
-        });
-
-        //勾选变化，更新密码配置
-        passCheck.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                // TODO 更新密码配置，不知道isSelected能不能用
-                signIn.setPasswordConfig(idText.getText(), passCheck.isSelected());
-            }
-        });
-
-        //登录按钮监听
-        signInButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                SignInAction(signIn);
-            }
-        });
-
+        //注册按钮监听
         signUpButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                // TODO 隐藏此窗口，打开注册界面，这里需要注册ID自动填充的回调
-                SignInView.this.setVisible(false);
-                new SignUpView().setSignUpViewCallBack(new SignUpView.SignUpViewCallBack() {
-                    @Override
-                    public void OnIDAutoFill(BigInteger newID) {
-                        // TODO 自动填充
-                    }
-                });
+                // TODO 注册功能
             }
         });
 
@@ -209,7 +133,7 @@ public class SignInView extends JFrame {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    SignInAction(signIn);
+                    // TODO 注册功能
                 }
             }
         });
@@ -217,7 +141,7 @@ public class SignInView extends JFrame {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    SignInAction(signIn);
+                    // TODO 注册功能
                 }
             }
         });
@@ -225,7 +149,7 @@ public class SignInView extends JFrame {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    SignInAction(signIn);
+                    // TODO 注册功能
                 }
             }
         });
@@ -250,43 +174,28 @@ public class SignInView extends JFrame {
             public void windowClosed(WindowEvent e) {
                 Debug.Log("关闭了登录窗口");
                 // TODO 关闭所有进程之前释放功能资源
-                if (signIn != null) {
-                    signIn.Close();
+                if (signUp != null) {
+                    signUp.Close();
                 }
                 super.windowClosed(e);
             }
         });
     }
 
-    /**
-     * 登录事件内容
-     *
-     * @param signIn 登录功能
-     */
-    private void SignInAction(SignIn signIn) {
-        passTmp = new String(passText.getPassword());
-        if (signIn != null) {
-            signIn.inputInformation(idText.getText(), passTmp);
-        }
-    }
-
-//    /**
-//     * ID列表
-//     */
-//    private ArrayList<BigInteger> idList;
-
-    /**
-     * 密码缓存
-     */
-    private String passTmp;
-
-    /**
-     * 鼠标坐标
-     */
     Point pressedPoint;
 
     /**
-     * 登录功能
+     * 注册功能
      */
-    SignIn signIn;
+    SignUp signUp;
+
+    public interface SignUpViewCallBack{
+        void OnIDAutoFill(BigInteger newID);
+    }
+
+    private SignUpViewCallBack signUpViewCallBack;
+
+    public void setSignUpViewCallBack(SignUpViewCallBack signUpViewCallBack) {
+        this.signUpViewCallBack = signUpViewCallBack;
+    }
 }
