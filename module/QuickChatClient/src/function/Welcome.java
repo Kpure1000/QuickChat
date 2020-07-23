@@ -18,7 +18,7 @@ public class Welcome extends BasicFunction {
                 Welcome.this.connecting = false;
                 //连接成功
                 if (welcomeCallBack != null)
-                    welcomeCallBack.OnConnectSuccess();
+                    welcomeCallBack.OnConnectSuccess();//调用自己的回调，通知UI
             }
 
             @Override
@@ -83,9 +83,9 @@ public class Welcome extends BasicFunction {
      * 欢迎功能回调
      */
     public interface WelcomeCallBack {
-        public void OnGetServerList(ArrayList<ServerInfo> serverList);
+        void OnGetServerList(ArrayList<ServerInfo> serverList);
 
-        public void OnConnectSuccess();
+        void OnConnectSuccess();
     }
 
     private WelcomeCallBack welcomeCallBack;

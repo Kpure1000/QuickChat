@@ -22,8 +22,14 @@ public class WelcomeView extends JFrame {
     //欢迎界面功能
     private final Welcome welcome;
 
+    /**
+     * 缓存的地址
+     */
     private String host;
 
+    /**
+     * 缓存的端口
+     */
     private int port;
 
     private Point pressedPoint;
@@ -78,15 +84,18 @@ public class WelcomeView extends JFrame {
         confirm.setBackground(new Color(MyLightRgb));
         confirm.setBounds(topX + 200, topY + 140, 80, 30);
         this.add(confirm);
+        // 连接服务器 按钮事件
         confirm.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO 连接成功
+                // TODO 连接成功，暂时这样写方便调试后面的登录
                 Debug.Log("连接成功");
                 //创建登录窗口
                 new SignInView();
                 //关掉自己
                 WelcomeView.this.dispose();
+                // 连接服务器
+                //welcome.ConnectToServer(host,port);
 
             }
         });
@@ -136,6 +145,7 @@ public class WelcomeView extends JFrame {
                 WelcomeView.this.dispose();
             }
         });
+
 
         this.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) { //鼠标按下事件
