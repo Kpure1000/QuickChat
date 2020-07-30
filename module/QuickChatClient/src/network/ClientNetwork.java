@@ -2,8 +2,10 @@ package network;
 
 import function.Debug;
 import information.BasicInfo;
+import message.UserMessage;
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -86,17 +88,16 @@ public class ClientNetwork {
             socket = new Socket(host, port);
             curHost = host;
             curPort = port;
-            //netCallBack.OnConnectSuccess();
             for (var item :
                     netCallBackList) {
                 //连接成功回调
                 item.OnConnectSuccess();
             }
+            objOut = new ObjectOutputStream(socket.getOutputStream());
             isConnected = true;
             //创建监听线程
             beginListening(socket);
         } catch (IOException e) {
-            //netCallBack.OnConnectFailed();
             for (var item :
                     netCallBackList) {
                 //连接失败回调
@@ -175,13 +176,53 @@ public class ClientNetwork {
      * 发送消息
      */
     // TODO param should include 'ClientMessage'
-    public void sendMessage() {
-
+    public void sendMessage(UserMessage userMessage) {
+        if(!isConnected){
+            for (NetCallBack item :
+                    netCallBackList) {
+                item.OnConnectFailed();
+            }
+            return;
+        }
+        try {
+            if (userMessage == null) {
+                System.out.println("消息传入错误");
+                return;
+            }
+            if (objOut == null) // 加载对象输出流
+                objOut = new ObjectOutputStream(socket.getOutputStream());
+            objOut.writeObject(userMessage);
+            objOut.flush();
+            for (NetCallBack item :
+                    netCallBackList) {
+                item.OnSendMessageSuccess(userMessage);
+            }
+        } catch (IOException e) {
+            // TODO 如果断开连接，broken pipe异常如何处理？
+            if (socket.isConnected()) {
+                while (!isConnected) {
+                    System.out.println("连接断开，发送失败;正在尝试重新连接...");
+                    // TODO 这里其实
+                    connect(curHost, curPort);
+                    try {
+                        //等待400ms
+                        Thread.sleep(400);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 
     /*--------------------------------------------*/
 
     private Socket socket;
+
+    /**
+     * 对象输出流
+     */
+    private ObjectOutputStream objOut;
 
     private boolean isConnected = false;
 
@@ -209,6 +250,10 @@ public class ClientNetwork {
         void OnConnectFailed();
 
         void OnDisconnect();
+
+        void OnSendMessageSuccess(UserMessage msg);
+
+        void OnSendMessageFailed(UserMessage msg);
     }
 
     /**

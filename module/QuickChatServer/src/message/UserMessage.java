@@ -1,7 +1,5 @@
 package message;
 
-import information.BasicInfo;
-
 import java.io.Serializable;
 import java.math.BigInteger;
 
