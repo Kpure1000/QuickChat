@@ -14,12 +14,10 @@ public class ServerListener implements Runnable {
     /**
      * 构造一个监听线程
      *
-     * @param socket
-     * @param ID
+     * @param socket Accept的套接字
      */
-    public ServerListener(Socket socket, BigInteger ID) {
+    public ServerListener(Socket socket) {
         this.socket = socket;
-        this.ID = ID;
     }
 
     @Override
@@ -31,18 +29,24 @@ public class ServerListener implements Runnable {
                 UserMessage msg = (UserMessage) objIn.readObject();
                 switch (msg.getMessageType()){
                     case Check_SignIn_ID -> {
+                        // TODO 按照ID登陆
+
                     }
                     case Check_SignIn_Email -> {
                     }
                     case Check_SignIn_Phone -> {
                     }
                     case Require_SignUp -> {
+                        // TODO 注册
                     }
                     case Require_Offline -> {
+                        // TODO 下线请求
                     }
                     case Require_OnLineList -> {
+                        // TODO 在线列表请求
                     }
                     case Require_ApplyFriend -> {
+                        // TODO 好友申请
                     }
                     case Require_DeleteFriend -> {
                     }

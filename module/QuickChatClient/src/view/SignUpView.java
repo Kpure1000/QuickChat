@@ -1,24 +1,21 @@
 package view;
 
 import function.Debug;
-import function.SignIn;
 import function.SignUp;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.math.BigInteger;
-import java.util.ArrayList;
 
 public class SignUpView extends JFrame {
 
     //  UI
-    private JTextField idText;
+    private JTextField nameText;
     private JComboBox<BigInteger> idBox;
 
     private JPasswordField passText;
+    private JPasswordField rePassText;
     private JCheckBox passCheck;
     private JLabel errorLabel;
 
@@ -50,19 +47,19 @@ public class SignUpView extends JFrame {
             }
         });
         //第一层
-        JLabel idLabel = new JLabel("ID:");
-        idLabel.setForeground(new Color(MyLightRgb));
-        idLabel.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 22));
-        idLabel.setBounds(leftX, topY, 80, 30);
-        this.add(idLabel);
-        idText = new JTextField();
-        idText.setForeground(new Color(MyDarkRgb));
-        idText.setBackground(new Color(MyLightRgb));
-        idText.setBounds(leftX + 30 + 40, topY, 280, 30);
-        this.add(idText);
+        JLabel nameLabel = new JLabel("名称:");
+        nameLabel.setForeground(new Color(MyLightRgb));
+        nameLabel.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 22));
+        nameLabel.setBounds(leftX, topY, 80, 30);
+        this.add(nameLabel);
+        nameText = new JTextField();
+        nameText.setForeground(new Color(MyDarkRgb));
+        nameText.setBackground(new Color(MyLightRgb));
+        nameText.setBounds(leftX + 30 + 40, topY, 280, 30);
+        this.add(nameText);
 
         //第二层
-        JLabel passLabel = new JLabel("密码:");
+        JLabel passLabel = new JLabel(" 创建密码");
         passLabel.setForeground(new Color(MyLightRgb));
         passLabel.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 22));
         passLabel.setBounds(leftX, topY + 50 + 50, 80, 30);
@@ -79,6 +76,23 @@ public class SignUpView extends JFrame {
         errorLabel.setBounds(leftX + 30 + 40 + 400 + 10, topY + 50 + 50, 200, 30);
         this.add(errorLabel);
         //第三层
+        JLabel rePassLabel = new JLabel(" 创建密码");
+        rePassLabel.setForeground(new Color(MyLightRgb));
+        rePassLabel.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 22));
+        rePassLabel.setBounds(leftX, topY + 50 + 50, 80, 30);
+        this.add(rePassLabel);
+        rePassText = new JPasswordField();
+        rePassText.setForeground(new Color(MyDarkRgb));
+        rePassText.setBackground(new Color(MyLightRgb));
+        rePassText.setBounds(leftX + 30 + 40, topY + 50 + 50, 400, 30);
+        this.add(rePassText);
+        errorLabel = new JLabel("");
+        errorLabel.setBackground(new Color(MyDarkRgb));
+        errorLabel.setForeground(Color.RED);
+        errorLabel.setFont(new Font("微软雅黑", Font.BOLD | Font.ITALIC, 13));
+        errorLabel.setBounds(leftX + 30 + 40 + 400 + 10, topY + 50 + 50, 200, 30);
+        this.add(errorLabel);
+        //第四层
 //        JButton signUpButton = new JButton("登录");
 //        signUpButton.setBackground(new Color(MyLightRgb));
 //        signUpButton.setForeground(new Color(MyDarkRgb));
@@ -112,11 +126,14 @@ public class SignUpView extends JFrame {
                 // TODO 当注册成功，反馈了新的ID
                 // 应该是弹窗提示，然后确认后进入登陆界面，自动填充新的ID
                 // 具体如何实现自动填充，详见 https://github.com/Kpure1000/QuickChat/issues/3
+                JOptionPane.showMessageDialog(SignUpView.this,
+                        "您的新ID: "+newID.toString(),"注册成功",JOptionPane.INFORMATION_MESSAGE
+                );
             }
 
             @Override
-            public void OnPassInputError() {
-                errorLabel.setText("密码格式错误");
+            public void OnPassInputError(String errorMsg) {
+                errorLabel.setText(errorMsg);
             }
 
         });
@@ -137,7 +154,7 @@ public class SignUpView extends JFrame {
                 }
             }
         });
-        idText.addKeyListener(new KeyAdapter() {
+        nameText.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {

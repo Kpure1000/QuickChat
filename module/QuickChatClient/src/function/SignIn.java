@@ -1,6 +1,7 @@
 package function;
 
 import data.DataManager;
+import message.UserMessage;
 import network.ClientNetwork;
 import network.ListenerCallBack;
 import network.ListenerCallBackAdapter;
@@ -101,7 +102,7 @@ public class SignIn extends BasicFunction {
         if (ID != null && password != null) {
             Debug.Log("ID:" + ID + ", PASS: " + password);
 
-            // 添加监听来获取登录反馈
+            // 定义监听来获取登录反馈
             listenerCallBack = new ListenerCallBackAdapter() {
                 @Override
                 public ListenerCallBack OnSignInCallBack(int fbState) {
@@ -109,16 +110,22 @@ public class SignIn extends BasicFunction {
                     if (fbState == 1) {
                         //登录成功
                         //更新ID记录
-                        if(signInCallBack.OnNeedPassConfigUpdate()) {
+                        if (signInCallBack.OnNeedPassConfigUpdate()) {
                             DataManager.getInstance().updateIDRecord(ID, password);
-                        }else {
+                        } else {
                             DataManager.getInstance().updateIDRecord(ID, null);
                         }
                     }
                     return this;
                 }
             };
+            // 加入监听
             ClientNetwork.getInstance().addListenerCallBack(listenerCallBack);
+            // 发送验证请求
+            ClientNetwork.getInstance().sendMessage(new UserMessage(
+                    UserMessage.MessageType.Check_SignIn_ID, null,
+                    ID.toString() + "#" + password
+            ));
         }
     }
 
@@ -138,7 +145,7 @@ public class SignIn extends BasicFunction {
      * 按ID更新记住密码配置，仅当勾选框变化时调用
      *
      * @param targetID 目标ID
-     * @param config 是否记住密码
+     * @param config   是否记住密码
      */
     public void setPasswordConfig(String targetID, boolean config) {
         var ID = new BigInteger(targetID);
