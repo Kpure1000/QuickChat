@@ -16,8 +16,9 @@ public class SignUp extends BasicFunction {
 
     /**
      * 输入注册信息
-     * @param newName 新用户名
-     * @param password 创建密码
+     *
+     * @param newName    新用户名
+     * @param password   创建密码
      * @param rePassword 确认密码
      */
     public void inputInformation(String newName, String password, String rePassword) {
@@ -49,6 +50,7 @@ public class SignUp extends BasicFunction {
 
             // 定义监听来获取登录反馈
             listenerCallBack = new ListenerCallBackAdapter() {
+
                 @Override
                 public ListenerCallBack OnSignUpCallBack(BigInteger fbID) {
                     Debug.Log("监听回调获取到了-注册新ID的反馈: " + fbID);
@@ -63,7 +65,8 @@ public class SignUp extends BasicFunction {
             ClientNetwork.getInstance().addListenerCallBack(listenerCallBack);
             // 发送验证请求
             ClientNetwork.getInstance().sendMessage(new UserMessage(
-                    UserMessage.MessageType.Require_SignUp, null,
+                    UserMessage.MessageType.Require_SignUp,
+                    null, null,
                     newName.toString() + "#" + password
             ));
         }

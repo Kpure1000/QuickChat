@@ -12,12 +12,15 @@ public class UserMessage implements Serializable {
 
     /**
      * 构造
+     *
      * @param messageType 消息类型
-     * @param receiverID 消息接收者
-     * @param content 内容
+     * @param senderID 消息发送者
+     * @param receiverID  消息接收者
+     * @param content     内容
      */
-    public UserMessage(MessageType messageType, BigInteger receiverID, String content) {
+    public UserMessage(MessageType messageType, BigInteger senderID, BigInteger receiverID, String content) {
         this.messageType = messageType;
+        this.senderID = senderID;
         this.receiverID = receiverID;
         this.content = content;
     }
@@ -107,6 +110,19 @@ public class UserMessage implements Serializable {
 
     public void setMessageType(MessageType messageType) {
         this.messageType = messageType;
+    }
+
+    /**
+     * 发送对象ID
+     */
+    private BigInteger senderID;
+
+    public void setSenderID(BigInteger senderID) {
+        this.senderID = senderID;
+    }
+
+    public BigInteger getSenderID() {
+        return senderID;
     }
 
     /**

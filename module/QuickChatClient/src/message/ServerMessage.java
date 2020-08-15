@@ -9,6 +9,21 @@ public class ServerMessage {
 
     private static final long serialVersionUID = 12345L;
 
+    /**
+     * 构造
+     *
+     * @param messageType 消息类型
+     * @param senderID    消息发送者
+     * @param receiverID  接收者
+     * @param content     消息内容
+     */
+    public ServerMessage(MessageType messageType, BigInteger senderID, BigInteger receiverID, String content) {
+        this.messageType = messageType;
+        this.senderID = senderID;
+        this.receiverID = receiverID;
+        this.content = content;
+    }
+
     public enum MessageType {
         /**
          * 登录反馈
@@ -63,13 +78,29 @@ public class ServerMessage {
         return senderID;
     }
 
-    private String message;
+    /**
+     * 接收对象ID
+     */
+    private BigInteger receiverID;
 
-    public String getMessage() {
-        return message;
+    public void setReceiverID(BigInteger receiverID) {
+        this.receiverID = receiverID;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public BigInteger getReceiverID() {
+        return receiverID;
+    }
+
+    /**
+     * 消息内容
+     */
+    private String content;
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 }

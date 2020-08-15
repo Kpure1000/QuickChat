@@ -1,5 +1,9 @@
 package network;
 
-public interface ServerListenerCallBack {
+import function.Debug;
+import message.ServerMessage;
 
+public interface ServerListenerCallBack {
+    void OnSendMessageSuccess(ServerMessage message);
+    void OnSendMessageFailed(ServerMessage message);
 }

@@ -88,44 +88,7 @@ public class PrivateConfig implements Serializable {
     /**
      * 消息
      */
-    public class MessageRecord {
-        /**
-         * 消息对象（位置）
-         */
-        private BigInteger ChatObjectID;
 
-        public BigInteger getChatObjectID() {
-            return ChatObjectID;
-        }
-
-        public void setChatObjectID(BigInteger chatObjectID) {
-            ChatObjectID = chatObjectID;
-        }
-
-        /**
-         * 消息内容
-         */
-        public class MessageContent {
-            private BigInteger senderID;
-            private Time sendTime;// TODO 这里可能不是用Time
-            private boolean isSent;//是否成功发送
-            private boolean isRead;//是否已读
-            private String content;//内容
-        }
-
-        /**
-         * 消息内容列表
-         */
-        private ArrayList<MessageContent> messageContents = new ArrayList<MessageContent>();
-
-        public ArrayList<MessageContent> getMessageContents() {
-            return messageContents;
-        }
-
-        public void setMessageContents(ArrayList<MessageContent> messageContents) {
-            this.messageContents = messageContents;
-        }
-    }
 
     /**
      * 消息列表（对象+内容）

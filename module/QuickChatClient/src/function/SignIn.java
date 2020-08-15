@@ -105,16 +105,20 @@ public class SignIn extends BasicFunction {
             // 定义监听来获取登录反馈
             listenerCallBack = new ListenerCallBackAdapter() {
                 @Override
-                public ListenerCallBack OnSignInCallBack(int fbState) {
+                public ListenerCallBack OnSignInCallBack(String fbState) {
                     Debug.Log("监听回调获取到了-登陆请求的反馈: " + fbState);
-                    if (fbState == 1) {
-                        //登录成功
+                    if (String.valueOf(fbState).equals("pass")) {
                         //更新ID记录
                         if (signInCallBack.OnNeedPassConfigUpdate()) {
                             DataManager.getInstance().updateIDRecord(ID, password);
                         } else {
                             DataManager.getInstance().updateIDRecord(ID, null);
                         }
+                        //登录成功
+                        signInCallBack.OnSignInSuccess();
+                    }else if (String.valueOf(fbState).equals("failed")) {
+                        //登录失败
+                        signInCallBack.OnSignInFailed();
                     }
                     return this;
                 }
@@ -123,7 +127,9 @@ public class SignIn extends BasicFunction {
             ClientNetwork.getInstance().addListenerCallBack(listenerCallBack);
             // 发送验证请求
             ClientNetwork.getInstance().sendMessage(new UserMessage(
-                    UserMessage.MessageType.Check_SignIn_ID, null,
+                    UserMessage.MessageType.Check_SignIn_ID,
+                    ID,
+                    null,
                     ID.toString() + "#" + password
             ));
         }
@@ -183,6 +189,10 @@ public class SignIn extends BasicFunction {
          * @return UI记住密码选框的值
          */
         boolean OnNeedPassConfigUpdate();
+
+        void OnSignInSuccess();
+
+        void OnSignInFailed();
     }
 
     /**

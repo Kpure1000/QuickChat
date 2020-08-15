@@ -64,7 +64,7 @@ public class Listener implements Runnable {
             while (listening) {
                 ObjectInputStream objIn = new ObjectInputStream(socket.getInputStream());
                 ServerMessage sM = (ServerMessage) objIn.readObject(); //  获取消息对象
-                if (sM.getMessage() == null) {
+                if (sM.getContent() == null) {
                     break;
                 }
                 switch (sM.getMessageType()) {
@@ -73,9 +73,7 @@ public class Listener implements Runnable {
                         for (var item :
                                 listenerCallBackList) {
                             if (item != null) {
-                                item.OnSignInCallBack(
-                                        Integer.parseInt(sM.getMessage()) //  获取是否登录成功
-                                );
+                                item.OnSignInCallBack(sM.getContent()); //  获取是否登录成功
                             }
                         }
                     }
@@ -84,7 +82,7 @@ public class Listener implements Runnable {
                                 listenerCallBackList) {
                             if (item != null) {
                                 item.OnSignUpCallBack(
-                                        sM.getSenderID() //  获取注册者的ID（新生成的）
+                                        sM.getReceiverID() //  获取注册者的ID（新生成的）
                                 );
                             }
                         }

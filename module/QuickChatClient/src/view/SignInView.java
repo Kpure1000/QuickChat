@@ -161,6 +161,18 @@ public class SignInView extends JFrame {
                 // TODO 更新密码配置，不知道isSelected能不能用
                 return passCheck.isSelected();
             }
+
+            @Override
+            public void OnSignInSuccess() {
+                // TODO 登陆成功，关闭自身，开启下一个窗口
+            }
+
+            @Override
+            public void OnSignInFailed() {
+                // TODO登陆失败，清空密码输入框
+                errorLabel.setText("账户或密码错误");
+                passText.setText("");
+            }
         });
 
         //ID选框变化（该ID一定存在于记录中），获取该ID的记住密码配置
