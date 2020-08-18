@@ -34,11 +34,13 @@ public class MessageRecord {
      *
      * @param message 格式化消息
      */
-    public synchronized void addMessageRecord(UserMessage message) {
-        if (message != null) {
-            MessageContent contentTmp = FormatUserMessage(message);
-            if (contentTmp != null)
-                messageContents.add(contentTmp);
+    public void addMessageRecord(UserMessage message) {
+        synchronized (messageContents) {
+            if (message != null) {
+                MessageContent contentTmp = FormatUserMessage(message);
+                if (contentTmp != null)
+                    messageContents.add(contentTmp);
+            }
         }
     }
 
