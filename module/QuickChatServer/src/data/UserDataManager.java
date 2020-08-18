@@ -19,9 +19,11 @@ public class UserDataManager implements Serializable {
      * @param password 密码
      * @return 是否正确
      */
-    public synchronized boolean checkPassword_ID(BigInteger ID, String password) {
-        if (userDataMap.containsKey(ID)) {
-            return userDataMap.get(ID).getPassword().equals(String.valueOf(password));
+    public boolean checkPassword_ID(BigInteger ID, String password) {
+        synchronized (userDataMap) {
+            if (userDataMap.containsKey(ID)) {
+                return userDataMap.get(ID).getPassword().equals(String.valueOf(password));
+            }
         }
         return false;
     }
@@ -32,9 +34,11 @@ public class UserDataManager implements Serializable {
      * @param ID       ID
      * @param password 新密码
      */
-    public synchronized void setPassword_ID(BigInteger ID, String password) {
-        if (userDataMap.containsKey(ID)) {
-            userDataMap.get(ID).setPassword(password);
+    public void setPassword_ID(BigInteger ID, String password) {
+        synchronized (userDataMap) {
+            if (userDataMap.containsKey(ID)) {
+                userDataMap.get(ID).setPassword(password);
+            }
         }
     }
 
@@ -45,13 +49,15 @@ public class UserDataManager implements Serializable {
      * @param password 用户密码
      * @return 新生成的ID
      */
-    public synchronized BigInteger CreateNewUser(String name, String password) {
+    public BigInteger CreateNewUser(String name, String password) {
         // 生成新ID
         BigInteger ID = maxID.add(new BigInteger("1"));
         // 自增
         maxID = ID;
         // 加入新用户
-        userDataMap.put(ID, new UserData(ID, name, "00:00:00", password));
+        synchronized (userDataMap) {
+            userDataMap.put(ID, new UserData(ID, name, "00:00:00", password));
+        }
         return ID;
     }
 

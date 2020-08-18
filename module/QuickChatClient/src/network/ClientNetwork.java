@@ -51,17 +51,18 @@ public class ClientNetwork {
      *
      * @param netCallBack 网络回调
      */
-    public synchronized void addNetCallBack(NetCallBack netCallBack) {
-        if (netCallBack != null) {
-            for (var item :
-                    netCallBackList) {
-                if (item == netCallBack) {
-                    return;
+    public void addNetCallBack(NetCallBack netCallBack) {
+        synchronized (netCallBackList) {
+            if (netCallBack != null) {
+                for (var item :
+                        netCallBackList) {
+                    if (item == netCallBack) {
+                        return;
+                    }
                 }
+                this.netCallBackList.add(netCallBack);
             }
-            this.netCallBackList.add(netCallBack);
         }
-
     }
 
     /**
@@ -69,9 +70,11 @@ public class ClientNetwork {
      *
      * @param netCallBack 目标回调
      */
-    public synchronized void removeNetCallBack(NetCallBack netCallBack) {
-        if (netCallBack != null) {
-            this.netCallBackList.removeIf(item -> item.equals(netCallBack));
+    public void removeNetCallBack(NetCallBack netCallBack) {
+        synchronized (netCallBackList) {
+            if (netCallBack != null) {
+                this.netCallBackList.removeIf(item -> item.equals(netCallBack));
+            }
         }
     }
 
@@ -155,9 +158,11 @@ public class ClientNetwork {
      *
      * @param listenerCallBack 监听回调
      */
-    public synchronized void addListenerCallBack(ListenerCallBack listenerCallBack) {
-        if (listener != null) {
-            listener.addListenerCallBack(listenerCallBack);
+    public void addListenerCallBack(ListenerCallBack listenerCallBack) {
+        synchronized (listener) {
+            if (listener != null) {
+                listener.addListenerCallBack(listenerCallBack);
+            }
         }
     }
 
@@ -166,9 +171,11 @@ public class ClientNetwork {
      *
      * @param listenerCallBack 目标回调
      */
-    public synchronized void removeListenerCallBacl(ListenerCallBack listenerCallBack) {
-        if (listener != null) {
-            listener.removeListenerCallBack(listenerCallBack);
+    public void removeListenerCallBacl(ListenerCallBack listenerCallBack) {
+        synchronized (listener) {
+            if (listener != null) {
+                listener.removeListenerCallBack(listenerCallBack);
+            }
         }
     }
 

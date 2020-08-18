@@ -33,9 +33,15 @@ public class Listener implements Runnable {
      *
      * @param listenerCallBack 新建回调
      */
-    public synchronized void addListenerCallBack(ListenerCallBack listenerCallBack) {
-        if (listenerCallBack != null) {
-            listenerCallBackList.add(listenerCallBack);
+    public void addListenerCallBack(ListenerCallBack listenerCallBack) {
+        synchronized (listenerCallBackList) {
+            if (listenerCallBack != null) {
+                for (ListenerCallBack item :
+                        listenerCallBackList) {
+                    if (item == listenerCallBack) return;
+                }
+                listenerCallBackList.add(listenerCallBack);
+            }
         }
     }
 
@@ -44,9 +50,11 @@ public class Listener implements Runnable {
      *
      * @param listenerCallBack 目标回调
      */
-    public synchronized void removeListenerCallBack(ListenerCallBack listenerCallBack) {
-        if (listenerCallBack != null) {
-            listenerCallBackList.remove(listenerCallBack);
+    public void removeListenerCallBack(ListenerCallBack listenerCallBack) {
+        synchronized (listenerCallBackList) {
+            if (listenerCallBack != null) {
+                listenerCallBackList.remove(listenerCallBack);
+            }
         }
     }
 
@@ -67,67 +75,69 @@ public class Listener implements Runnable {
                 if (sM.getContent() == null) {
                     break;
                 }
-                switch (sM.getMessageType()) {
-                    case Fb_SignIn -> { //  登录反馈
-                        // 在这里调用有关回调即可
-                        for (var item :
-                                listenerCallBackList) {
-                            if (item != null) {
-                                item.OnSignInCallBack(sM.getContent()); //  获取是否登录成功
+                synchronized (listenerCallBackList) {
+                    switch (sM.getMessageType()) {
+                        case Fb_SignIn -> { //  登录反馈
+                            // 在这里调用有关回调即可
+                            for (var item :
+                                    listenerCallBackList) {
+                                if (item != null) {
+                                    item.OnSignInCallBack(sM.getContent()); //  获取是否登录成功
+                                }
                             }
                         }
-                    }
-                    case Fb_SignUp -> { //  注册反馈
-                        for (var item :
-                                listenerCallBackList) {
-                            if (item != null) {
-                                item.OnSignUpCallBack(
-                                        sM.getReceiverID() //  获取注册者的ID（新生成的）
-                                );
+                        case Fb_SignUp -> { //  注册反馈
+                            for (var item :
+                                    listenerCallBackList) {
+                                if (item != null) {
+                                    item.OnSignUpCallBack(
+                                            sM.getReceiverID() //  获取注册者的ID（新生成的）
+                                    );
+                                }
                             }
                         }
-                    }
-                    case Fb_OnlineList -> {
-                        for (var item :
-                                listenerCallBackList) {
-                            if (item != null) {
-                                item.OnReceiveOnLineList(
-                                        // TODO 应该是缺少一个ArrayList
-                                );
+                        case Fb_OnlineList -> {
+                            for (var item :
+                                    listenerCallBackList) {
+                                if (item != null) {
+                                    item.OnReceiveOnLineList(
+                                            // TODO 应该是缺少一个ArrayList
+                                    );
+                                }
                             }
                         }
-                    }
-                    case Msg_Private -> {
-                        for (var item :
-                                listenerCallBackList) {
-                            if (item != null) {
-                                item.OnReceivePrivateMsg(
-                                        // TODO 缺少生产的消息
-                                );
+                        case Msg_Private -> {
+                            for (var item :
+                                    listenerCallBackList) {
+                                if (item != null) {
+                                    item.OnReceivePrivateMsg(
+                                            // TODO 缺少生产的消息
+                                    );
+                                }
                             }
                         }
-                    }
-                    case Msg_Group -> {
-                        for (var item :
-                                listenerCallBackList) {
-                            if (item != null) {
-                                item.OnReceiveGroupMsg(
-                                        // TODO 缺少参数
-                                );
+                        case Msg_Group -> {
+                            for (var item :
+                                    listenerCallBackList) {
+                                if (item != null) {
+                                    item.OnReceiveGroupMsg(
+                                            // TODO 缺少参数
+                                    );
+                                }
                             }
                         }
-                    }
-                    case Msg_Test -> {
-                        for (var item :
-                                listenerCallBackList) {
-                            if (item != null) {
-                                item.OnReceiveTestMsg(
-                                        // TODO 缺少参数
-                                );
+                        case Msg_Test -> {
+                            for (var item :
+                                    listenerCallBackList) {
+                                if (item != null) {
+                                    item.OnReceiveTestMsg(
+                                            // TODO 缺少参数
+                                    );
+                                }
                             }
                         }
-                    }
-                } //  end of switch
+                    } //  end of switch
+                } //  end of synchronized
             } //  end of while(listening)
         } catch (IOException e) {
             Debug.LogError("监听线程任务中有输入错误或Socket错误");
