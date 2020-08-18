@@ -246,7 +246,7 @@ public class ClientNetwork {
     /**
      * 网络回调列表
      */
-    private ArrayList<NetCallBack> netCallBackList = new ArrayList<NetCallBack>();
+    final private ArrayList<NetCallBack> netCallBackList = new ArrayList<>();
 
     /**
      * 网络事件回调定义

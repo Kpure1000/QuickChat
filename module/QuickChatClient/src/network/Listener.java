@@ -150,7 +150,7 @@ public class Listener implements Runnable {
     }
 
     // 回调列表
-    private ArrayList<ListenerCallBack> listenerCallBackList;
+    final private ArrayList<ListenerCallBack> listenerCallBackList = new ArrayList<>();
 
     private Socket socket;
 }

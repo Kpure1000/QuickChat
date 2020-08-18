@@ -2,6 +2,7 @@ package function;
 
 import data.DataManager;
 import data.ServerInfo;
+import message.UserMessage;
 import network.ClientNetwork;
 
 import java.util.ArrayList;
@@ -29,6 +30,16 @@ public class Welcome extends BasicFunction {
 
             @Override
             public void OnDisconnect() {
+            }
+
+            @Override
+            public void OnSendMessageSuccess(UserMessage msg) {
+
+            }
+
+            @Override
+            public void OnSendMessageFailed(UserMessage msg) {
+
             }
         };
         ClientNetwork.getInstance().addNetCallBack(netCallBack_function);

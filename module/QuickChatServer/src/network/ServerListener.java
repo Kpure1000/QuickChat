@@ -20,6 +20,7 @@ public class ServerListener implements Runnable {
      * @param socket Accept的套接字
      */
     public ServerListener(Socket socket) {
+        this.serverListenerCallBacks = new ArrayList<ServerListenerCallBack>();
         this.socket = socket;
         if (socket != null && socket.isConnected()) {
             try {
@@ -109,14 +110,11 @@ public class ServerListener implements Runnable {
         }
     }
 
+    /**
+     * 发送消息
+     * @param serverMessage 服务器消息
+     */
     private void sendMessage(ServerMessage serverMessage) {
-//        if(!isConnected){
-//            for (NetCallBack item :
-//                    netCallBackList) {
-//                item.OnConnectFailed();
-//            }
-//            return;
-//        }
         try {
             if (serverMessage == null) {
                 System.out.println("消息传入错误");
@@ -169,7 +167,7 @@ public class ServerListener implements Runnable {
     /**
      * 监听订阅队列
      */
-    private ArrayList<ServerListenerCallBack> serverListenerCallBacks;
+    final private ArrayList<ServerListenerCallBack> serverListenerCallBacks;
 
     /**
      * 添加监听订阅

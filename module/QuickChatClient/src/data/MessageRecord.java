@@ -23,7 +23,7 @@ public class MessageRecord {
     /**
      * 消息内容列表
      */
-    private ArrayList<MessageContent> messageContents = new ArrayList<MessageContent>();
+    final private ArrayList<MessageContent> messageContents = new ArrayList<>();
 
     public ArrayList<MessageContent> getMessageContents() {
         return messageContents;
@@ -64,8 +64,4 @@ public class MessageRecord {
         }
     }
 
-    @Deprecated
-    public void setMessageContents(ArrayList<MessageContent> messageContents) {
-        this.messageContents = messageContents;
-    }
 }
