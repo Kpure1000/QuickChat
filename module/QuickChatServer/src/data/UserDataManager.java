@@ -8,6 +8,8 @@ import java.util.HashMap;
 
 public class UserDataManager implements Serializable {
 
+    static final long serialVersionUID = 10000001L;
+
     public UserDataManager() {
         maxID = new BigInteger("10000");
     }
@@ -62,6 +64,17 @@ public class UserDataManager implements Serializable {
     }
 
     /**
+     * 获取目前未登录客户端的最大ID，并令该值自增
+     * @return ID最大值
+     */
+    public BigInteger getMaxSignOutClientID() {
+        BigInteger tmpID = MaxSignOutClientID;
+        //自增
+        MaxSignOutClientID = MaxSignOutClientID.add(new BigInteger("1"));
+        return tmpID;
+    }
+
+    /**
      * 需要序列化的
      */
     private HashMap<BigInteger, UserData> userDataMap = new HashMap<BigInteger, UserData>();
@@ -70,5 +83,10 @@ public class UserDataManager implements Serializable {
      * 目前最大的用户ID，用于生成新的用户ID（只需自增）
      */
     private BigInteger maxID;
+
+    /**
+     * 这是未登录的客户端
+     */
+    private BigInteger MaxSignOutClientID = new BigInteger("1");
 
 }

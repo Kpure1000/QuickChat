@@ -23,7 +23,8 @@ public class ServerNetWork {
     ///////////
 
     /**
-     * 开始接收服务
+     * 首先传入订阅的网络回调，然后开始接收服务
+     *
      * @param networkCallBack 网络回调
      */
     public void BeginAccept(NetworkCallBack networkCallBack) {
@@ -31,12 +32,16 @@ public class ServerNetWork {
         // 创建线程单独接收socket
         new Thread(() -> {
             try {
+                // 初始化ServerSocket
                 serverSocket = new ServerSocket(12345);
+                // 成功打开了服务器套接字
                 networkCallBack.OnServerOpen(serverSocket);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
             Debug.Log("开始接收客户端连接...");
+
             while (true) {
                 try {
                     Debug.Log("等待接入的客户端...");
@@ -79,7 +84,8 @@ public class ServerNetWork {
      *
      * @param networkCallBack 网络回调
      */
-    private void setNetworkCallBack(NetworkCallBack networkCallBack) {
+    @Deprecated
+    public void setNetworkCallBack(NetworkCallBack networkCallBack) {
         this.networkCallBack = networkCallBack;
     }
 }

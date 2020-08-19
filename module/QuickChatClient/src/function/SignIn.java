@@ -17,7 +17,7 @@ public class SignIn extends BasicFunction {
     @Override
     public void Close() {
         //删除监听回调
-        ClientNetwork.getInstance().removeListenerCallBacl(listenerCallBack);
+        ClientNetwork.getInstance().removeListenerCallBack(listenerCallBack);
         ClientNetwork.getInstance().Disconnect();
     }
 
@@ -77,7 +77,7 @@ public class SignIn extends BasicFunction {
      * 判断密码格式
      *
      * @param password 输入的密码
-     * @return
+     * @return 是否输入正确
      */
     private boolean judgePass(String password) {
         //判断长度
@@ -89,6 +89,7 @@ public class SignIn extends BasicFunction {
                     return false;
                 }
             }
+            return true;
         }
         return false;
     }
@@ -123,7 +124,7 @@ public class SignIn extends BasicFunction {
                         }
                         //登录成功
                         signInCallBack.OnSignInSuccess();
-                    }else if (String.valueOf(fbState).equals("failed")) {
+                    } else if (String.valueOf(fbState).equals("failed")) {
                         //登录失败
                         signInCallBack.OnSignInFailed();
                     }

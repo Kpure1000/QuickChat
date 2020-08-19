@@ -12,7 +12,11 @@ import java.math.BigInteger;
 import java.net.Socket;
 import java.util.ArrayList;
 
+/**
+ * 服务线程
+ */
 public class ServerListener implements Runnable {
+
 
     /**
      * 构造一个监听线程
@@ -22,6 +26,8 @@ public class ServerListener implements Runnable {
     public ServerListener(Socket socket) {
         this.serverListenerCallBacks = new ArrayList<ServerListenerCallBack>();
         this.socket = socket;
+        //获取未正式登录的默认ID，待正式登录后更新ID
+        this.ID = DataManager.getInstance().getUserDataManager().getMaxSignOutClientID();
         if (socket != null && socket.isConnected()) {
             try {
                 objOut = new ObjectOutputStream(socket.getOutputStream());
@@ -33,7 +39,7 @@ public class ServerListener implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (listening) {
             try {
                 ObjectInputStream objIn = new ObjectInputStream(socket.getInputStream());
                 // 反序列化消息
@@ -47,9 +53,17 @@ public class ServerListener implements Runnable {
                             // 根据库检查用户信息
                             // TODO 有可能把'ID不存在'单独列为一种情况
                             if (DataManager.getInstance().getUserDataManager().checkPassword_ID(idIn, passIn)) {
+                                // 更新ID
+                                ServerListenerManager.getInstance().updateListenerID(ID, idIn);
+                                this.ID = idIn;
                                 // TODO反馈验证通过
-                                sendMessage(new ServerMessage(ServerMessage.MessageType.Fb_SignIn,
-                                        idIn, null, "pass"));
+                                ServerMessage message = new ServerMessage(ServerMessage.MessageType.Fb_SignIn,
+                                        idIn, null, "pass");
+                                sendMessage(message);
+                                for (ServerListenerCallBack item :
+                                        serverListenerCallBacks) {
+                                    item.OnUserSignIn(idIn);
+                                }
                             } else {
                                 // TODO反馈验证失败
                                 sendMessage(new ServerMessage(ServerMessage.MessageType.Fb_SignIn,
@@ -101,17 +115,37 @@ public class ServerListener implements Runnable {
                     }
                 }
             } catch (IOException e) {
-                Debug.LogError("监听服务异常, at: " + ID.toString());
-                e.printStackTrace();
+                Debug.LogError("监听服务异常, at ID: " + ID.toString());
+                //e.printStackTrace();
+                break;
             } catch (ClassNotFoundException e) {
-                Debug.LogError("反序列化异常, at: " + ID.toString());
-                e.printStackTrace();
+                Debug.LogError("反序列化异常, at ID: " + ID.toString());
+                //e.printStackTrace();
+                break;
             }
         }
     }
 
     /**
+     * 关闭该监听
+     */
+    public void Close() {
+        listening = false;
+        synchronized (serverListenerCallBacks) {
+            serverListenerCallBacks.clear();
+        }
+        //删除监听
+        ServerListenerManager.getInstance().removeListener(this);
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * 发送消息
+     *
      * @param serverMessage 服务器消息
      */
     private void sendMessage(ServerMessage serverMessage) {
@@ -144,6 +178,11 @@ public class ServerListener implements Runnable {
     }
 
     /**
+     * 是否正在监听
+     */
+    private boolean listening = true;
+
+    /**
      * 服务对象ID
      */
     private BigInteger ID;
@@ -159,8 +198,9 @@ public class ServerListener implements Runnable {
 
     /**
      * 服务对象套接字
+     * // TODO 暂时用final，以后考虑优化的话会复用监听给不同的Client
      */
-    private Socket socket;
+    private final Socket socket;
 
     ObjectOutputStream objOut;
 

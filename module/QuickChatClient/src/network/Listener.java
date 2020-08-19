@@ -42,9 +42,9 @@ public class Listener implements Runnable {
                     if (item == listenerCallBack) return;
                 }
                 listenerCallBackList.add(listenerCallBack);
-            }
-            if (listening) {
-                listenerCallBack.OnListeningStart();
+                if (listening) {
+                    listenerCallBack.OnListeningStart();
+                }
             }
         }
     }

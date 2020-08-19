@@ -10,8 +10,9 @@ import java.math.BigInteger;
 public class SignUp extends BasicFunction {
     @Override
     public void Close() {
-        // TODO 重写
-        super.Close();
+        ClientNetwork.getInstance().removeListenerCallBack(listenerCallBack);
+        ClientNetwork.getInstance().Disconnect();
+        // TODO 应该返回上一个登陆界面
     }
 
     /**

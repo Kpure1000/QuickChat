@@ -103,12 +103,10 @@ public class WelcomeView extends JFrame {
         this.setResizable(false);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        //配置
-        hostCombo.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                host = e.getItem().toString();
-            }
+        //选项变动时的
+        hostCombo.addItemListener(e -> {
+            host = ((ServerInfo)e.getItem()).getHost();
+            port = ((ServerInfo)e.getItem()).getPort();
         });
 
         //欢迎功能

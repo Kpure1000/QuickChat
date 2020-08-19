@@ -174,7 +174,7 @@ public class ClientNetwork {
      *
      * @param listenerCallBack 目标回调
      */
-    public void removeListenerCallBacl(ListenerCallBack listenerCallBack) {
+    public void removeListenerCallBack(ListenerCallBack listenerCallBack) {
         if (listener == null) {
             Debug.LogError("未连接");
             return;
@@ -215,7 +215,7 @@ public class ClientNetwork {
             // TODO 如果断开连接，broken pipe异常如何处理？
             if (socket.isConnected()) {
                 while (!isConnected) {
-                    System.out.println("连接断开，发送失败;正在尝试重新连接...");
+                    Debug.LogWarning("连接断开，发送失败;正在尝试重新连接...");
                     // TODO 这里其实
                     connect(curHost, curPort);
                     try {

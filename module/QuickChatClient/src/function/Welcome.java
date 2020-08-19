@@ -7,6 +7,9 @@ import network.ClientNetwork;
 
 import java.util.ArrayList;
 
+/**
+ * 欢迎功能
+ */
 public class Welcome extends BasicFunction {
 
     private boolean connecting = true;

@@ -92,13 +92,8 @@ public class SignUpView extends JFrame {
         errorLabel.setFont(new Font("微软雅黑", Font.BOLD | Font.ITALIC, 13));
         errorLabel.setBounds(leftX + 30 + 40 + 400 + 10, topY + 50 + 50, 200, 30);
         this.add(errorLabel);
+        idBox = new JComboBox<>();
         //第四层
-//        JButton signUpButton = new JButton("登录");
-//        signUpButton.setBackground(new Color(MyLightRgb));
-//        signUpButton.setForeground(new Color(MyDarkRgb));
-//        signUpButton.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 20));
-//        signUpButton.setBounds(leftX + 100, topY + 200, 90, 30);
-//        this.add(signUpButton);
         JButton signUpButton = new JButton("注册");
         signUpButton.setBackground(new Color(MyLightRgb));
         signUpButton.setForeground(new Color(MyDarkRgb));
