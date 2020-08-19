@@ -122,19 +122,18 @@ public class ClientNetwork {
     /**
      * 断开当前连接
      */
-    public void Disconnect() {
+    public synchronized void Disconnect() {
         if (socket != null) {
             if (isConnected) {
                 try {
                     //关闭监听
                     listener.Close();
-                    //关闭Socket
-                    socket.close();
                     for (var item :
                             netCallBackList) {
                         //断开连接回调
                         item.OnDisconnect();
                     }
+                    socket.close();
                 } catch (IOException e) {
                     Debug.LogError("Socket关闭失败");
                     e.printStackTrace();
@@ -159,6 +158,10 @@ public class ClientNetwork {
      * @param listenerCallBack 监听回调
      */
     public void addListenerCallBack(ListenerCallBack listenerCallBack) {
+        if (listener == null) {
+            Debug.LogError("尚未连接");
+            return;
+        }
         synchronized (listener) {
             if (listener != null) {
                 listener.addListenerCallBack(listenerCallBack);
@@ -172,6 +175,10 @@ public class ClientNetwork {
      * @param listenerCallBack 目标回调
      */
     public void removeListenerCallBacl(ListenerCallBack listenerCallBack) {
+        if (listener == null) {
+            Debug.LogError("未连接");
+            return;
+        }
         synchronized (listener) {
             if (listener != null) {
                 listener.removeListenerCallBack(listenerCallBack);
@@ -184,7 +191,7 @@ public class ClientNetwork {
      */
     // TODO param should include 'ClientMessage'
     public void sendMessage(UserMessage userMessage) {
-        if(!isConnected){
+        if (!isConnected) {
             for (NetCallBack item :
                     netCallBackList) {
                 item.OnConnectFailed();

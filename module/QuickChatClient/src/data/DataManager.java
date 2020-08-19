@@ -108,17 +108,21 @@ public class DataManager {
      */
     private void readPublic() {
         try {
+            File readerFile = new File(publicConfigPath);
+            if(!readerFile.exists()){
+                writePublic();
+            }
             BufferedReader bufferedReader = new BufferedReader(
-                    new InputStreamReader(new FileInputStream(new File(publicConfigPath)), "UTF-8"));
+                    new InputStreamReader(new FileInputStream(readerFile), "UTF-8"));
             String line;
             line = bufferedReader.readLine();
-            String jspnstr = "";
+            StringBuilder jsonStr = new StringBuilder();
             while (line != null) {
-                jspnstr += line;
+                jsonStr.append(line);
                 // Debug.Log(line);
                 line = bufferedReader.readLine();
             }
-            publicConfig = JSON.parseObject(jspnstr, PublicConfig.class);
+            publicConfig = JSON.parseObject(jsonStr.toString(), PublicConfig.class);
             if (publicConfig != null) {
                 Debug.Log("读取公共配置：" + publicConfig.toString());
                 for (BigInteger item :
@@ -194,6 +198,9 @@ public class DataManager {
         }
         try {
             File file = new File(privateConfigPath + ID.toString() + privateConfigExtend);
+            if(!file.exists()){
+                initPrivate(ID);
+            }
             ObjectInputStream objIn = new ObjectInputStream(new FileInputStream(file));
             //读取配置到缓存
             privateConfig = (PrivateConfig) objIn.readObject();
@@ -210,9 +217,8 @@ public class DataManager {
      * 初次写入私有配置，仅当初次创建私有记录
      *
      * @param ID             新ID
-     * @param passwordConfig 记住密码配置
      */
-    private void initPrivate(BigInteger ID, String passwordConfig) {
+    private void initPrivate(BigInteger ID) {
         try {
             File file = new File(privateConfigPath +
                     ID.toString() + privateConfigExtend);

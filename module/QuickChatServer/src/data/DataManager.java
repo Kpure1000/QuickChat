@@ -19,7 +19,7 @@ public class DataManager {
     /**
      * 初始化数据（从文件读取）
      */
-    public void initData() {
+    public void LoadData() {
         File file = new File(userDataFileName);
         try {
             if (!file.exists()) { //  文件不存在

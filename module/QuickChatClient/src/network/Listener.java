@@ -26,6 +26,7 @@ public class Listener implements Runnable {
     public Listener(Socket socket) {
         this.socket = socket;
         listening = true;
+        Debug.Log("Listener线程开始监听!");
     }
 
     /**
@@ -41,6 +42,9 @@ public class Listener implements Runnable {
                     if (item == listenerCallBack) return;
                 }
                 listenerCallBackList.add(listenerCallBack);
+            }
+            if (listening) {
+                listenerCallBack.OnListeningStart();
             }
         }
     }
@@ -64,6 +68,10 @@ public class Listener implements Runnable {
     public void Close() {
         // TODO 关闭监听
         listening = false;
+        synchronized (listenerCallBackList) {
+            listenerCallBackList.clear();
+        }
+        Debug.Log("准备关闭监听");
     }
 
     @Override
@@ -140,8 +148,8 @@ public class Listener implements Runnable {
                 } //  end of synchronized
             } //  end of while(listening)
         } catch (IOException e) {
-            Debug.LogError("监听线程任务中有输入错误或Socket错误");
-            e.printStackTrace();
+            Debug.LogWarning("Socket已关闭，应该是某窗口关闭导致的，Listener线程马上退出");
+            //e.printStackTrace();
         } catch (ClassNotFoundException e) {
             // 消息错误
             Debug.LogError("The Msg is Empty or UnSerialize Failed.");

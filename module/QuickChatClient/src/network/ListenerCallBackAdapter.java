@@ -11,6 +11,10 @@ import java.math.BigInteger;
  */
 public abstract class ListenerCallBackAdapter implements ListenerCallBack {
 
+    public ListenerCallBack OnListeningStart() {
+        return this;
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -37,7 +41,7 @@ public abstract class ListenerCallBackAdapter implements ListenerCallBack {
         return this;
     }
 
-    public ListenerCallBack OnReceiveOnLineList(){
+    public ListenerCallBack OnReceiveOnLineList() {
         return this;
     }
 }

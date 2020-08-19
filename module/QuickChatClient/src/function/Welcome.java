@@ -12,6 +12,7 @@ public class Welcome extends BasicFunction {
     private boolean connecting = true;
 
     public Welcome() {
+        Debug.Log("启用欢迎功能...");
         //订阅网络回调
         netCallBack_function = new ClientNetwork.NetCallBack() {
             @Override
@@ -25,21 +26,23 @@ public class Welcome extends BasicFunction {
             @Override
             public void OnConnectFailed() {
                 //继续连接
+                Debug.LogWarning("连接尝试失败，继续连接...");
                 Welcome.this.connecting = true;
             }
 
             @Override
             public void OnDisconnect() {
+                Debug.Log("已经断开连接");
             }
 
             @Override
             public void OnSendMessageSuccess(UserMessage msg) {
-
+                Debug.Log("发送消息: " + msg.getMessageType() + ", " + msg.getContent() + " 成功!");
             }
 
             @Override
             public void OnSendMessageFailed(UserMessage msg) {
-
+                Debug.LogError("发送消息: " + msg.getMessageType() + ", " + msg.getContent() + " 失败!");
             }
         };
         ClientNetwork.getInstance().addNetCallBack(netCallBack_function);
@@ -75,6 +78,7 @@ public class Welcome extends BasicFunction {
     public void ConnectToServer(String host, int port) {
         //尝试连接服务器
         while (connecting) {
+            Debug.Log("尝试连接服务器, info: " + host + ":" + port + "...");
             ClientNetwork.getInstance().connect(host, port);
             try {
                 //主线程停顿
@@ -87,6 +91,7 @@ public class Welcome extends BasicFunction {
 
     @Override
     public void Close() {
+        Debug.Log("关闭welcome功能");
         super.Close();
     }
 

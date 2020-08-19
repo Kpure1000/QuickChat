@@ -18,6 +18,7 @@ public class SignIn extends BasicFunction {
     public void Close() {
         //删除监听回调
         ClientNetwork.getInstance().removeListenerCallBacl(listenerCallBack);
+        ClientNetwork.getInstance().Disconnect();
     }
 
     /**
@@ -104,6 +105,12 @@ public class SignIn extends BasicFunction {
 
             // 定义监听来获取登录反馈
             listenerCallBack = new ListenerCallBackAdapter() {
+                @Override
+                public ListenerCallBack OnListeningStart() {
+                    Debug.Log("关于登陆的监听开始工作");
+                    return this;
+                }
+
                 @Override
                 public ListenerCallBack OnSignInCallBack(String fbState) {
                     Debug.Log("监听回调获取到了-登陆请求的反馈: " + fbState);

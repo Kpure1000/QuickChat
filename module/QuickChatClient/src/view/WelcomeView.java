@@ -66,7 +66,7 @@ public class WelcomeView extends JFrame {
         hostT.setForeground(new Color(MyLightRgb));
         hostT.setBounds(topX, topY, 110, 26);
         this.add(hostT);
-        hostCombo = new JComboBox<String>();
+        hostCombo = new JComboBox<>();
         hostCombo.setForeground(new Color(MyDarkRgb));
         hostCombo.setBackground(new Color(MyLightRgb));
         hostCombo.setBounds(topX + 110 + 10, topY, 180, 26);
@@ -84,19 +84,13 @@ public class WelcomeView extends JFrame {
         confirm.setBackground(new Color(MyLightRgb));
         confirm.setBounds(topX + 200, topY + 140, 80, 30);
         this.add(confirm);
+
         // 连接服务器 按钮事件
         confirm.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO 连接成功，暂时这样写方便调试后面的登录
-                Debug.Log("连接成功");
-                //创建登录窗口
-                new SignInView();
-                //关掉自己
-                WelcomeView.this.dispose();
                 // 连接服务器
-                //welcome.ConnectToServer(host,port);
-
+                welcome.ConnectToServer(host, port);
             }
         });
 
@@ -129,10 +123,11 @@ public class WelcomeView extends JFrame {
                 for (ServerInfo item :
                         serverList) {
                     //添加服务器选项
-                    hostCombo.addItem(item.toString());
+                    hostCombo.addItem(item);
                 }
                 //默认为第一个服务器
-                host = serverList.get(0).toString();
+                host = serverList.get(0).getHost();
+                port = serverList.get(0).getPort();
             }
 
             @Override
@@ -182,7 +177,7 @@ public class WelcomeView extends JFrame {
     /**
      * 选项框
      */
-    private JComboBox<String> hostCombo;
+    private JComboBox<ServerInfo> hostCombo;
 
     private JLabel errorLabel;
 }

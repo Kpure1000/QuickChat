@@ -257,6 +257,7 @@ public class SignInView extends JFrame {
             }
         });
 
+        //重写关闭方法
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
@@ -265,7 +266,7 @@ public class SignInView extends JFrame {
                 if (signIn != null) {
                     signIn.Close();
                 }
-                super.windowClosed(e);
+                SignInView.super.dispose();
             }
         });
     }
