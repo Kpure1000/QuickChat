@@ -23,14 +23,23 @@ public class SignUpView extends JFrame {
     private final int MyDarkRgb = 0x3d3f41;
     ////
 
-    public SignUpView(){
+    public SignUpView(JFrame parentFrame) {
+        this.signInView = parentFrame;
+
         int topY = 220;
-        int leftX = 110;
+        int leftX = 90;
 
         //窗体初设置
         this.setSize(700, 525);
         this.setLocationRelativeTo(null);// 窗体居中
         this.getContentPane().setBackground(new Color(MyDarkRgb));
+        //功能标题
+        JLabel title = new JLabel("注册");
+        title.setBounds(this.getWidth() / 2 - 170, 60, 350, 100);
+        title.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 48));
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+        title.setForeground(new Color(MyLightRgb));
+        this.add(title);
         //第零层
         JLabel closeLabel = new JLabel("X");
         closeLabel.setBackground(new Color(MyDarkRgb));
@@ -38,6 +47,7 @@ public class SignUpView extends JFrame {
         closeLabel.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 20));
         closeLabel.setBounds(665, 15, 30, 30);
         this.add(closeLabel);
+        //关闭按钮
         closeLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -47,50 +57,50 @@ public class SignUpView extends JFrame {
             }
         });
         //第一层
-        JLabel nameLabel = new JLabel("名称:");
+        JLabel nameLabel = new JLabel("设置名称:");
         nameLabel.setForeground(new Color(MyLightRgb));
         nameLabel.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 22));
-        nameLabel.setBounds(leftX, topY, 80, 30);
+        nameLabel.setBounds(leftX, topY, 100, 30);
         this.add(nameLabel);
         nameText = new JTextField();
         nameText.setForeground(new Color(MyDarkRgb));
         nameText.setBackground(new Color(MyLightRgb));
-        nameText.setBounds(leftX + 30 + 40, topY, 280, 30);
+        nameText.setBounds(leftX + 100 + 10, topY, 280, 30);
         this.add(nameText);
 
         //第二层
-        JLabel passLabel = new JLabel(" 创建密码");
+        JLabel passLabel = new JLabel("设置密码:");
         passLabel.setForeground(new Color(MyLightRgb));
         passLabel.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 22));
-        passLabel.setBounds(leftX, topY + 50 + 50, 80, 30);
+        passLabel.setBounds(leftX, topY + 50, 100, 30);
         this.add(passLabel);
         passText = new JPasswordField();
         passText.setForeground(new Color(MyDarkRgb));
         passText.setBackground(new Color(MyLightRgb));
-        passText.setBounds(leftX + 30 + 40, topY + 50 + 50, 400, 30);
+        passText.setBounds(leftX + 100 + 10, topY + 50, 400, 30);
         this.add(passText);
         errorLabel = new JLabel("");
         errorLabel.setBackground(new Color(MyDarkRgb));
         errorLabel.setForeground(Color.RED);
         errorLabel.setFont(new Font("微软雅黑", Font.BOLD | Font.ITALIC, 13));
-        errorLabel.setBounds(leftX + 30 + 40 + 400 + 10, topY + 50 + 50, 200, 30);
+        errorLabel.setBounds(leftX + 100 + 10 + 400 + 10, topY + 50, 200, 30);
         this.add(errorLabel);
         //第三层
-        JLabel rePassLabel = new JLabel(" 创建密码");
+        JLabel rePassLabel = new JLabel("重复密码:");
         rePassLabel.setForeground(new Color(MyLightRgb));
         rePassLabel.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 22));
-        rePassLabel.setBounds(leftX, topY + 50 + 50, 80, 30);
+        rePassLabel.setBounds(leftX, topY + 50 + 50, 100, 30);
         this.add(rePassLabel);
         rePassText = new JPasswordField();
         rePassText.setForeground(new Color(MyDarkRgb));
         rePassText.setBackground(new Color(MyLightRgb));
-        rePassText.setBounds(leftX + 30 + 40, topY + 50 + 50, 400, 30);
+        rePassText.setBounds(leftX + 100 + 10, topY + 50 + 50, 400, 30);
         this.add(rePassText);
         errorLabel = new JLabel("");
         errorLabel.setBackground(new Color(MyDarkRgb));
         errorLabel.setForeground(Color.RED);
         errorLabel.setFont(new Font("微软雅黑", Font.BOLD | Font.ITALIC, 13));
-        errorLabel.setBounds(leftX + 30 + 40 + 400 + 10, topY + 50 + 50, 200, 30);
+        errorLabel.setBounds(leftX + 100 + 10 + 400 + 10, topY + 50 + 50, 200, 30);
         this.add(errorLabel);
         idBox = new JComboBox<>();
         //第四层
@@ -118,12 +128,15 @@ public class SignUpView extends JFrame {
         signUp.setSignUpCallBack(new SignUp.SignUpCallBack() {
             @Override
             public void OnNewIDFeedBack(BigInteger newID) {
-                // TODO 当注册成功，反馈了新的ID
+                // TODO当注册成功，反馈了新的ID
                 // 应该是弹窗提示，然后确认后进入登陆界面，自动填充新的ID
                 // 具体如何实现自动填充，详见 https://github.com/Kpure1000/QuickChat/issues/3
                 JOptionPane.showMessageDialog(SignUpView.this,
-                        "您的新ID: "+newID.toString(),"注册成功",JOptionPane.INFORMATION_MESSAGE
+                        "您的新ID: " + newID.toString(), "注册成功", JOptionPane.INFORMATION_MESSAGE
                 );
+                // TODO 回到上一登陆界面
+                SignUpView.this.dispose();
+                signUpViewCallBack.OnAutoFilltoSignIn(newID, repass);
             }
 
             @Override
@@ -138,6 +151,7 @@ public class SignUpView extends JFrame {
             @Override
             public void mouseReleased(MouseEvent e) {
                 // TODO 注册功能
+                SignUpAction();
             }
         });
 
@@ -146,6 +160,7 @@ public class SignUpView extends JFrame {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     // TODO 注册功能
+                    SignUpAction();
                 }
             }
         });
@@ -154,6 +169,7 @@ public class SignUpView extends JFrame {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     // TODO 注册功能
+                    SignUpAction();
                 }
             }
         });
@@ -162,6 +178,7 @@ public class SignUpView extends JFrame {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     // TODO 注册功能
+                    SignUpAction();
                 }
             }
         });
@@ -181,17 +198,28 @@ public class SignUpView extends JFrame {
             }
         });
 
+        //重写关闭
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
-                Debug.Log("关闭了登录窗口");
+                Debug.Log("关闭了注册窗口");
                 // TODO 关闭所有进程之前释放功能资源
                 if (signUp != null) {
                     signUp.Close();
                 }
                 super.windowClosed(e);
+                signInView.setVisible(true);
             }
         });
+    }
+
+    /**
+     * 注册动作
+     */
+    public void SignUpAction() {
+        pass = new String(passText.getPassword());
+        repass = new String(rePassText.getPassword());
+        signUp.inputInformation(nameText.getText(), pass, repass);
     }
 
     Point pressedPoint;
@@ -201,8 +229,14 @@ public class SignUpView extends JFrame {
      */
     SignUp signUp;
 
-    public interface SignUpViewCallBack{
-        void OnIDAutoFill(BigInteger newID);
+    private JFrame signInView;
+
+
+    String pass = "";
+    String repass = "";
+
+    public interface SignUpViewCallBack {
+        void OnAutoFilltoSignIn(BigInteger newID, String password);
     }
 
     private SignUpViewCallBack signUpViewCallBack;

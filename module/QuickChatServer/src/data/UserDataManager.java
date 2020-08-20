@@ -12,6 +12,11 @@ public class UserDataManager implements Serializable {
 
     public UserDataManager() {
         maxID = new BigInteger("10000");
+        MaxSignOutClientID = new BigInteger("1");
+    }
+
+    public void initUserDataManager(){
+        MaxSignOutClientID = new BigInteger("1");
     }
 
     /**
@@ -87,6 +92,6 @@ public class UserDataManager implements Serializable {
     /**
      * 这是未登录的客户端
      */
-    private BigInteger MaxSignOutClientID = new BigInteger("1");
+    private BigInteger MaxSignOutClientID;
 
 }

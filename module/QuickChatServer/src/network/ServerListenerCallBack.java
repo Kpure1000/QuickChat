@@ -27,4 +27,11 @@ public interface ServerListenerCallBack {
      * @return
      */
     ServerListenerCallBack OnUserSignIn(BigInteger ID);
+
+    /**
+     * 当用户（客户端）下线
+     * @param ID
+     * @return
+     */
+    ServerListenerCallBack OnUserOffLine(BigInteger ID);
 }

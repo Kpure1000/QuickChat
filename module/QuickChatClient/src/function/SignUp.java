@@ -10,9 +10,9 @@ import java.math.BigInteger;
 public class SignUp extends BasicFunction {
     @Override
     public void Close() {
+        //删除自己的监听
         ClientNetwork.getInstance().removeListenerCallBack(listenerCallBack);
-        ClientNetwork.getInstance().Disconnect();
-        // TODO 应该返回上一个登陆界面
+        // TODO应该返回上一个登陆界面
     }
 
     /**
@@ -25,7 +25,7 @@ public class SignUp extends BasicFunction {
     public void inputInformation(String newName, String password, String rePassword) {
         int judgeResult = judgePass(password, rePassword);
         if (judgeResult == 0) {
-            sendSignInMessage(newName, password);
+            sendSignUnMessage(newName, password);
         } else if (judgeResult == 1) {
             // 输入不合法
             signUpCallBack.OnPassInputError("输入不合法");
@@ -45,7 +45,7 @@ public class SignUp extends BasicFunction {
      * @param newName
      * @param password
      */
-    private void sendSignInMessage(String newName, String password) {
+    private void sendSignUnMessage(String newName, String password) {
         if (newName != null && password != null) {
             Debug.Log("ID:" + newName + ", PASS: " + password);
 
@@ -71,6 +71,7 @@ public class SignUp extends BasicFunction {
                     newName.toString() + "#" + password
             ));
         }
+        Debug.LogWarning("密码输入有误");
     }
 
     /**

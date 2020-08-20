@@ -1,11 +1,12 @@
 package message;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
 /**
  * 发自服务器的消息
  */
-public class ServerMessage {
+public class ServerMessage implements Serializable {
 
     private static final long serialVersionUID = 12345L;
 

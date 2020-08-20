@@ -22,4 +22,9 @@ abstract public class ServerListenerCallBackAdapter implements ServerListenerCal
     public ServerListenerCallBack OnUserSignIn(BigInteger ID) {
         return this;
     }
+
+    @Override
+    public ServerListenerCallBack OnUserOffLine(BigInteger ID) {
+        return this;
+    }
 }

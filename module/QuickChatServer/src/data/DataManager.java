@@ -32,6 +32,7 @@ public class DataManager {
             //输入流初始化
             ObjectInputStream objIn = new ObjectInputStream(new FileInputStream(file));
             userDataManager = (UserDataManager) objIn.readObject();
+            userDataManager.initUserDataManager();
             objIn.close();
         } catch (IOException e) {
             Debug.LogError("文件读取错误(EOF)");
@@ -91,6 +92,7 @@ public class DataManager {
             ObjectOutputStream objOut = new ObjectOutputStream(new FileOutputStream(file));
             //输出一个非空记录对象到文件
             objOut.writeObject(userDataManager);
+            Debug.Log("保存成功");
             objOut.flush();
             objOut.close();
         } catch(IOException e){

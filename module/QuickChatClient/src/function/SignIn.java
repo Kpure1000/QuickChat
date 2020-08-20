@@ -12,13 +12,40 @@ import java.util.ArrayList;
 public class SignIn extends BasicFunction {
     public SignIn() {
         idListTmp = DataManager.getInstance().getIDRecord();
+
+        netCallBack_function = new ClientNetwork.NetCallBack() {
+            @Override
+            public void OnConnectSuccess() {
+                //DO NOTHING
+            }
+
+            @Override
+            public void OnConnectFailed() {
+                // DO NOTHING
+            }
+
+            @Override
+            public void OnDisconnect() {
+                // DO NOTHING
+            }
+
+            @Override
+            public void OnSendMessageSuccess(UserMessage msg) {
+                Debug.Log("发送" + msg.getMessageType() + "类消息成功");
+            }
+
+            @Override
+            public void OnSendMessageFailed(UserMessage msg) {
+                Debug.LogWarning("发送" + msg.getMessageType() + "类消息失败");
+            }
+        };
+        ClientNetwork.getInstance().addNetCallBack(netCallBack_function);
     }
 
     @Override
     public void Close() {
         //删除监听回调
         ClientNetwork.getInstance().removeListenerCallBack(listenerCallBack);
-        ClientNetwork.getInstance().Disconnect();
     }
 
     /**
@@ -105,34 +132,37 @@ public class SignIn extends BasicFunction {
             Debug.Log("ID:" + ID + ", PASS: " + password);
 
             // 定义监听来获取登录反馈
-            listenerCallBack = new ListenerCallBackAdapter() {
-                @Override
-                public ListenerCallBack OnListeningStart() {
-                    Debug.Log("关于登陆的监听开始工作");
-                    return this;
-                }
-
-                @Override
-                public ListenerCallBack OnSignInCallBack(String fbState) {
-                    Debug.Log("监听回调获取到了-登陆请求的反馈: " + fbState);
-                    if (String.valueOf(fbState).equals("pass")) {
-                        //更新ID记录
-                        if (signInCallBack.OnNeedPassConfigUpdate()) {
-                            DataManager.getInstance().updateIDRecord(ID, password);
-                        } else {
-                            DataManager.getInstance().updateIDRecord(ID, null);
-                        }
-                        //登录成功
-                        signInCallBack.OnSignInSuccess();
-                    } else if (String.valueOf(fbState).equals("failed")) {
-                        //登录失败
-                        signInCallBack.OnSignInFailed();
+            if (listenerCallBack == null) {
+                //若listenerCallback为空则实例化一个
+                listenerCallBack = new ListenerCallBackAdapter() {
+                    @Override
+                    public ListenerCallBack OnListeningStart() {
+                        Debug.Log("关于登陆的监听开始工作");
+                        return this;
                     }
-                    return this;
-                }
-            };
-            // 加入监听
-            ClientNetwork.getInstance().addListenerCallBack(listenerCallBack);
+
+                    @Override
+                    public ListenerCallBack OnSignInCallBack(String fbState) {
+                        Debug.Log("监听回调获取到了-登陆请求的反馈: " + fbState);
+                        if (String.valueOf(fbState).equals("pass")) {
+                            //更新ID记录
+                            DataManager.getInstance().updateIDRecord(ID,
+                                    signInCallBack.OnNeedPassConfigUpdate() ? password : null);
+                            //更新密保记录
+                            DataManager.getInstance().updatePasswordConfig(ID,password);
+                            //登录成功
+                            signInCallBack.OnSignInSuccess();
+                        } else if (String.valueOf(fbState).equals("failed")) {
+                            //登录失败
+                            signInCallBack.OnSignInFailed();
+                        }
+                        return this;
+                    }
+                };
+                // 加入监听
+                ClientNetwork.getInstance().addListenerCallBack(listenerCallBack);
+            }
+
             // 发送验证请求
             ClientNetwork.getInstance().sendMessage(new UserMessage(
                     UserMessage.MessageType.Check_SignIn_ID,
@@ -170,40 +200,6 @@ public class SignIn extends BasicFunction {
     }
 
     /**
-     * 登录功能回调，功能与UI交互
-     */
-    public interface SignInCallBack {
-        /**
-         * 获取ID列表
-         *
-         * @param ids 登录成功的ID列表
-         */
-        void OnGetIDConfig(ArrayList<BigInteger> ids);
-
-        /**
-         * 获取密码配置
-         *
-         * @param password 记住的密码，如果不记住则为null
-         */
-        void OnGetPassConfig(String password);
-
-        void OnIDInputError();
-
-        void OnPassInputError();
-
-        /**
-         * 如果用户始终没有变化勾选框，则主动向UI请求记住密码配置
-         *
-         * @return UI记住密码选框的值
-         */
-        boolean OnNeedPassConfigUpdate();
-
-        void OnSignInSuccess();
-
-        void OnSignInFailed();
-    }
-
-    /**
      * 本登录功能的回调
      */
     private SignInCallBack signInCallBack;
@@ -213,19 +209,9 @@ public class SignIn extends BasicFunction {
      */
     private ListenerCallBackAdapter listenerCallBack;
 
-    @Deprecated
-    private String idInputTmp;// the temp of id, from input
-
     /**
      * 登录成功的历史ID的列表
      */
     private ArrayList<BigInteger> idListTmp;// the temp of IDList, from public config
 
-    /**
-     * 可能用来缓存是否记住密码以及其值，如果不记住则为null
-     */
-    //private String passTmp;// the temp of password, from input or private config
-
-    @Deprecated
-    private boolean rememberPass;// pass record config from private config
 }

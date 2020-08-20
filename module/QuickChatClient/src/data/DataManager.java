@@ -1,7 +1,6 @@
 package data;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializeConfig;
 import function.Debug;
 
 import java.io.*;
@@ -39,6 +38,10 @@ public class DataManager {
 
     //////////////////////////////////
 
+    public void Close() {
+        savePublic();
+    }
+
     /**
      * 获取公有记录中登录ID历史记录
      *
@@ -69,31 +72,51 @@ public class DataManager {
     }
 
     /**
-     * 更新记住密码配置
-     * @param ID 目标ID
-     * @param isRemember 是否记住密码
+     * 更新私有配置的记住密码配置
+     *
+     * @param ID         目标ID
+     * @param password 记住的密码
      */
-    public void updatePasswordConfig(BigInteger ID, boolean isRemember){
+    public void updatePasswordConfig(BigInteger ID, String password) {
         readPrivate(ID);
-        privateConfig.setRemembered(isRemember);
+        Debug.Log("正在更新密码配置");
+        privateConfig.setRemembered(password!=null);
+        privateConfig.setRememberedPassword(password);
+        savePrivate(ID);
+    }
+
+    /**
+     * 更新私有配置的记住密码配置
+     *
+     * @param ID         目标ID
+     * @param config 是否记住密码
+     */
+    public void updatePasswordConfig(BigInteger ID, boolean config) {
+        readPrivate(ID);
+        Debug.Log("正在更新密码配置");
+        privateConfig.setRemembered(config);
+        savePrivate(ID);
+
     }
 
     /**
      * 更新ID的历史记录，仅当该ID登录成功，否则无意义
      * <p>
-     *      不存在则新增登录记录和私有配置，
-     *      存在则更新私有配置
+     * 不存在则新增登录记录和私有配置，
+     * 存在则更新私有配置
      * </p>
      *
      * @param newID          新ID
      * @param passwordConfig 记住密码配置
      */
     public void updateIDRecord(BigInteger newID, String passwordConfig) {
-        // TODO 新增历史ID记录，若存在则更新其私人配置
+        // TODO新增历史ID记录，若存在则更新其私人配置
         // 判断是否存在
         for (var item :
                 publicConfig.getIdList()) {
             if (item.compareTo(newID) == 0) { //  存在记录
+                // 更新密码记录
+                updatePasswordConfig(newID, passwordConfig);
                 return;
             }
         }
@@ -109,7 +132,7 @@ public class DataManager {
     private void readPublic() {
         try {
             File readerFile = new File(publicConfigPath);
-            if(!readerFile.exists()){
+            if (!readerFile.exists()) {
                 writePublic();
             }
             BufferedReader bufferedReader = new BufferedReader(
@@ -144,7 +167,10 @@ public class DataManager {
         }
     }
 
-    private void updatePublic() {
+    /**
+     * 保存公有配置到本地
+     */
+    private void savePublic() {
         try {
             File file = new File(publicConfigPath);
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
@@ -198,7 +224,7 @@ public class DataManager {
         }
         try {
             File file = new File(privateConfigPath + ID.toString() + privateConfigExtend);
-            if(!file.exists()){
+            if (!file.exists()) {
                 initPrivate(ID);
             }
             ObjectInputStream objIn = new ObjectInputStream(new FileInputStream(file));
@@ -216,7 +242,7 @@ public class DataManager {
     /**
      * 初次写入私有配置，仅当初次创建私有记录
      *
-     * @param ID             新ID
+     * @param ID 新ID
      */
     private void initPrivate(BigInteger ID) {
         try {
@@ -241,13 +267,21 @@ public class DataManager {
     }
 
     /**
-     * 更新ID配置
-     *
-     * @param ID             ID
-     * @param passwordConfig 记住密码配置
+     * 保存私人配置
+     * @param ID 私人ID索引
      */
-    private void updatePrivate(BigInteger ID, String passwordConfig) {
-
+    private void savePrivate(BigInteger ID){
+        if(privateConfig!=null){
+            try {
+                File file = new File(privateConfigPath+ID.toString()+privateConfigExtend);
+                ObjectOutputStream objOut = new ObjectOutputStream(new FileOutputStream(file));
+                objOut.writeObject(privateConfig);
+                objOut.flush();
+                objOut.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /////////////////////////////////////////

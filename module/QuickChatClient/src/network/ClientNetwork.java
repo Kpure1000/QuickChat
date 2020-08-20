@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * clientNetwork
@@ -36,22 +37,11 @@ public class ClientNetwork {
     }
 
     /**
-     * 传入网络回调
-     *
-     * @param netCallBack 网络回调
-     */
-    @Deprecated
-    public void setNetCallBack(NetCallBack netCallBack) {
-        if (netCallBack != null)
-            this.netCallBack = netCallBack;
-    }
-
-    /**
      * 添加网络回调
      *
      * @param netCallBack 网络回调
      */
-    public void addNetCallBack(NetCallBack netCallBack) {
+    public synchronized void addNetCallBack(NetCallBack netCallBack) {
         synchronized (netCallBackList) {
             if (netCallBack != null) {
                 for (var item :
@@ -70,7 +60,7 @@ public class ClientNetwork {
      *
      * @param netCallBack 目标回调
      */
-    public void removeNetCallBack(NetCallBack netCallBack) {
+    public synchronized void removeNetCallBack(NetCallBack netCallBack) {
         synchronized (netCallBackList) {
             if (netCallBack != null) {
                 this.netCallBackList.removeIf(item -> item.equals(netCallBack));
@@ -91,20 +81,24 @@ public class ClientNetwork {
             socket = new Socket(host, port);
             curHost = host;
             curPort = port;
-            for (var item :
-                    netCallBackList) {
-                //连接成功回调
-                item.OnConnectSuccess();
+            synchronized (netCallBackList) {
+                for (var item :
+                        netCallBackList) {
+                    //连接成功回调
+                    item.OnConnectSuccess();
+                }
             }
             objOut = new ObjectOutputStream(socket.getOutputStream());
             isConnected = true;
             //创建监听线程
             beginListening(socket);
         } catch (IOException e) {
-            for (var item :
-                    netCallBackList) {
-                //连接失败回调
-                item.OnConnectFailed();
+            synchronized (netCallBackList) {
+                for (var item :
+                        netCallBackList) {
+                    //连接失败回调
+                    item.OnConnectFailed();
+                }
             }
             isConnected = false;
         }
@@ -126,12 +120,17 @@ public class ClientNetwork {
         if (socket != null) {
             if (isConnected) {
                 try {
+                    //发送下线消息
+                    sendMessage(new UserMessage(UserMessage.MessageType.Require_Offline,
+                            null,null,""));
                     //关闭监听
                     listener.Close();
-                    for (var item :
-                            netCallBackList) {
-                        //断开连接回调
-                        item.OnDisconnect();
+                    synchronized (netCallBackList) {
+                        for (var item :
+                                netCallBackList) {
+                            //断开连接回调
+                            item.OnDisconnect();
+                        }
                     }
                     socket.close();
                 } catch (IOException e) {
@@ -207,9 +206,11 @@ public class ClientNetwork {
                 objOut = new ObjectOutputStream(socket.getOutputStream());
             objOut.writeObject(userMessage);
             objOut.flush();
-            for (NetCallBack item :
-                    netCallBackList) {
-                item.OnSendMessageSuccess(userMessage);
+            synchronized (netCallBackList) {
+                for (NetCallBack item :
+                        netCallBackList) {
+                    item.OnSendMessageSuccess(userMessage);
+                }
             }
         } catch (IOException e) {
             // TODO 如果断开连接，broken pipe异常如何处理？
@@ -245,15 +246,9 @@ public class ClientNetwork {
     private int curPort;
 
     /**
-     * 回调实例
-     */
-    @Deprecated
-    private NetCallBack netCallBack;
-
-    /**
      * 网络回调列表
      */
-    final private ArrayList<NetCallBack> netCallBackList = new ArrayList<>();
+    final private CopyOnWriteArrayList<NetCallBack> netCallBackList = new CopyOnWriteArrayList<>();
 
     /**
      * 网络事件回调定义

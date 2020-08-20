@@ -5,5 +5,6 @@ public class AppMain {
         //欢迎界面，选择服务器
         new WelcomeView();
         //new SignInView();
+        //new SignUpView(null);
     }
 }

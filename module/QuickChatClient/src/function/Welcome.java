@@ -95,6 +95,7 @@ public class Welcome extends BasicFunction {
     @Override
     public void Close() {
         Debug.Log("关闭welcome功能");
+        ClientNetwork.getInstance().removeNetCallBack(netCallBack_function);
         super.Close();
     }
 

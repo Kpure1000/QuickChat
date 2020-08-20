@@ -49,6 +49,7 @@ public class PrivateConfig implements Serializable {
      */
     public void setRemembered(boolean remembered) {
         isRemembered = remembered;
+        if (!isRemembered) rememberedPassword = null;
     }
 
     /**
@@ -61,7 +62,7 @@ public class PrivateConfig implements Serializable {
     }
 
     /**
-     * 记住的密码
+     * 记住的密码,不记住的话为null
      */
     private String rememberedPassword;
 
@@ -72,6 +73,8 @@ public class PrivateConfig implements Serializable {
      */
     public void setRememberedPassword(String rememberedPassword) {
         this.rememberedPassword = rememberedPassword;
+        if (rememberedPassword == null)
+            isRemembered = false;
     }
 
     /**

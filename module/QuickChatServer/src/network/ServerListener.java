@@ -10,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigInteger;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 
 /**
@@ -39,9 +40,16 @@ public class ServerListener implements Runnable {
 
     @Override
     public void run() {
+        try {
+            objIn = new ObjectInputStream(socket.getInputStream());
+        } catch (IOException e) {
+            Debug.LogWarning("服务获取到的socket输入输出有问题,不能开始监听");
+            listening=false;
+            e.printStackTrace();
+            return;
+        }
         while (listening) {
             try {
-                ObjectInputStream objIn = new ObjectInputStream(socket.getInputStream());
                 // 反序列化消息
                 UserMessage msg = (UserMessage) objIn.readObject();
                 synchronized (serverListenerCallBacks) {
@@ -86,7 +94,9 @@ public class ServerListener implements Runnable {
                                     null, newID, ""));
                         }
                         case Require_Offline -> {
-                            // TODO 下线请求
+                            // TODO 下线请求，暂时这么写
+                            Close();
+                            return;
                         }
                         case Require_OnLineList -> {
                             // TODO 在线列表请求
@@ -114,9 +124,13 @@ public class ServerListener implements Runnable {
                         }
                     }
                 }
-            } catch (IOException e) {
-                Debug.LogError("监听服务异常, at ID: " + ID.toString());
-                //e.printStackTrace();
+            }catch (SocketException e){
+                Debug.LogError("监听服务Socket异常, at ID: " + ID.toString());
+                break;
+            }
+            catch (IOException e) {
+                Debug.LogError("监听服务输入输出异常, at ID: " + ID.toString());
+                e.printStackTrace();
                 break;
             } catch (ClassNotFoundException e) {
                 Debug.LogError("反序列化异常, at ID: " + ID.toString());
@@ -132,11 +146,17 @@ public class ServerListener implements Runnable {
     public void Close() {
         listening = false;
         synchronized (serverListenerCallBacks) {
+            for (ServerListenerCallBack item :
+                    serverListenerCallBacks) {
+                item.OnUserOffLine(ID);
+            }
             serverListenerCallBacks.clear();
         }
         //删除监听
         ServerListenerManager.getInstance().removeListener(this);
         try {
+            objIn.close();
+            objOut.close();
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -203,6 +223,8 @@ public class ServerListener implements Runnable {
     private final Socket socket;
 
     ObjectOutputStream objOut;
+
+    ObjectInputStream objIn;
 
     /**
      * 监听订阅队列

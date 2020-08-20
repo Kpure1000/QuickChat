@@ -53,6 +53,12 @@ public class StartServer {
                         Debug.Log("用户: " + ID + " 登录成功");
                         return super.OnUserSignIn(ID);
                     }
+
+                    @Override
+                    public ServerListenerCallBack OnUserOffLine(BigInteger ID) {
+                        Debug.Log("用户: " + ID + " 下线");
+                        return super.OnUserOffLine(ID);
+                    }
                 };
                 // 加入目标监听任务回调
                 newListener.addServerListenerCallBack(serverListenerCallBack);
@@ -63,6 +69,11 @@ public class StartServer {
                 }
             }
         });
+    }
+
+    public void CloseServer() {
+        // TODO 通知所有客户端服务器已关闭
+        DataManager.getInstance().Close();
     }
 
     /**
