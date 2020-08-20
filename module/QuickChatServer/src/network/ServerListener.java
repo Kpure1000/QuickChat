@@ -58,9 +58,16 @@ public class ServerListener implements Runnable {
                             String[] msgContent = msg.getContent().split("#");
                             BigInteger idIn = new BigInteger(msgContent[0]);
                             String passIn = msgContent[1];
-                            // 根据库检查用户信息
-                            // TODO 有可能把'ID不存在'单独列为一种情况
-                            if (DataManager.getInstance().getUserDataManager().checkPassword_ID(idIn, passIn)) {
+                            // 检查是否已经登录
+                            if(ServerListenerManager.getInstance().getServerListener(idIn)!=null){
+                                // 反馈 登录成功
+                                sendMessage(new ServerMessage(ServerMessage.MessageType.Fb_SignIn,
+                                        idIn, null, "pass"));
+                                // 强制之前登陆的用户下线
+                                ServerListenerManager.getInstance().getServerListener(idIn).ForcedOffLine();
+                            }
+                            else if (DataManager.getInstance().getUserDataManager().checkPassword_ID(idIn, passIn)) {
+                                // 根据库检查用户信息
                                 // 更新ID
                                 ServerListenerManager.getInstance().updateListenerID(ID, idIn);
                                 this.ID = idIn;
@@ -195,6 +202,13 @@ public class ServerListener implements Runnable {
                 }
             }
         }
+    }
+
+    /**
+     * 强制下线
+     */
+    public void ForcedOffLine(){
+        sendMessage(new ServerMessage(ServerMessage.MessageType.Require_ForcedOffLine,null,ID,""));
     }
 
     /**

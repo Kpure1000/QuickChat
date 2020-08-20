@@ -13,6 +13,7 @@ import java.awt.event.WindowEvent;
 public class StartView extends JFrame {
     public StartView() {
         this.setVisible(true);
+        this.setTitle("服务器");
         this.setSize(100,100);
         this.setAlwaysOnTop(true);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);

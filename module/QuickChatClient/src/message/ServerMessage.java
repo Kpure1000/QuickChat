@@ -38,7 +38,10 @@ public class ServerMessage implements Serializable {
          * 在线列表反馈
          */
         Fb_OnlineList,
-
+        /**
+         * 强制下线
+         */
+        Require_ForcedOffLine,
         /**
          * 私聊消息
          */

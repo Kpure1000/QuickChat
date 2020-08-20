@@ -16,4 +16,6 @@ public interface ListenerCallBack {
     public ListenerCallBack OnReceiveTestMsg();
 
     public ListenerCallBack OnReceiveOnLineList(); //  TODO 缺参数
+
+    public ListenerCallBack OnForcedOffLine();
 }

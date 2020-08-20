@@ -134,8 +134,9 @@ public class SignUpView extends JFrame {
                 JOptionPane.showMessageDialog(SignUpView.this,
                         "您的新ID: " + newID.toString(), "注册成功", JOptionPane.INFORMATION_MESSAGE
                 );
-                // TODO 回到上一登陆界面
+                // TODO回到上一登陆界面
                 SignUpView.this.dispose();
+                // 自动填充
                 signUpViewCallBack.OnAutoFilltoSignIn(newID, repass);
             }
 

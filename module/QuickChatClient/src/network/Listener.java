@@ -128,6 +128,17 @@ public class Listener implements Runnable {
                                 }
                             }
                         }
+                        case Require_ForcedOffLine -> {
+                            // TODO强制下线
+                            for (var item :
+                                    listenerCallBackList) {
+                                if (item != null) {
+                                    item.OnForcedOffLine();
+                                }
+                                Debug.Log("由于检测到账户不安全，已被强制下线");
+                                Close();
+                            }
+                        }
                         case Msg_Private -> {
                             for (var item :
                                     listenerCallBackList) {

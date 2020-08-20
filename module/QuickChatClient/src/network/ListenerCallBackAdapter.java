@@ -28,7 +28,6 @@ public abstract class ListenerCallBackAdapter implements ListenerCallBack {
         return this;
     }
 
-    //  TODO 缺少参数
     public ListenerCallBack OnReceivePrivateMsg() {
         return this;
     }
@@ -42,6 +41,10 @@ public abstract class ListenerCallBackAdapter implements ListenerCallBack {
     }
 
     public ListenerCallBack OnReceiveOnLineList() {
+        return this;
+    }
+
+    public ListenerCallBack OnForcedOffLine() {
         return this;
     }
 }
