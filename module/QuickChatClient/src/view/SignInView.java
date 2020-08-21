@@ -32,6 +32,7 @@ public class SignInView extends JFrame {
         int topY = 220;
         int leftX = 110;
 
+
         //窗体初设置
         this.setSize(700, 525);
         this.setLocationRelativeTo(null);// 窗体居中
@@ -39,7 +40,7 @@ public class SignInView extends JFrame {
         //功能标题
         JLabel title = new JLabel("登陆");
         title.setBounds(this.getWidth()/2-170,60,350,100);
-        title.setFont(new Font("微软雅黑",Font.ROMAN_BASELINE,48));
+        title.setFont(new Font("微软雅黑",Font.PLAIN,48));
         title.setHorizontalAlignment(SwingConstants.CENTER);
         title.setForeground(new Color(MyLightRgb));
         this.add(title);
@@ -47,7 +48,7 @@ public class SignInView extends JFrame {
         JLabel closeLabel = new JLabel("X");
         closeLabel.setBackground(new Color(MyDarkRgb));
         closeLabel.setForeground(new Color(MyLightRgb));
-        closeLabel.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 20));
+        closeLabel.setFont(new Font("微软雅黑", Font.PLAIN, 20));
         closeLabel.setBounds(665, 15, 30, 30);
         this.add(closeLabel);
         closeLabel.addMouseListener(new MouseAdapter() {
@@ -63,7 +64,7 @@ public class SignInView extends JFrame {
         //第一层
         JLabel idLabel = new JLabel("ID:");
         idLabel.setForeground(new Color(MyLightRgb));
-        idLabel.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 22));
+        idLabel.setFont(new Font("微软雅黑", Font.PLAIN, 22));
         idLabel.setBounds(leftX, topY, 80, 30);
         this.add(idLabel);
         idText = new JTextField();
@@ -80,7 +81,7 @@ public class SignInView extends JFrame {
         //第二层
         JLabel passLabel = new JLabel("密码:");
         passLabel.setForeground(new Color(MyLightRgb));
-        passLabel.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 22));
+        passLabel.setFont(new Font("微软雅黑", Font.PLAIN, 22));
         passLabel.setBounds(leftX, topY + 50 + 50, 80, 30);
         this.add(passLabel);
         passText = new JPasswordField();
@@ -97,7 +98,7 @@ public class SignInView extends JFrame {
         //第三层
         JLabel passConfigText = new JLabel("记住密码");
         passConfigText.setForeground(new Color(MyLightRgb));
-        passConfigText.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 15));
+        passConfigText.setFont(new Font("微软雅黑", Font.PLAIN, 15));
         passConfigText.setBounds(leftX, topY + 140, 60, 30);
         this.add(passConfigText);
         passCheck = new JCheckBox();
@@ -108,13 +109,13 @@ public class SignInView extends JFrame {
         JButton signInButton = new JButton("登录");
         signInButton.setBackground(new Color(MyLightRgb));
         signInButton.setForeground(new Color(MyDarkRgb));
-        signInButton.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 20));
+        signInButton.setFont(new Font("微软雅黑", Font.PLAIN, 20));
         signInButton.setBounds(leftX + 100, topY + 200, 90, 30);
         this.add(signInButton);
         JButton signUpButton = new JButton("注册");
         signUpButton.setBackground(new Color(MyLightRgb));
         signUpButton.setForeground(new Color(MyDarkRgb));
-        signUpButton.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 20));
+        signUpButton.setFont(new Font("微软雅黑", Font.PLAIN, 20));
         signUpButton.setBounds(leftX + 100 + 200, topY + 200, 90, 30);
         this.add(signUpButton);
 
