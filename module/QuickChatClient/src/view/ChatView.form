@@ -11,9 +11,8 @@
         <constraints border-constraint="Center"/>
         <properties>
           <continuousLayout value="false"/>
-          <dividerLocation value="212"/>
+          <dividerLocation value="250"/>
           <enabled value="true"/>
-          <foreground color="-4473925"/>
           <oneTouchExpandable value="false"/>
           <resizeWeight value="0.5"/>
         </properties>
@@ -24,8 +23,8 @@
               <splitpane position="left"/>
             </constraints>
             <properties>
-              <background color="-12763327"/>
-              <verticalScrollBarPolicy value="22"/>
+              <background color="-11513259"/>
+              <foreground color="-12763327"/>
             </properties>
             <border type="none"/>
             <children/>
@@ -40,8 +39,8 @@
               <splitpane id="519c">
                 <constraints border-constraint="Center"/>
                 <properties>
-                  <dividerLocation value="208"/>
-                  <lastDividerLocation value="227"/>
+                  <dividerLocation value="319"/>
+                  <lastDividerLocation value="300"/>
                   <orientation value="0"/>
                   <resizeWeight value="0.5"/>
                 </properties>
@@ -56,18 +55,24 @@
                     <children>
                       <grid id="63525" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="2">
                         <constraints border-constraint="North"/>
-                        <properties/>
+                        <properties>
+                          <background color="-1379847"/>
+                        </properties>
                         <border type="none"/>
                         <children>
                           <component id="a43ea" class="javax.swing.JButton" binding="BT_MemberList">
                             <constraints/>
                             <properties>
+                              <background color="-9273713"/>
+                              <foreground color="-1379847"/>
                               <text value="查看成员"/>
                             </properties>
                           </component>
                           <component id="abe78" class="javax.swing.JButton" binding="BT_History">
                             <constraints/>
                             <properties>
+                              <background color="-9273713"/>
+                              <foreground color="-1379847"/>
                               <horizontalAlignment value="0"/>
                               <horizontalTextPosition value="0"/>
                               <text value="历史记录"/>
@@ -83,7 +88,11 @@
                         <children>
                           <component id="9b2db" class="javax.swing.JTextArea" binding="textArea1" default-binding="true">
                             <constraints/>
-                            <properties/>
+                            <properties>
+                              <background color="-1379847"/>
+                              <font size="24"/>
+                              <foreground color="-12763327"/>
+                            </properties>
                           </component>
                         </children>
                       </scrollpane>
@@ -99,7 +108,7 @@
                       <scrollpane id="af73e">
                         <constraints border-constraint="Center"/>
                         <properties>
-                          <horizontalScrollBarPolicy value="30"/>
+                          <horizontalScrollBarPolicy value="31"/>
                           <verticalScrollBarPolicy value="20"/>
                         </properties>
                         <border type="none"/>
@@ -107,51 +116,81 @@
                           <component id="67502" class="javax.swing.JEditorPane" binding="editorPane1" default-binding="true">
                             <constraints/>
                             <properties>
+                              <background color="-11513259"/>
                               <editable value="false"/>
+                              <foreground color="-7733417"/>
                             </properties>
                           </component>
                         </children>
                       </scrollpane>
-                      <grid id="31dd7" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
+                      <grid id="31dd7" layout-manager="BorderLayout" hgap="0" vgap="0">
                         <constraints border-constraint="North"/>
-                        <properties/>
+                        <properties>
+                          <background color="-12763327"/>
+                        </properties>
                         <border type="none"/>
                         <children>
-                          <component id="f2947" class="javax.swing.JLabel" binding="LB_ChatObjTitle">
-                            <constraints/>
+                          <grid id="23b28" layout-manager="GridBagLayout">
+                            <constraints border-constraint="West"/>
                             <properties>
-                              <enabled value="true"/>
-                              <font size="20"/>
-                              <text value="聊天对象名称"/>
+                              <background color="-12763327"/>
                             </properties>
-                          </component>
-                          <component id="d3c95" class="javax.swing.JButton" binding="BT_Info">
-                            <constraints/>
+                            <border type="none"/>
+                            <children>
+                              <component id="f2947" class="javax.swing.JLabel" binding="LB_ChatObjTitle">
+                                <constraints>
+                                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                                  <gridbag weightx="0.0" weighty="0.0"/>
+                                </constraints>
+                                <properties>
+                                  <enabled value="true"/>
+                                  <text value="聊天对象名称"/>
+                                </properties>
+                              </component>
+                            </children>
+                          </grid>
+                          <grid id="a3b8c" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="2">
+                            <constraints border-constraint="East"/>
                             <properties>
-                              <horizontalAlignment value="0"/>
-                              <horizontalTextPosition value="0"/>
-                              <text value="查看资料"/>
-                              <verticalAlignment value="0"/>
+                              <background color="-12763327"/>
                             </properties>
-                          </component>
-                          <component id="835a1" class="javax.swing.JButton" binding="BT_DeleteFriend">
-                            <constraints/>
-                            <properties>
-                              <horizontalAlignment value="0"/>
-                              <horizontalTextPosition value="0"/>
-                              <text value="删除好友"/>
-                              <verticalAlignment value="0"/>
-                            </properties>
-                          </component>
-                          <component id="8753a" class="javax.swing.JButton" binding="BT_QuitGroup">
-                            <constraints/>
-                            <properties>
-                              <horizontalAlignment value="0"/>
-                              <horizontalTextPosition value="0"/>
-                              <text value="退出群聊"/>
-                              <verticalAlignment value="0"/>
-                            </properties>
-                          </component>
+                            <border type="none"/>
+                            <children>
+                              <component id="d3c95" class="javax.swing.JButton" binding="BT_Info">
+                                <constraints/>
+                                <properties>
+                                  <background color="-7733417"/>
+                                  <foreground color="-12763327"/>
+                                  <horizontalAlignment value="0"/>
+                                  <horizontalTextPosition value="0"/>
+                                  <text value="查看资料"/>
+                                  <verticalAlignment value="0"/>
+                                </properties>
+                              </component>
+                              <component id="835a1" class="javax.swing.JButton" binding="BT_DeleteFriend">
+                                <constraints/>
+                                <properties>
+                                  <background color="-7733417"/>
+                                  <foreground color="-12763327"/>
+                                  <horizontalAlignment value="0"/>
+                                  <horizontalTextPosition value="0"/>
+                                  <text value="删除好友"/>
+                                  <verticalAlignment value="0"/>
+                                </properties>
+                              </component>
+                              <component id="8753a" class="javax.swing.JButton" binding="BT_QuitGroup">
+                                <constraints/>
+                                <properties>
+                                  <background color="-7733417"/>
+                                  <foreground color="-12763327"/>
+                                  <horizontalAlignment value="0"/>
+                                  <horizontalTextPosition value="0"/>
+                                  <text value="退出群聊"/>
+                                  <verticalAlignment value="0"/>
+                                </properties>
+                              </component>
+                            </children>
+                          </grid>
                         </children>
                       </grid>
                     </children>
@@ -162,34 +201,108 @@
           </grid>
         </children>
       </splitpane>
-      <grid id="40b9a" binding="topSettingPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+      <grid id="609d9" binding="topPanel" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
         <constraints border-constraint="North"/>
         <properties>
-          <background color="-12763327"/>
+          <background color="-11513259"/>
         </properties>
         <border type="none"/>
         <children>
-          <component id="d38c0" class="javax.swing.JButton" binding="BT_AddFriend">
-            <constraints/>
+          <grid id="a578e" binding="settingPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+            </constraints>
             <properties>
-              <horizontalAlignment value="0"/>
-              <text value="添加好友"/>
+              <background color="-11513259"/>
             </properties>
-          </component>
-          <component id="4b01f" class="javax.swing.JButton" binding="BT_AddGroup">
-            <constraints/>
+            <border type="none"/>
+            <children>
+              <grid id="40b9a" binding="topSettingPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+                <constraints border-constraint="West"/>
+                <properties>
+                  <background color="-11513259"/>
+                </properties>
+                <border type="none"/>
+                <children>
+                  <component id="d38c0" class="javax.swing.JButton" binding="BT_AddFriend">
+                    <constraints/>
+                    <properties>
+                      <autoscrolls value="true"/>
+                      <background color="-7733417"/>
+                      <foreground color="-12763327"/>
+                      <hideActionText value="false"/>
+                      <horizontalAlignment value="0"/>
+                      <opaque value="true"/>
+                      <selected value="false"/>
+                      <text value="添加好友"/>
+                    </properties>
+                  </component>
+                  <component id="4b01f" class="javax.swing.JButton" binding="BT_AddGroup">
+                    <constraints/>
+                    <properties>
+                      <autoscrolls value="true"/>
+                      <background color="-7733417"/>
+                      <foreground color="-12763327"/>
+                      <hideActionText value="false"/>
+                      <horizontalAlignment value="0"/>
+                      <opaque value="true"/>
+                      <selected value="false"/>
+                      <text value="添加群聊"/>
+                    </properties>
+                  </component>
+                  <component id="dabef" class="javax.swing.JButton" binding="BT_Setting">
+                    <constraints/>
+                    <properties>
+                      <autoscrolls value="true"/>
+                      <background color="-7733417"/>
+                      <foreground color="-12763327"/>
+                      <hideActionText value="false"/>
+                      <horizontalAlignment value="0"/>
+                      <opaque value="true"/>
+                      <selected value="false"/>
+                      <text value="设置"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <grid id="bcfd4" binding="emptyPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="2">
+                <constraints border-constraint="Center"/>
+                <properties>
+                  <background color="-11513259"/>
+                </properties>
+                <border type="none"/>
+                <children/>
+              </grid>
+            </children>
+          </grid>
+          <grid id="5d57e" binding="quitPanel" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+            </constraints>
             <properties>
-              <horizontalAlignment value="0"/>
-              <text value="添加群聊"/>
+              <background color="-11513259"/>
             </properties>
-          </component>
-          <component id="dabef" class="javax.swing.JButton" binding="BT_Setting">
-            <constraints/>
-            <properties>
-              <horizontalAlignment value="0"/>
-              <text value="设置"/>
-            </properties>
-          </component>
+            <border type="none"/>
+            <children>
+              <component id="9579b" class="javax.swing.JButton" binding="BT_Quit">
+                <constraints>
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <background color="-7733417"/>
+                  <foreground color="-12763327"/>
+                  <text value="  退出  "/>
+                </properties>
+              </component>
+              <hspacer id="46b9e">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+              </hspacer>
+            </children>
+          </grid>
         </children>
       </grid>
     </children>

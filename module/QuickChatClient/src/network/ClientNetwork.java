@@ -114,7 +114,7 @@ public class ClientNetwork {
     }
 
     /**
-     * 断开当前连接
+     * 立刻下线，发送下线消息，并断开socket连接，<b>销毁监听线程</b>
      */
     public synchronized void Disconnect() {
         if (socket != null) {

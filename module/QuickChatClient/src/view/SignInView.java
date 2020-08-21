@@ -184,7 +184,8 @@ public class SignInView extends JFrame {
             public void OnSignInSuccess() {
                 // TODO 关闭自身，开启下一个窗口
                 Debug.Log("登录成功!");
-//                SignInView.this.dispose();
+                SignInView.this.dispose();
+                new ChatView();
             }
 
             @Override

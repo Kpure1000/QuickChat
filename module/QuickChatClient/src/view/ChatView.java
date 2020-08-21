@@ -1,18 +1,12 @@
 package view;
 
-import com.intellij.ui.treeStructure.Tree;
-import function.Debug;
+import network.ClientNetwork;
 import view.listInfoView.ChatInfoNode;
 import view.listInfoView.ChatInfoNodeRender;
 
 import javax.swing.*;
-import javax.swing.event.MouseInputAdapter;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 
 /**
  * 聊天主页
@@ -35,28 +29,45 @@ public class ChatView {
      * 一定要注意，这个必须要检查字符串长度，否则会导致问题
      */
     private JLabel LB_ChatObjTitle;
+    private JButton BT_Quit;
+    private JPanel emptyPanel;
+    private JPanel quitPanel;
+    private JPanel settingPanel;
+    private JPanel topPanel;
     private JTree tree1;
 
     private ChatInfoNode root;
+    private Point pressedPoint;
 
     public ChatView() {
         JFrame asd = new JFrame();
+        String lookAndFeel = UIManager.getSystemLookAndFeelClassName();
+//        try {
+//            UIManager.setLookAndFeel(lookAndFeel);
+//        } catch (ClassNotFoundException |
+//                InstantiationException |
+//                IllegalAccessException |
+//                UnsupportedLookAndFeelException e) {
+//            e.printStackTrace();
+//        }
         $$$setupUI$$$();
+        asd.setUndecorated(true);
         asd.setVisible(true);
         asd.setSize(800, 600);
         asd.setLocationRelativeTo(null);
         asd.setResizable(false);
         asd.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        asd.getContentPane().setBackground(new Color(0x323436));
+        asd.getContentPane().setBackground(new Color(0x999999));
         asd.setTitle("聊天");
 
         asd.add($$$getRootComponent$$$());
 
-        Color back = new Color(0xC2C2C2);
+        Color back = new Color(0x3d3f41);
 
         root = new ChatInfoNode(back, "我的好友", "");
         for (int i = 0; i < 15; i++) {
-            ChatInfoNode sub = new ChatInfoNode(back, "好友" + (i + 1), "你好你好你好你好", i % 2 == 0, false);
+            ChatInfoNode sub = new ChatInfoNode(back, new ImageIcon("image/h1.jpg"),
+                    "好友" + (i + 1), "你好你好你好你好", i % 2 == 0, false);
 
 
             root.add(sub);
@@ -79,10 +90,50 @@ public class ChatView {
 
         tree1.setRootVisible(false);
 
-        tree1.addTreeSelectionListener(e ->
-                editorPane1.setText(chatContent += ((ChatInfoNode)
-                        tree1.getLastSelectedPathComponent()).getHead() + "\r\n")
+        tree1.addTreeSelectionListener(e -> {
+                    ChatInfoNode curNode = ((ChatInfoNode)
+                            tree1.getLastSelectedPathComponent());
+                    LB_ChatObjTitle.setText("<html><font size=\"5\" style = \"color:#89FF57\">" + curNode.getHead() + "</font></html>");
+                }
         );
+
+        LB_ChatObjTitle.setText("<html><font size=\"5\" style = \"color:#89FF57\">请选择聊天对象</font></html>");
+
+        JSP_FriendList.remove(tree1);
+
+        BT_AddFriend.setBackground(new Color(0x89FF57));
+
+        BT_Quit.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(e.getClickCount()==1){
+                    asd.dispose();
+                }
+            }
+        });
+
+        asd.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) { //鼠标按下事件
+                pressedPoint = e.getPoint(); //记录鼠标坐标
+            }
+        });
+        asd.addMouseMotionListener(new MouseMotionAdapter() {
+            public void mouseDragged(MouseEvent e) { // 鼠标拖拽事件
+                Point point = e.getPoint();// 获取当前坐标
+                Point locationPoint = asd.getLocation();// 获取窗体坐标
+                int x = locationPoint.x + point.x - pressedPoint.x;// 计算移动后的新坐标
+                int y = locationPoint.y + point.y - pressedPoint.y;
+                asd.setLocation(x, y);// 改变窗体位置
+            }
+        });
+
+        asd.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                ClientNetwork.getInstance().Disconnect();
+                super.windowClosed(e);
+            }
+        });
 
     }
 
@@ -151,8 +202,6 @@ public class ChatView {
         panel5.add(panel6, BorderLayout.NORTH);
         LB_ChatObjTitle = new JLabel();
         LB_ChatObjTitle.setEnabled(true);
-        Font LB_ChatObjTitleFont = this.$$$getFont$$$(null, -1, 20, LB_ChatObjTitle.getFont());
-        if (LB_ChatObjTitleFont != null) LB_ChatObjTitle.setFont(LB_ChatObjTitleFont);
         LB_ChatObjTitle.setText("聊天对象名称");
         panel6.add(LB_ChatObjTitle);
         BT_Info = new JButton();
@@ -191,24 +240,6 @@ public class ChatView {
         topSettingPanel.add(BT_Setting);
     }
 
-    /**
-     * @noinspection ALL
-     */
-    private Font $$$getFont$$$(String fontName, int style, int size, Font currentFont) {
-        if (currentFont == null) return null;
-        String resultName;
-        if (fontName == null) {
-            resultName = currentFont.getName();
-        } else {
-            Font testFont = new Font(fontName, Font.PLAIN, 10);
-            if (testFont.canDisplay('a') && testFont.canDisplay('1')) {
-                resultName = fontName;
-            } else {
-                resultName = currentFont.getName();
-            }
-        }
-        return new Font(resultName, style >= 0 ? style : currentFont.getStyle(), size >= 0 ? size : currentFont.getSize());
-    }
 
     /**
      * @noinspection ALL

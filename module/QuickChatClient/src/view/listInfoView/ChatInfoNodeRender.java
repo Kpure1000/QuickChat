@@ -35,15 +35,15 @@ public class ChatInfoNodeRender extends DefaultTreeCellRenderer {
 
         //设置html文本
         String text =
-                "<html><font size=\"5\"style=\"color:#111111\">" + chatInfoNode.getHead() + "</font><br/>" +
-                        "<font size=\"3\"style=\"color:#111111\">" + chatInfoNode.getBody() + "</font></html>";
+                "<html><font size=\"5\"style=\"color:#89FF57\">" + chatInfoNode.getHead() + "</font><br/>" +
+                        "<font size=\"3\"style=\"color:#89FF57\">" + chatInfoNode.getBody() + "</font><br/></html>";
 
         setText(text);
 
         //设置图片
         ImageIcon icon = chatInfoNode.getIcon();
         if (icon != null) {
-            icon.setImage(icon.getImage().getScaledInstance(80, 80, Image.SCALE_DEFAULT));
+            icon.setImage(icon.getImage().getScaledInstance(50, 50, Image.SCALE_DEFAULT));
             this.setIcon(icon);
             setIconTextGap(10);
         }
@@ -52,15 +52,17 @@ public class ChatInfoNodeRender extends DefaultTreeCellRenderer {
         setBackground(chatInfoNode.getBackGroundColor());
         setOpaque(true);
 
-        if (mouseListener == null && chatInfoNode.getMouseListener() != null) {
-            Debug.Log("添加监听");
-            mouseListener = chatInfoNode.getMouseListener();
-            super.addMouseListener(mouseListener);
-        }
-
         return this;
     }
 
     private MouseListener mouseListener = null;
+
+    private Color normalColor = new Color(0xffffff);
+
+    private Color highlightColor = new Color(0x888888);
+
+    private String normalRGB = "000000";
+
+    private String highlightRGB = "";
 
 }
