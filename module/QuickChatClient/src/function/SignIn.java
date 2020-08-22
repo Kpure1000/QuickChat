@@ -5,15 +5,22 @@ import message.UserMessage;
 import network.ClientNetwork;
 import network.ListenerCallBack;
 import network.ListenerCallBackAdapter;
+import network.NetCallBack;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 
+/**
+ * 登录功能.
+ * <p>拓展注册功能</p>
+ *
+ * @see function.SignUp
+ */
 public class SignIn extends BasicFunction {
     public SignIn() {
         idListTmp = DataManager.getInstance().getIDRecord();
 
-        netCallBack_function = new ClientNetwork.NetCallBack() {
+        netCallBack_function = new NetCallBack() {
             @Override
             public void OnConnectSuccess() {
                 //DO NOTHING
@@ -148,8 +155,6 @@ public class SignIn extends BasicFunction {
                             //更新ID记录
                             DataManager.getInstance().updateIDRecord(ID,
                                     signInCallBack.OnNeedPassConfigUpdate() ? password : null);
-                            //更新密保记录
-                            DataManager.getInstance().updatePasswordConfig(ID,password);
                             //登录成功
                             signInCallBack.OnSignInSuccess();
                         } else if (String.valueOf(fbState).equals("failed")) {

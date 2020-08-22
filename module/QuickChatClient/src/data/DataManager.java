@@ -79,7 +79,7 @@ public class DataManager {
      */
     public void updatePasswordConfig(BigInteger ID, String password) {
         readPrivate(ID);
-        Debug.Log("正在更新密码配置");
+        Debug.Log("正在更新密码配置以及记住的密码");
         privateConfig.setRemembered(password!=null);
         privateConfig.setRememberedPassword(password);
         savePrivate(ID);
@@ -100,7 +100,7 @@ public class DataManager {
     }
 
     /**
-     * 更新ID的历史记录，仅当该ID登录成功，否则无意义
+     * 更新配置的ID的历史记录，仅当该ID登录成功，否则无意义
      * <p>
      * 不存在则新增登录记录和私有配置，
      * 存在则更新私有配置
@@ -121,7 +121,9 @@ public class DataManager {
             }
         }
         // TODO 不存在，添加记录
+        Debug.Log("该用户首次登陆成功，添加记录");
         publicConfig.addIdList(newID);
+        updatePasswordConfig(newID, passwordConfig);
     }
 
     //////////////////////////////////
@@ -301,8 +303,6 @@ public class DataManager {
         publicConfig = new PublicConfig();
         publicConfig.addServerList(new ServerInfo("127.0.0.1", 12345));
         publicConfig.addServerList(new ServerInfo("127.0.0.2", 11111));
-        publicConfig.addIdList(new BigInteger("1212121212"));
-        publicConfig.addIdList(new BigInteger("123123123"));
         //  Debug
         for (BigInteger item :
                 publicConfig.getIdList()) {

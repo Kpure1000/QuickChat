@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 public class ServerInfo implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 0x1ef8e6670c0969abL;
 
     /**
      * 主机号

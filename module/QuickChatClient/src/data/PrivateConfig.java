@@ -17,7 +17,7 @@ import java.util.ArrayList;
  */
 public class PrivateConfig implements Serializable {
 
-    private static final long serialVersionUID = 1002L;
+    private static final long serialVersionUID = 0xa087b9291f7c541bL;
 
     public PrivateConfig(BigInteger id) {
         selfID = id;

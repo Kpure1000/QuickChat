@@ -110,6 +110,7 @@ public class ServerListener implements Runnable {
                         }
                         case Require_ApplyFriend -> {
                             // TODO 好友申请
+
                         }
                         case Require_DeleteFriend -> {
                         }

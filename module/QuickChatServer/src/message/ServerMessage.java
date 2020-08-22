@@ -8,7 +8,7 @@ import java.math.BigInteger;
  */
 public class ServerMessage implements Serializable {
 
-    private static final long serialVersionUID = 12345L;
+    private static final long serialVersionUID = 0xad400628389930a7L;
 
     /**
      * 构造
@@ -34,6 +34,10 @@ public class ServerMessage implements Serializable {
          * 注册反馈
          */
         Fb_SignUp,
+        /**
+         * 好友申请反馈
+         */
+        Fb_FriendRequire,
         /**
          * 在线列表反馈
          */

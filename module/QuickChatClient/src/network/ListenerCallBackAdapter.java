@@ -1,5 +1,7 @@
 package network;
 
+import message.ServerMessage;
+
 import java.math.BigInteger;
 
 /**
@@ -20,30 +22,82 @@ public abstract class ListenerCallBackAdapter implements ListenerCallBack {
      *
      * @param fbState
      */
+    @Override
     public ListenerCallBack OnSignInCallBack(String fbState) {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param fbID
+     * @return
+     */
+    @Override
     public ListenerCallBack OnSignUpCallBack(BigInteger fbID) {
         return this;
     }
 
-    public ListenerCallBack OnReceivePrivateMsg() {
+    /**
+     * {@inheritDoc}
+     *
+     * @param fbState 反馈申请结果
+     * @return
+     */
+    @Override
+    public ListenerCallBack OnFriendRequireCallBack(ServerMessage serverMessage) {
         return this;
     }
 
-    public ListenerCallBack OnReceiveGroupMsg() {
+    /**
+     * {@inheritDoc}
+     *
+     * @param serverMessage
+     * @return
+     */
+    @Override
+    public ListenerCallBack OnReceivePrivateMsg(ServerMessage serverMessage) {
         return this;
     }
 
-    public ListenerCallBack OnReceiveTestMsg() {
+    /**
+     * {@inheritDoc}
+     *
+     * @param serverMessage
+     * @return
+     */
+    @Override
+    public ListenerCallBack OnReceiveGroupMsg(ServerMessage serverMessage) {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param serverMessage
+     * @return
+     */
+    @Override
+    public ListenerCallBack OnReceiveTestMsg(ServerMessage serverMessage) {
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return
+     */
+    @Override
     public ListenerCallBack OnReceiveOnLineList() {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return
+     */
+    @Override
     public ListenerCallBack OnForcedOffLine() {
         return this;
     }

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class PublicConfig implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 0x3902486d7511d9adL;
 
     /**
      * 加入服务器

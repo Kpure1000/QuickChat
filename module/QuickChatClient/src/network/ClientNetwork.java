@@ -73,12 +73,13 @@ public class ClientNetwork {
      * 如果成功则创建监听线程，
      * 否则取消
      *
-     * @param host
-     * @param port
+     * @param host IP
+     * @param port 端口
      */
     public void connect(String host, int port) {
         try {
             socket = new Socket(host, port);
+            //缓存目前的服务器信息
             curHost = host;
             curPort = port;
             synchronized (netCallBackList) {
@@ -88,6 +89,7 @@ public class ClientNetwork {
                     item.OnConnectSuccess();
                 }
             }
+            //输出流
             objOut = new ObjectOutputStream(socket.getOutputStream());
             isConnected = true;
             //创建监听线程
@@ -122,7 +124,7 @@ public class ClientNetwork {
                 try {
                     //发送下线消息
                     sendMessage(new UserMessage(UserMessage.MessageType.Require_Offline,
-                            null,null,""));
+                            null, null, ""));
                     //关闭监听
                     listener.Close();
                     synchronized (netCallBackList) {
@@ -190,6 +192,10 @@ public class ClientNetwork {
      */
     // TODO param should include 'ClientMessage'
     public void sendMessage(UserMessage userMessage) {
+        if (retrying) {
+            Debug.Log("正在尝试重连，不可发送新消息");
+            return;
+        }
         if (!isConnected) {
             for (NetCallBack item :
                     netCallBackList) {
@@ -213,19 +219,38 @@ public class ClientNetwork {
                 }
             }
         } catch (IOException e) {
-            // TODO 如果断开连接，broken pipe异常如何处理？
-            if (socket.isConnected()) {
-                while (!isConnected) {
-                    Debug.LogWarning("连接断开，发送失败;正在尝试重新连接...");
-                    // TODO 这里其实
-                    connect(curHost, curPort);
-                    try {
-                        //等待400ms
-                        Thread.sleep(400);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
+            if (!socket.isConnected()) {
+                //开始尝试重连，禁止sendMessage的再次调用
+                retrying = true;
+                //如果不用多线程可能会导致卡顿
+                new Thread(() -> {
+                    while (!isConnected && retryCount < 5) {
+                        retryCount++;
+                        synchronized (netCallBackList) {
+                            for (NetCallBack item :
+                                    netCallBackList) {
+                                item.OnSendMessageSuccess(userMessage);
+                            }
+                        }
+                        Debug.LogWarning("连接断开，发送失败;正在尝试重新连接...");
+                        connect(curHost, curPort);
+                        try {
+                            //等待500ms
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e1) {
+                            e1.printStackTrace();
+                        }
                     }
-                }
+                    if (retryCount >= 5) {
+                        Debug.LogWarning("重连失败，取消发送");
+                    }
+                    //取消尝试
+                    retrying = false;
+                    retryCount = 0;
+                }).start();
+            } else {
+                Debug.Log("输入输出流异常");
+                e.printStackTrace();
             }
         }
     }
@@ -250,24 +275,14 @@ public class ClientNetwork {
      */
     final private CopyOnWriteArrayList<NetCallBack> netCallBackList = new CopyOnWriteArrayList<>();
 
-    /**
-     * 网络事件回调定义
-     */
-    public interface NetCallBack {
-        void OnConnectSuccess();
-
-        void OnConnectFailed();
-
-        void OnDisconnect();
-
-        void OnSendMessageSuccess(UserMessage msg);
-
-        void OnSendMessageFailed(UserMessage msg);
-    }
 
     /**
      * 监听
      */
     private Listener listener;
+
+    private int retryCount = 0;
+
+    private boolean retrying = false;
 
 }

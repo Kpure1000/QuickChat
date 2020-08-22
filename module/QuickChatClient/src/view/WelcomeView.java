@@ -73,7 +73,7 @@ public class WelcomeView extends JFrame {
         this.add(hostCombo);
 
         // TODO 第二行
-        errorLabel = new JLabel("服务器连接错误");
+        errorLabel = new JLabel(" ");
         errorLabel.setFont(new Font("微软雅黑", Font.PLAIN, 18));
         errorLabel.setForeground(Color.RED);
         errorLabel.setBounds(this.getBounds().width / 2 - 75, topY + 50, 160, 30);
@@ -130,12 +130,17 @@ public class WelcomeView extends JFrame {
 
             @Override
             public void OnConnectSuccess() {
-                // TODO 连接成功
+                // TODO连接成功
                 Debug.Log("连接成功");
                 //创建登录窗口
                 new SignInView();
                 //关掉自己
                 WelcomeView.this.dispose();
+            }
+
+            @Override
+            public void OnConnectFailed() {
+                errorLabel.setText("服务器连接错误");
             }
         });
 

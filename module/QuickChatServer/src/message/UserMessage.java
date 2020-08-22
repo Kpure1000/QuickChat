@@ -8,7 +8,7 @@ import java.math.BigInteger;
  */
 public class UserMessage implements Serializable {
 
-    private static final long serialVersionUID = 1234L;
+    private static final long serialVersionUID = 0x972989652dac494fL;
 
     /**
      * 构造
