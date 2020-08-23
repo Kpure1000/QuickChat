@@ -6,11 +6,14 @@ import java.io.*;
 import java.math.BigInteger;
 import java.util.HashMap;
 
-public class UserDataManager implements Serializable {
+/**
+ * 用户
+ */
+public class UserDataContain implements Serializable {
 
     static final long serialVersionUID = 10000001L;
 
-    public UserDataManager() {
+    public UserDataContain() {
         maxID = new BigInteger("10000");
         MaxSignOutClientID = new BigInteger("1");
     }
@@ -80,7 +83,7 @@ public class UserDataManager implements Serializable {
     }
 
     /**
-     * 需要序列化的
+     * 用户散列表
      */
     private HashMap<BigInteger, UserData> userDataMap = new HashMap<BigInteger, UserData>();
 

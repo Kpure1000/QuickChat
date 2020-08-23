@@ -31,7 +31,7 @@ public class DataManager {
             }
             //输入流初始化
             ObjectInputStream objIn = new ObjectInputStream(new FileInputStream(file));
-            userDataManager = (UserDataManager) objIn.readObject();
+            userDataManager = (UserDataContain) objIn.readObject();
             userDataManager.initUserDataManager();
             objIn.close();
         } catch (IOException e) {
@@ -61,7 +61,7 @@ public class DataManager {
         }
         if (file.exists()) {
             //写入
-            UserDataManager newUserDataManager = new UserDataManager();
+            UserDataContain newUserDataManager = new UserDataContain();
             ObjectOutputStream objOut = new ObjectOutputStream(new FileOutputStream(file));
             objOut.writeObject(newUserDataManager);
             objOut.flush();
@@ -105,13 +105,13 @@ public class DataManager {
     /**
      * 用户数据管理器
      */
-    private UserDataManager userDataManager;
+    private UserDataContain userDataManager;
 
     /**
      * 获取用户数据管理器
      * @return
      */
-    public UserDataManager getUserDataManager() {
+    public UserDataContain getUserDataManager() {
         return userDataManager;
     }
 

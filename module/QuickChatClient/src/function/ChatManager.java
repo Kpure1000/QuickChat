@@ -1,10 +1,14 @@
 package function;
 
 import data.DataManager;
+import data.UserManager;
 import message.ServerMessage;
+import message.UserMessage;
 import network.ClientNetwork;
 import network.ListenerCallBack;
 import network.ListenerCallBackAdapter;
+
+import java.math.BigInteger;
 
 /**
  * 聊天管理功能
@@ -61,6 +65,23 @@ public class ChatManager extends BasicFunction {
         ClientNetwork.getInstance().Disconnect();
     }
 
+
+    /**
+     * 发送消息
+     * @param content
+     */
+    public void sendMessage(String content) {
+        ClientNetwork.getInstance().sendMessage(new UserMessage(UserMessage.MessageType.Msg_Test, UserManager.getInstance().getCurrentID(), curChatObject, content));
+    }
+
+    /**
+     * 当前聊天对象
+     */
+    private BigInteger curChatObject;
+
+    /**
+     * 监听回调
+     */
     private ListenerCallBack listenerCallBack;
 
 }

@@ -19,6 +19,14 @@ public class UserManager {
         return instance;
     }
 
+    public BigInteger getCurrentID() {
+        return currentID;
+    }
+
+    public void setCurrentID(BigInteger currentID) {
+        this.currentID = currentID;
+    }
+
     //////////////////
 
     BigInteger currentID;

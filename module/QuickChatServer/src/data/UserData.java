@@ -1,14 +1,14 @@
 package data;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 用户数据类
  */
 public class UserData extends BasicData {
 
-    public UserData(BigInteger ID,String name, String createTime,String password) {
+    public UserData(BigInteger ID, String name, String createTime, String password) {
         super.ID = ID;
         super.Name = name;
         super.createTime = createTime;
@@ -33,18 +33,66 @@ public class UserData extends BasicData {
     /**
      * 好友列表
      */
-    private ArrayList<BigInteger> friendList;
+    private CopyOnWriteArrayList<BigInteger> friendList;
 
     /**
      * 加入的群列表
      */
-    private ArrayList<BigInteger> groupJoin;
+    private CopyOnWriteArrayList<BigInteger> groupList;
 
     public String getPassword() {
         return password;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public CopyOnWriteArrayList<BigInteger> getFriendList() {
+        return friendList;
+    }
+
+    public CopyOnWriteArrayList<BigInteger> getGroupList() {
+        return groupList;
+    }
+
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setFriendList(CopyOnWriteArrayList<BigInteger> friendList) {
+        this.friendList = friendList;
+    }
+
+    public void setGroupList(CopyOnWriteArrayList<BigInteger> groupList) {
+        this.groupList = groupList;
+    }
+
+    public void addFriend(BigInteger ID) {
+        friendList.add(ID);
+    }
+
+    public void removeFriend(BigInteger ID){
+        friendList.remove(ID);
+    }
+
+    public void addGroup(BigInteger ID){
+        groupList.add(ID);
+    }
+
+    public void removeGroup(BigInteger ID){
+        groupList.remove(ID);
     }
 }

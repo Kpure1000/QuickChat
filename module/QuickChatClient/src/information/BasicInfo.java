@@ -13,7 +13,7 @@ import java.math.BigInteger;
  */
 public class BasicInfo implements Serializable {
 
-    private static final long serialVersionUID = 1001L;
+    private static final long serialVersionUID = 0x6ecb4d6491b8df09L;
 
     private BigInteger ID;
 

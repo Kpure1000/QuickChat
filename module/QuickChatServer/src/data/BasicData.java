@@ -7,8 +7,34 @@ import java.math.BigInteger;
  * 数据基类
  */
 public class BasicData implements Serializable {
+
+    private static final long serialVersionUID = 0xd365142df7629b67L;
+
     protected BigInteger ID;
     protected String Name;
     protected String createTime;
 
+    public void setID(BigInteger ID) {
+        this.ID = ID;
+    }
+
+    public void setName(String name) {
+        Name = name;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    public BigInteger getID() {
+        return ID;
+    }
+
+    public String getName() {
+        return Name;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
 }

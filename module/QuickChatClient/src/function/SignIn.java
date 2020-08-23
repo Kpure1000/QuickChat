@@ -1,6 +1,7 @@
 package function;
 
 import data.DataManager;
+import data.UserManager;
 import message.UserMessage;
 import network.ClientNetwork;
 import network.ListenerCallBack;
@@ -157,6 +158,8 @@ public class SignIn extends BasicFunction {
                                     signInCallBack.OnNeedPassConfigUpdate() ? password : null);
                             //登录成功
                             signInCallBack.OnSignInSuccess();
+                            //本地登录
+                            UserManager.getInstance().setCurrentID(ID);
                         } else if (String.valueOf(fbState).equals("failed")) {
                             //登录失败
                             signInCallBack.OnSignInFailed();

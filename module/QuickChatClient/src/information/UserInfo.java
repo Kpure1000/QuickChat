@@ -8,8 +8,6 @@ package information;
  */
 public class UserInfo extends BasicInfo {
 
-    private static final long serialVersionUID = 100101L;
-
     private String email;
 
     private String phoneNumber;

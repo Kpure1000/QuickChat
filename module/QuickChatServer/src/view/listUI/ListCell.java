@@ -1,6 +1,4 @@
-package view.listInfoView.listUI;
-
-import function.Debug;
+package view.listUI;
 
 import javax.swing.*;
 import java.awt.*;

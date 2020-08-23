@@ -1,12 +1,9 @@
-package view.listInfoView.listUI;
-
-import function.Debug;
+package view.listUI;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 /**
  * 好友列表单元

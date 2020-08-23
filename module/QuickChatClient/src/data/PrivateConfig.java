@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 私有配置，包括用户记住密码选项和消息记录
@@ -88,21 +90,19 @@ public class PrivateConfig implements Serializable {
         return rememberedPassword;
     }
 
-    /**
-     * 消息
-     */
-
-
-    /**
-     * 消息列表（对象+内容）
-     */
-    private ArrayList<MessageRecord> messageRecords = new ArrayList<MessageRecord>();
-
-    public ArrayList<MessageRecord> getMessageRecords() {
+    public CopyOnWriteArrayList<MessageRecord> getMessageRecords() {
         return messageRecords;
     }
 
-    public void setMessageRecords(ArrayList<MessageRecord> messageRecords) {
+    public void setMessageRecords(CopyOnWriteArrayList<MessageRecord> messageRecords) {
         this.messageRecords = messageRecords;
     }
+
+    /**
+     * 消息记录
+     */
+    private CopyOnWriteArrayList<MessageRecord> messageRecords = new CopyOnWriteArrayList<MessageRecord>();
+
+//    private ConcurrentLinkedQueue<MessageRecord>
+
 }

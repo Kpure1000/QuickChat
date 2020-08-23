@@ -2,6 +2,7 @@ package network;
 
 import data.DataManager;
 import function.Debug;
+import function.UserManager;
 import message.ServerMessage;
 import message.UserMessage;
 
@@ -75,6 +76,8 @@ public class ServerListener implements Runnable {
                                 ServerMessage message = new ServerMessage(ServerMessage.MessageType.Fb_SignIn,
                                         idIn, null, "pass");
                                 sendMessage(message);
+                                // TODO 加入在线用户管理器
+                                UserManager.getInstance().equals(null);
                                 for (ServerListenerCallBack item :
                                         serverListenerCallBacks) {
                                     item.OnUserSignIn(idIn);

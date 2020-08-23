@@ -3,11 +3,10 @@ package view;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import data.DataManager;
 import function.ChatManager;
-import network.ClientNetwork;
+import function.Debug;
+import org.jetbrains.annotations.NotNull;
 import view.listInfoView.ChatInfoNode;
-import view.listInfoView.ChatInfoNodeRender;
 import view.listInfoView.listUI.FriendListCell;
 import view.listInfoView.listUI.ListCell;
 import view.listInfoView.listUI.ListPanel;
@@ -15,7 +14,7 @@ import view.listInfoView.listUI.ListPanel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
+import java.util.Comparator;
 
 /**
  * 聊天主页
@@ -41,8 +40,9 @@ public class ChatView {
     private JPanel topPanel;
     private JButton BT_MyInfo;
     private JButton BT_Emoji;
-    private JTree tree1;
-    private ChatInfoNode root;
+    private JLabel topLabel;
+    //    private JTree tree1;
+//    private ChatInfoNode root;
     private Point pressedPoint;
     private ListPanel friendList;
 
@@ -68,6 +68,10 @@ public class ChatView {
         asd.setTitle("聊天");
 
         asd.add($$$getRootComponent$$$());
+
+        ImageIcon imageIcon = new ImageIcon("image/l1.jpg");
+//        imageIcon.setImage(imageIcon.getImage().getScaledInstance(200, 40, Image.SCALE_DEFAULT));
+//        topLabel.setIcon(imageIcon);
 
         //好友列表数////////////////////////
 //        Color back = new Color(0x3d3f41);
@@ -99,27 +103,34 @@ public class ChatView {
 //        );
         ////////////////////////////////
 
-        //好友列表
+        //好友列表///////////////////////
+
         friendList = new ListPanel();
         for (int i = 0; i < 20; i++) {
-            friendList.insertCell(new FriendListCell(
-                            new ImageIcon("image/h1.jpg"), "好友" + (i + 1),
-                            "富强民主文明和谐", friendListCell -> {
-                        friendList.setLastSelectedCell(friendListCell);
-                        LB_ChatObjTitle.setText(friendListCell.getFormatName());
-                    })
-            );
+            FriendListCell newCell = new FriendListCell(
+                    new ImageIcon("image/h1.jpg"), "好友" + (i + 1),
+                    "富强民主文明和谐", friendListCell -> {
+                friendList.setLastSelectedCell(friendListCell);
+                LB_ChatObjTitle.setText(friendListCell.getFormatName());
+            });
+            newCell.setColor(new Color(0xE5E5E5),
+                    new Color(0x9C9C9C));
+            newCell.setEnabled(i % 3 == 0);
+            newCell.setNotice(i % 4 == 0);
+            //加入列表
+            friendList.insertCell(newCell);
         }
         ((GridLayout) friendList.getLayout()).setVgap(5);
         JSP_FriendList.setViewportView(friendList);
-
         LB_ChatObjTitle.setText("<html><font size=\"5\" style = \"color:#89FF57\">请选择聊天对象</font></html>");
 
-        BT_AddFriend.setBackground(new Color(0x89FF57));
+        BT_MyInfo.addActionListener(e -> friendList.sortListCell(compByNotice));
 
-        BT_Quit.addActionListener(e -> {
-            asd.dispose();
-        });
+        BT_AddFriend.addActionListener(e -> friendList.sortListCell(compByEnable));
+
+        ////////////////////////////////
+
+        BT_AddFriend.setBackground(new Color(0x89FF57));
 
         BT_Info.addActionListener(e -> {
             // TODO 弹出显示信息的窗口
@@ -183,7 +194,7 @@ public class ChatView {
         panel2.setLayout(new BorderLayout(0, 0));
         splitPane1.setRightComponent(panel2);
         final JSplitPane splitPane2 = new JSplitPane();
-        splitPane2.setDividerLocation(319);
+        splitPane2.setDividerLocation(324);
         splitPane2.setLastDividerLocation(300);
         splitPane2.setOrientation(0);
         splitPane2.setResizeWeight(0.5);
@@ -267,7 +278,7 @@ public class ChatView {
         topSettingPanel = new JPanel();
         topSettingPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
         topSettingPanel.setBackground(new Color(-11513259));
-        settingPanel.add(topSettingPanel, BorderLayout.WEST);
+        settingPanel.add(topSettingPanel, BorderLayout.EAST);
         BT_MyInfo = new JButton();
         BT_MyInfo.setAutoscrolls(true);
         BT_MyInfo.setBackground(new Color(-7733417));
@@ -276,7 +287,7 @@ public class ChatView {
         BT_MyInfo.setHorizontalAlignment(0);
         BT_MyInfo.setOpaque(true);
         BT_MyInfo.setSelected(false);
-        BT_MyInfo.setText("我的资料");
+        BT_MyInfo.setText("更新列表");
         topSettingPanel.add(BT_MyInfo);
         BT_AddFriend = new JButton();
         BT_AddFriend.setAutoscrolls(true);
@@ -309,16 +320,12 @@ public class ChatView {
         BT_Setting.setText("设置");
         topSettingPanel.add(BT_Setting);
         quitPanel = new JPanel();
-        quitPanel.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+        quitPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         quitPanel.setBackground(new Color(-11513259));
         topPanel.add(quitPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        BT_Quit = new JButton();
-        BT_Quit.setBackground(new Color(-7733417));
-        BT_Quit.setForeground(new Color(-12763327));
-        BT_Quit.setText("  退出  ");
-        quitPanel.add(BT_Quit, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer2 = new Spacer();
-        quitPanel.add(spacer2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        topLabel = new JLabel();
+        topLabel.setText("");
+        quitPanel.add(topLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
@@ -351,5 +358,18 @@ public class ChatView {
     ChatManager chatManager;
 
     String chatContent = "";
+
+    /**
+     * 比较-优先提醒
+     */
+    Comparator<ListCell> compByNotice = (o1, o2) ->
+            ((FriendListCell) o1).isHasNewMessage() &&
+                    !((FriendListCell) o2).isHasNewMessage() ? -1 : 0;
+
+    /**
+     * 比较-优先在线
+     */
+    Comparator<ListCell> compByEnable = (o1, o2) ->
+            (o1).isEnabled() && !(o2).isEnabled() ? -1 : 0;
 
 }

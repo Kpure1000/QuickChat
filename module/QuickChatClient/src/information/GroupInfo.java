@@ -7,8 +7,6 @@ import java.util.ArrayList;
  * 群组信息
  */
 public class GroupInfo extends BasicInfo{
-    
-    private static final long serialVersionUID = 100102L;
 
     /**群主ID*/
     private BigInteger groupLeaderID;
