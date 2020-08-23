@@ -33,7 +33,7 @@ public class ServerNetWork {
         new Thread(() -> {
             try {
                 // 初始化ServerSocket
-                serverSocket = new ServerSocket(12345);
+                serverSocket = new ServerSocket(10808);
                 // 成功打开了服务器套接字
                 networkCallBack.OnServerOpen(serverSocket);
             } catch (IOException e) {

@@ -11,6 +11,7 @@ import java.awt.event.WindowEvent;
 /**
  * 不一定需要GUI
  */
+@Deprecated
 public class StartView extends JFrame {
     public StartView() {
         this.setVisible(true);

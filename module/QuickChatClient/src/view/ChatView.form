@@ -40,9 +40,9 @@
                 <constraints border-constraint="Center"/>
                 <properties>
                   <dividerLocation value="324"/>
-                  <lastDividerLocation value="300"/>
+                  <lastDividerLocation value="240"/>
                   <orientation value="0"/>
-                  <resizeWeight value="0.5"/>
+                  <resizeWeight value="0.4"/>
                 </properties>
                 <border type="none"/>
                 <children>

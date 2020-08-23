@@ -37,4 +37,9 @@ public class BasicData implements Serializable {
     public String getCreateTime() {
         return createTime;
     }
+
+    @Override
+    public String toString() {
+        return ID + "#" + Name + "#" + createTime;
+    }
 }

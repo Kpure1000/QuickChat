@@ -29,7 +29,7 @@ public class ServerView {
         jf.setVisible(true);
         jf.setLocation(0, 0);
         jf.setSize(new Dimension(800, 600));
-        jf.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        jf.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         jf.add(rootPanel);
 
@@ -84,7 +84,7 @@ public class ServerView {
         centerPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         rootPanel.add(centerPanel, BorderLayout.CENTER);
         final JSplitPane splitPane1 = new JSplitPane();
-        splitPane1.setDividerLocation(257);
+        splitPane1.setDividerLocation(240);
         splitPane1.setResizeWeight(0.5);
         centerPanel.add(splitPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
         leftPanel = new JPanel();

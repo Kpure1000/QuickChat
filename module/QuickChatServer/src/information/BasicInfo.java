@@ -25,7 +25,6 @@ public class BasicInfo implements Serializable {
      *
      * @param ID
      */
-    @Deprecated
     public void setID(BigInteger ID) {
         this.ID = ID;
     }

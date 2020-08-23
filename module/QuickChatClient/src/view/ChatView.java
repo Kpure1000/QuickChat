@@ -63,7 +63,7 @@ public class ChatView {
         asd.setSize(800, 600);
         asd.setLocationRelativeTo(null);
 //        asd.setResizable(false);
-        asd.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        asd.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         asd.getContentPane().setBackground(new Color(0x999999));
         asd.setTitle("聊天");
 
@@ -195,9 +195,9 @@ public class ChatView {
         splitPane1.setRightComponent(panel2);
         final JSplitPane splitPane2 = new JSplitPane();
         splitPane2.setDividerLocation(324);
-        splitPane2.setLastDividerLocation(300);
+        splitPane2.setLastDividerLocation(240);
         splitPane2.setOrientation(0);
-        splitPane2.setResizeWeight(0.5);
+        splitPane2.setResizeWeight(0.4);
         panel2.add(splitPane2, BorderLayout.CENTER);
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new BorderLayout(0, 0));

@@ -84,15 +84,20 @@ public class UserData extends BasicData {
         friendList.add(ID);
     }
 
-    public void removeFriend(BigInteger ID){
+    public void removeFriend(BigInteger ID) {
         friendList.remove(ID);
     }
 
-    public void addGroup(BigInteger ID){
+    public void addGroup(BigInteger ID) {
         groupList.add(ID);
     }
 
-    public void removeGroup(BigInteger ID){
+    public void removeGroup(BigInteger ID) {
         groupList.remove(ID);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + "#" + password + "#" + email + "#" + phoneNumber;
     }
 }

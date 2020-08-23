@@ -1,5 +1,7 @@
 package function;
 
+import data.DataManager;
+import information.UserInfo;
 import message.UserMessage;
 import network.ClientNetwork;
 import network.ListenerCallBack;
@@ -48,16 +50,15 @@ public class SignUp extends BasicFunction {
     private void sendSignUnMessage(String newName, String password) {
         if (newName != null && password != null) {
             Debug.Log("ID:" + newName + ", PASS: " + password);
-
             // 定义监听来获取登录反馈
             listenerCallBack = new ListenerCallBackAdapter() {
-
                 @Override
                 public ListenerCallBack OnSignUpCallBack(BigInteger fbID) {
                     Debug.Log("监听回调获取到了-注册新ID的反馈: " + fbID);
                     if (fbID != null) {
                         signUpCallBack.OnNewIDFeedBack(fbID);
-
+                        // 更新私有（不存在则创建）
+                        DataManager.getInstance().updatePrivateConfig(new UserInfo(fbID, newName, password));
                     }
                     return this;
                 }

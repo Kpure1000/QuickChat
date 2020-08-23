@@ -1,5 +1,7 @@
 package data;
 
+import information.UserInfo;
+
 import java.math.BigInteger;
 
 /**
@@ -10,27 +12,38 @@ import java.math.BigInteger;
  * </p>
  */
 public class UserManager {
-    private static UserManager instance;
+    private static UserManager instance = new UserManager();
 
-    private UserManager(){
-
+    private UserManager() {
     }
+
     public static UserManager getInstance() {
         return instance;
     }
 
-    public BigInteger getCurrentID() {
-        return currentID;
+    /**
+     * 获取用户信息
+     *
+     * @return
+     */
+    public UserInfo getUserInfo() {
+        return userInfo;
     }
 
-    public void setCurrentID(BigInteger currentID) {
-        this.currentID = currentID;
+    /**
+     * 设置用户信息
+     *
+     * @param userInfo
+     */
+    public void setUserInfo(UserInfo userInfo) {
+        this.userInfo = userInfo;
+        // 更新本地私有配置
+        DataManager.getInstance().updatePrivateConfig(userInfo);
     }
 
     //////////////////
 
-    BigInteger currentID;
-
+    UserInfo userInfo;
 
 
 }

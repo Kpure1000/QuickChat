@@ -1,5 +1,8 @@
 package data;
 
+import com.esotericsoftware.kryo.NotNull;
+import information.UserInfo;
+
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.sql.Time;
@@ -21,28 +24,25 @@ public class PrivateConfig implements Serializable {
 
     private static final long serialVersionUID = 0xa087b9291f7c541bL;
 
-    public PrivateConfig(BigInteger id) {
-        selfID = id;
+    public PrivateConfig(UserInfo userInfo) {
+        this.userInfo = userInfo;
     }
 
-    /**
-     * 本配置ID
-     */
-    private BigInteger selfID;
-
-    /**
-     * 获取本配置所属ID
-     *
-     * @return
-     */
-    public BigInteger getSelfID() {
-        return selfID;
+    public PrivateConfig(BigInteger ID, String Name) {
+        userInfo = new UserInfo(ID, Name);
     }
 
-    /**
-     * 是否记住密码
-     */
-    private boolean isRemembered;
+    public PrivateConfig(BigInteger ID, String Name, String password){
+        userInfo = new UserInfo(ID,Name,password);
+    }
+
+    public void setUserInfo(UserInfo userInfo) {
+        this.userInfo = userInfo;
+    }
+
+    public UserInfo getUserInfo() {
+        return userInfo;
+    }
 
     /**
      * 设置是否记住密码
@@ -62,11 +62,6 @@ public class PrivateConfig implements Serializable {
     public boolean isRemembered() {
         return isRemembered;
     }
-
-    /**
-     * 记住的密码,不记住的话为null
-     */
-    private String rememberedPassword;
 
     /**
      * 设置记住的密码
@@ -90,6 +85,11 @@ public class PrivateConfig implements Serializable {
         return rememberedPassword;
     }
 
+    /**
+     * 获取消息记录
+     *
+     * @return
+     */
     public CopyOnWriteArrayList<MessageRecord> getMessageRecords() {
         return messageRecords;
     }
@@ -98,11 +98,21 @@ public class PrivateConfig implements Serializable {
         this.messageRecords = messageRecords;
     }
 
+    private UserInfo userInfo;
+
+    /**
+     * 是否记住密码
+     */
+    private boolean isRemembered;
+
+    /**
+     * 记住的密码,不记住的话为null
+     */
+    private String rememberedPassword;
+
     /**
      * 消息记录
      */
     private CopyOnWriteArrayList<MessageRecord> messageRecords = new CopyOnWriteArrayList<MessageRecord>();
-
-//    private ConcurrentLinkedQueue<MessageRecord>
 
 }

@@ -20,7 +20,7 @@
               </grid>
             </constraints>
             <properties>
-              <dividerLocation value="257"/>
+              <dividerLocation value="240"/>
               <resizeWeight value="0.5"/>
             </properties>
             <border type="none"/>

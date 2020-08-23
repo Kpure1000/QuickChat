@@ -2,6 +2,7 @@ package data;
 
 import com.alibaba.fastjson.JSON;
 import function.Debug;
+import information.UserInfo;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -40,6 +41,9 @@ public class DataManager {
 
     public void Close() {
         savePublic();
+        if (privateConfig != null) {
+            savePrivate(privateConfig.getUserInfo().getID());
+        }
     }
 
     /**
@@ -72,15 +76,26 @@ public class DataManager {
     }
 
     /**
+     * 更新私有配置
+     *
+     * @param userInfo
+     */
+    public void updatePrivateConfig(UserInfo userInfo) {
+        readPrivate(userInfo.getID());
+        privateConfig = new PrivateConfig(userInfo);
+        savePrivate(privateConfig.getUserInfo().getID());
+    }
+
+    /**
      * 更新私有配置的记住密码配置
      *
-     * @param ID         目标ID
+     * @param ID       目标ID
      * @param password 记住的密码
      */
     public void updatePasswordConfig(BigInteger ID, String password) {
         readPrivate(ID);
         Debug.Log("正在更新密码配置以及记住的密码");
-        privateConfig.setRemembered(password!=null);
+        privateConfig.setRemembered(password != null);
         privateConfig.setRememberedPassword(password);
         savePrivate(ID);
     }
@@ -88,7 +103,7 @@ public class DataManager {
     /**
      * 更新私有配置的记住密码配置
      *
-     * @param ID         目标ID
+     * @param ID     目标ID
      * @param config 是否记住密码
      */
     public void updatePasswordConfig(BigInteger ID, boolean config) {
@@ -134,30 +149,35 @@ public class DataManager {
     private void readPublic() {
         try {
             File readerFile = new File(publicConfigPath);
+            //文件不存在
             if (!readerFile.exists()) {
+                //创建文件
                 writePublic();
             }
+            //读取字节
             BufferedReader bufferedReader = new BufferedReader(
                     new InputStreamReader(new FileInputStream(readerFile), "UTF-8"));
             String line;
+            //按行读取字符串
             line = bufferedReader.readLine();
             StringBuilder jsonStr = new StringBuilder();
             while (line != null) {
                 jsonStr.append(line);
-                // Debug.Log(line);
+                //按行读取
                 line = bufferedReader.readLine();
             }
+            //解析JSON字符串
             publicConfig = JSON.parseObject(jsonStr.toString(), PublicConfig.class);
             if (publicConfig != null) {
-                Debug.Log("读取公共配置：" + publicConfig.toString());
-                for (BigInteger item :
-                        publicConfig.getIdList()) {
-                    if (item != null) Debug.Log(item.toString());
-                }
-                for (ServerInfo item :
-                        publicConfig.getServerInfoList()) {
-                    if (item != null) Debug.Log(item.toString());
-                }
+                Debug.Log("读取公共配置：" + publicConfigPath);
+//                for (BigInteger item :
+//                        publicConfig.getIdList()) {
+//                    if (item != null) Debug.Log(item.toString());
+//                }
+//                for (ServerInfo item :
+//                        publicConfig.getServerInfoList()) {
+//                    if (item != null) Debug.Log(item.toString());
+//                }
             } else {
                 Debug.LogError("公共配置为空");
             }
@@ -173,10 +193,11 @@ public class DataManager {
      * 保存公有配置到本地
      */
     private void savePublic() {
+        Debug.Log("保存公有配置到本地");
         try {
             File file = new File(publicConfigPath);
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
-            // 序列化问题详见 https://github.com/Kpure1000/QuickChat/issues/1
+            // FASTJSON序列化问题详见 https://github.com/Kpure1000/QuickChat/issues/1
             var jsonStr = JSON.toJSONString(publicConfig, true);
             bufferedWriter.write(jsonStr);
             bufferedWriter.flush();
@@ -220,14 +241,14 @@ public class DataManager {
      * @param ID 目标ID
      */
     private void readPrivate(BigInteger ID) {
-        if (privateConfig != null && privateConfig.getSelfID().compareTo(ID) == 0) {
+        if (privateConfig != null && privateConfig.getUserInfo().getID().compareTo(ID) == 0) {
             //加载的目标配置已经缓存
             return;
         }
         try {
             File file = new File(privateConfigPath + ID.toString() + privateConfigExtend);
             if (!file.exists()) {
-                initPrivate(ID);
+                initPrivate(ID, "");
             }
             ObjectInputStream objIn = new ObjectInputStream(new FileInputStream(file));
             //读取配置到缓存
@@ -246,7 +267,7 @@ public class DataManager {
      *
      * @param ID 新ID
      */
-    private void initPrivate(BigInteger ID) {
+    private void initPrivate(BigInteger ID, String Name) {
         try {
             File file = new File(privateConfigPath +
                     ID.toString() + privateConfigExtend);
@@ -261,7 +282,7 @@ public class DataManager {
             }
             if (file.exists()) {
                 //新建一个文件
-                CreatePrivateConfig(file, ID);
+                CreatePrivateConfig(file, ID, Name);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -270,12 +291,13 @@ public class DataManager {
 
     /**
      * 保存私人配置
+     *
      * @param ID 私人ID索引
      */
-    private void savePrivate(BigInteger ID){
-        if(privateConfig!=null){
+    private void savePrivate(BigInteger ID) {
+        if (privateConfig != null) {
             try {
-                File file = new File(privateConfigPath+ID.toString()+privateConfigExtend);
+                File file = new File(privateConfigPath + ID.toString() + privateConfigExtend);
                 ObjectOutputStream objOut = new ObjectOutputStream(new FileOutputStream(file));
                 objOut.writeObject(privateConfig);
                 objOut.flush();
@@ -329,9 +351,9 @@ public class DataManager {
      * @param file
      * @throws IOException
      */
-    private void CreatePrivateConfig(File file, BigInteger ID) throws IOException {
+    private void CreatePrivateConfig(File file, BigInteger ID, String Name) throws IOException {
         //初始化私有配置
-        privateConfig = new PrivateConfig(ID);
+        privateConfig = new PrivateConfig(ID, Name);
         privateConfig.setRemembered(false);
         //privateConfig.setRememberedPassword();
         //创建文件

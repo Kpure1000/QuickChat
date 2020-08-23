@@ -2,6 +2,7 @@ package function;
 
 import data.DataManager;
 import data.UserManager;
+import information.UserInfo;
 import message.UserMessage;
 import network.ClientNetwork;
 import network.ListenerCallBack;
@@ -159,7 +160,9 @@ public class SignIn extends BasicFunction {
                             //登录成功
                             signInCallBack.OnSignInSuccess();
                             //本地登录
-                            UserManager.getInstance().setCurrentID(ID);
+                            // TODO 这里要注意几点
+                            // 1. 服务器反馈登录消息时，要增加一个UserInfo的详细反馈，并且传入这个setUserInfo
+                            UserManager.getInstance().setUserInfo(null);
                         } else if (String.valueOf(fbState).equals("failed")) {
                             //登录失败
                             signInCallBack.OnSignInFailed();

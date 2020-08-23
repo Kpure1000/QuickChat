@@ -29,7 +29,7 @@ public class ServerListener implements Runnable {
         this.serverListenerCallBacks = new ArrayList<ServerListenerCallBack>();
         this.socket = socket;
         //获取未正式登录的默认ID，待正式登录后更新ID
-        this.ID = DataManager.getInstance().getUserDataManager().getMaxSignOutClientID();
+        this.ID = DataManager.getInstance().getUserDataContain().getMaxSignOutClientID();
         if (socket != null && socket.isConnected()) {
             try {
                 objOut = new ObjectOutputStream(socket.getOutputStream());
@@ -45,7 +45,7 @@ public class ServerListener implements Runnable {
             objIn = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
             Debug.LogWarning("服务获取到的socket输入输出有问题,不能开始监听");
-            listening=false;
+            listening = false;
             e.printStackTrace();
             return;
         }
@@ -55,28 +55,30 @@ public class ServerListener implements Runnable {
                 UserMessage msg = (UserMessage) objIn.readObject();
                 synchronized (serverListenerCallBacks) {
                     switch (msg.getMessageType()) {
-                        case Check_SignIn_ID -> { //  按照ID登陆
+                        case Check_SignIn_ID -> {
+                            //  按照ID登陆
                             String[] msgContent = msg.getContent().split("#");
                             BigInteger idIn = new BigInteger(msgContent[0]);
                             String passIn = msgContent[1];
                             // 检查是否已经登录
-                            if(ServerListenerManager.getInstance().getServerListener(idIn)!=null){
+                            if (ServerListenerManager.getInstance().getServerListener(idIn) != null) {
                                 // 反馈 登录成功
                                 sendMessage(new ServerMessage(ServerMessage.MessageType.Fb_SignIn,
                                         idIn, null, "pass"));
                                 // 强制之前登陆的用户下线
                                 ServerListenerManager.getInstance().getServerListener(idIn).ForcedOffLine();
-                            }
-                            else if (DataManager.getInstance().getUserDataManager().checkPassword_ID(idIn, passIn)) {
+                            } else if (DataManager.getInstance().getUserDataContain().checkPassword_ID(idIn, passIn)) {
                                 // 根据库检查用户信息
                                 // 更新ID
                                 ServerListenerManager.getInstance().updateListenerID(ID, idIn);
                                 this.ID = idIn;
                                 // TODO反馈验证通过
                                 ServerMessage message = new ServerMessage(ServerMessage.MessageType.Fb_SignIn,
-                                        idIn, null, "pass");
+                                        null, ID, "pass#" +
+                                        DataManager.getInstance().getUserDataContain().getUserData(ID).toString()
+                                );
                                 sendMessage(message);
-                                // TODO 加入在线用户管理器
+                                // TODO 用户管理器中该用户在线，更新列表
                                 UserManager.getInstance().equals(null);
                                 for (ServerListenerCallBack item :
                                         serverListenerCallBacks) {
@@ -85,20 +87,22 @@ public class ServerListener implements Runnable {
                             } else {
                                 // TODO反馈验证失败
                                 sendMessage(new ServerMessage(ServerMessage.MessageType.Fb_SignIn,
-                                        idIn, null, "failed"));
+                                        null, this.ID, "failed"));
                             }
                         }
 //                    case Check_SignIn_Email -> {
 //                    }
 //                    case Check_SignIn_Phone -> {
 //                    }
-                        case Require_SignUp -> { //  注册
+                        case Require_SignUp -> {
+                            //  注册
                             String[] msgContent = msg.getContent().split("#");
                             String newName = msgContent[0];
                             String password = msgContent[1];
                             // 创建新用户
-                            BigInteger newID = DataManager.getInstance().getUserDataManager().CreateNewUser(newName, password);
-                            // TODO 反馈注册信息
+                            BigInteger newID = DataManager.getInstance().getUserDataContain().
+                                    CreateNewUser(newName, password);
+                            // TODO反馈注册信息
                             // 将新生成的ID作为 receiverID 发送
                             sendMessage(new ServerMessage(ServerMessage.MessageType.Fb_SignUp,
                                     null, newID, ""));
@@ -135,11 +139,10 @@ public class ServerListener implements Runnable {
                         }
                     }
                 }
-            }catch (SocketException e){
+            } catch (SocketException e) {
                 Debug.LogError("监听服务Socket异常, at ID: " + ID.toString());
                 break;
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 Debug.LogError("监听服务输入输出异常, at ID: " + ID.toString());
                 e.printStackTrace();
                 break;
@@ -211,8 +214,8 @@ public class ServerListener implements Runnable {
     /**
      * 强制下线
      */
-    public void ForcedOffLine(){
-        sendMessage(new ServerMessage(ServerMessage.MessageType.Require_ForcedOffLine,null,ID,""));
+    public void ForcedOffLine() {
+        sendMessage(new ServerMessage(ServerMessage.MessageType.Require_ForcedOffLine, null, ID, ""));
     }
 
     /**

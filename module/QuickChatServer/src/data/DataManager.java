@@ -31,8 +31,8 @@ public class DataManager {
             }
             //输入流初始化
             ObjectInputStream objIn = new ObjectInputStream(new FileInputStream(file));
-            userDataManager = (UserDataContain) objIn.readObject();
-            userDataManager.initUserDataManager();
+            userDataContain = (UserDataContain) objIn.readObject();
+            userDataContain.initUserDataManager();
             objIn.close();
         } catch (IOException e) {
             Debug.LogError("文件读取错误(EOF)");
@@ -91,7 +91,7 @@ public class DataManager {
             //输出流初始化
             ObjectOutputStream objOut = new ObjectOutputStream(new FileOutputStream(file));
             //输出一个非空记录对象到文件
-            objOut.writeObject(userDataManager);
+            objOut.writeObject(userDataContain);
             Debug.Log("保存成功");
             objOut.flush();
             objOut.close();
@@ -105,14 +105,14 @@ public class DataManager {
     /**
      * 用户数据管理器
      */
-    private UserDataContain userDataManager;
+    private UserDataContain userDataContain;
 
     /**
      * 获取用户数据管理器
      * @return
      */
-    public UserDataContain getUserDataManager() {
-        return userDataManager;
+    public UserDataContain getUserDataContain() {
+        return userDataContain;
     }
 
     //Group

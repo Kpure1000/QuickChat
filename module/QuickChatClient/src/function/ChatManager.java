@@ -68,10 +68,12 @@ public class ChatManager extends BasicFunction {
 
     /**
      * 发送消息
+     *
      * @param content
      */
     public void sendMessage(String content) {
-        ClientNetwork.getInstance().sendMessage(new UserMessage(UserMessage.MessageType.Msg_Test, UserManager.getInstance().getCurrentID(), curChatObject, content));
+        ClientNetwork.getInstance().sendMessage(new UserMessage(UserMessage.MessageType.Msg_Test,
+                UserManager.getInstance().getUserInfo().getID(), curChatObject, content));
     }
 
     /**

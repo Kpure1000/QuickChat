@@ -5,6 +5,7 @@ import function.Debug;
 import java.io.*;
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 用户
@@ -18,7 +19,7 @@ public class UserDataContain implements Serializable {
         MaxSignOutClientID = new BigInteger("1");
     }
 
-    public void initUserDataManager(){
+    public void initUserDataManager() {
         MaxSignOutClientID = new BigInteger("1");
     }
 
@@ -53,6 +54,15 @@ public class UserDataContain implements Serializable {
     }
 
     /**
+     * 获取用户信息数据
+     * @param ID
+     * @return
+     */
+    public UserData getUserData(BigInteger ID) {
+        return userDataMap.containsKey(ID) ? userDataMap.get(ID) : null;
+    }
+
+    /**
      * 创建新用户
      *
      * @param name     用户名
@@ -73,6 +83,7 @@ public class UserDataContain implements Serializable {
 
     /**
      * 获取目前未登录客户端的最大ID，并令该值自增
+     *
      * @return ID最大值
      */
     public BigInteger getMaxSignOutClientID() {
@@ -85,7 +96,7 @@ public class UserDataContain implements Serializable {
     /**
      * 用户散列表
      */
-    private HashMap<BigInteger, UserData> userDataMap = new HashMap<BigInteger, UserData>();
+    private ConcurrentHashMap<BigInteger, UserData> userDataMap = new ConcurrentHashMap<>();
 
     /**
      * 目前最大的用户ID，用于生成新的用户ID（只需自增）
