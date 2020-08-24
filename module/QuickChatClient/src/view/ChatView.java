@@ -62,46 +62,12 @@ public class ChatView {
         asd.setVisible(true);
         asd.setSize(800, 600);
         asd.setLocationRelativeTo(null);
-//        asd.setResizable(false);
+//        asd.setAlwaysOnTop(true);
         asd.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         asd.getContentPane().setBackground(new Color(0x999999));
         asd.setTitle("聊天");
 
         asd.add($$$getRootComponent$$$());
-
-        ImageIcon imageIcon = new ImageIcon("image/l1.jpg");
-//        imageIcon.setImage(imageIcon.getImage().getScaledInstance(200, 40, Image.SCALE_DEFAULT));
-//        topLabel.setIcon(imageIcon);
-
-        //好友列表数////////////////////////
-//        Color back = new Color(0x3d3f41);
-//        root = new ChatInfoNode(back, "我的好友", "");
-//        for (int i = 0; i < 15; i++) {
-//            ChatInfoNode sub = new ChatInfoNode(back, new ImageIcon("image/h1.jpg"),
-//                    "好友" + (i + 1), "你好你好你好你好", i % 2 == 0, false);
-//            root.add(sub);
-//        }
-//        tree1 = new JTree(root);
-//        tree1.setBackground(back);
-//        tree1.setDropMode(DropMode.ON);
-//        tree1.setOpaque(true);
-//        JSP_FriendList.setViewportView(tree1);
-//        //将树的前面连接去掉
-//        tree1.putClientProperty("JTree.lineStyle", "Horizontal");
-//        //设置树的字体大小，样式
-//        tree1.setFont(new Font("微软雅黑", Font.PLAIN, 1));
-//        //设置树节点的高度
-//        tree1.setRowHeight(70);
-//        //设置单元渲染描述
-//        tree1.setCellRenderer(new ChatInfoNodeRender());
-//        tree1.setRootVisible(false);
-//        tree1.addTreeSelectionListener(e -> {
-//                    ChatInfoNode curNode = ((ChatInfoNode)
-//                            tree1.getLastSelectedPathComponent());
-//                    LB_ChatObjTitle.setText("<html><font size=\"5\" style = \"color:#89FF57\">" + curNode.getHead() + "</font></html>");
-//                }
-//        );
-        ////////////////////////////////
 
         //好友列表///////////////////////
 

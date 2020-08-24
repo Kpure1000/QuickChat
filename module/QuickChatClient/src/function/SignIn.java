@@ -153,17 +153,17 @@ public class SignIn extends BasicFunction {
                     @Override
                     public ListenerCallBack OnSignInCallBack(String fbState) {
                         Debug.Log("监听回调获取到了-登陆请求的反馈: " + fbState);
-                        if (String.valueOf(fbState).equals("pass")) {
+                        String[] fbStr = fbState.split("#");
+                        if (String.valueOf(fbStr[0]).equals("pass")) {
                             //更新ID记录
                             DataManager.getInstance().updateIDRecord(ID,
                                     signInCallBack.OnNeedPassConfigUpdate() ? password : null);
                             //登录成功
                             signInCallBack.OnSignInSuccess();
                             //本地登录
-                            // TODO 这里要注意几点
-                            // 1. 服务器反馈登录消息时，要增加一个UserInfo的详细反馈，并且传入这个setUserInfo
-                            UserManager.getInstance().setUserInfo(null);
-                        } else if (String.valueOf(fbState).equals("failed")) {
+                            // TODO 服务器反馈登录消息时，要增加一个UserInfo的详细反馈，并且传入这个setUserInfo
+                            UserManager.getInstance().setUserInfo(new UserInfo(new BigInteger(fbStr[1]), fbStr[2]));
+                        } else if (fbState.equals("failed")) {
                             //登录失败
                             signInCallBack.OnSignInFailed();
                         }

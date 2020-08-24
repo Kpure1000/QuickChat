@@ -71,8 +71,9 @@ public class SignUp extends BasicFunction {
                     null, null,
                     newName.toString() + "#" + password
             ));
+        }else {
+            Debug.LogWarning("密码输入有误");
         }
-        Debug.LogWarning("密码输入有误");
     }
 
     /**

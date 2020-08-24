@@ -1,5 +1,6 @@
 package function;
 
+import data.UserManager;
 import message.ServerMessage;
 import message.UserMessage;
 import network.ClientNetwork;
@@ -53,8 +54,8 @@ public class FriendManager extends BasicFunction {
 
             ClientNetwork.getInstance().sendMessage(new UserMessage(
                     UserMessage.MessageType.Require_ApplyFriend,
-                    // TODO 这里还需要以自己ID作为senderID
-                    null,
+                    // TODO这里还需要以自己ID作为senderID
+                    UserManager.getInstance().getUserInfo().getID(),
                     ID,
                     ""
             ));

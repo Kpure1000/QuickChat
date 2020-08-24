@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class UserDataContain implements Serializable {
 
-    static final long serialVersionUID = 10000001L;
+    static final long serialVersionUID = 0x208b5aebde43a6bcL;
 
     public UserDataContain() {
         maxID = new BigInteger("10000");

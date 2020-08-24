@@ -30,7 +30,8 @@ public class ServerView {
         jf.setLocation(0, 0);
         jf.setSize(new Dimension(800, 600));
         jf.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
+        jf.setTitle("QuickChat服务器");
+        jf.setAlwaysOnTop(true);
         jf.add(rootPanel);
 
         Random rd = new Random(Calendar.getInstance().getTimeInMillis());

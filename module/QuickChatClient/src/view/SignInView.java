@@ -229,6 +229,7 @@ public class SignInView extends JFrame {
                 SignInView.this.setVisible(false);
                 //打开注册功能界面，并添加回调
                 new SignUpView(SignInView.this).setSignUpViewCallBack((newID, password) -> {
+                    SignInView.this.setVisible(true);
                     // TODO自动填充
                     Debug.Log("注册后自动填充！");
                     SignInView.this.idText.setText(newID.toString());

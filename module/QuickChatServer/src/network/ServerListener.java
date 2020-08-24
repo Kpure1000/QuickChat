@@ -1,8 +1,8 @@
 package network;
 
 import data.DataManager;
+import data.MessageCache;
 import function.Debug;
-import function.UserManager;
 import message.ServerMessage;
 import message.UserMessage;
 
@@ -13,6 +13,7 @@ import java.math.BigInteger;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 服务线程
@@ -26,7 +27,7 @@ public class ServerListener implements Runnable {
      * @param socket Accept的套接字
      */
     public ServerListener(Socket socket) {
-        this.serverListenerCallBacks = new ArrayList<ServerListenerCallBack>();
+        this.serverListenerCallBacks = new CopyOnWriteArrayList<>();
         this.socket = socket;
         //获取未正式登录的默认ID，待正式登录后更新ID
         this.ID = DataManager.getInstance().getUserDataContain().getMaxSignOutClientID();
@@ -63,7 +64,7 @@ public class ServerListener implements Runnable {
                             // 检查是否已经登录
                             if (ServerListenerManager.getInstance().getServerListener(idIn) != null) {
                                 // 反馈 登录成功
-                                sendMessage(new ServerMessage(ServerMessage.MessageType.Fb_SignIn,
+                                sendFeedBack(new ServerMessage(ServerMessage.MessageType.Fb_SignIn,
                                         idIn, null, "pass"));
                                 // 强制之前登陆的用户下线
                                 ServerListenerManager.getInstance().getServerListener(idIn).ForcedOffLine();
@@ -77,16 +78,16 @@ public class ServerListener implements Runnable {
                                         null, ID, "pass#" +
                                         DataManager.getInstance().getUserDataContain().getUserData(ID).toString()
                                 );
-                                sendMessage(message);
+                                sendFeedBack(message);
                                 // TODO 用户管理器中该用户在线，更新列表
-                                UserManager.getInstance().equals(null);
+
                                 for (ServerListenerCallBack item :
                                         serverListenerCallBacks) {
                                     item.OnUserSignIn(idIn);
                                 }
                             } else {
                                 // TODO反馈验证失败
-                                sendMessage(new ServerMessage(ServerMessage.MessageType.Fb_SignIn,
+                                sendFeedBack(new ServerMessage(ServerMessage.MessageType.Fb_SignIn,
                                         null, this.ID, "failed"));
                             }
                         }
@@ -104,7 +105,7 @@ public class ServerListener implements Runnable {
                                     CreateNewUser(newName, password);
                             // TODO反馈注册信息
                             // 将新生成的ID作为 receiverID 发送
-                            sendMessage(new ServerMessage(ServerMessage.MessageType.Fb_SignUp,
+                            sendFeedBack(new ServerMessage(ServerMessage.MessageType.Fb_SignUp,
                                     null, newID, ""));
                         }
                         case Require_Offline -> {
@@ -132,10 +133,16 @@ public class ServerListener implements Runnable {
                         case Reply_GroupApply -> {
                         }
                         case Msg_Private -> {
+                            sendChatMessage(new ServerMessage(ServerMessage.MessageType.Msg_Private,
+                                    msg.getSenderID(), msg.getReceiverID(), msg.getContent()));
                         }
                         case Msg_Group -> {
+                            sendChatMessage(new ServerMessage(ServerMessage.MessageType.Msg_Group,
+                                    msg.getSenderID(), msg.getReceiverID(), msg.getContent()));
                         }
                         case Msg_Test -> {
+                            sendChatMessage(new ServerMessage(ServerMessage.MessageType.Msg_Test,
+                                    msg.getSenderID(), msg.getReceiverID(), msg.getContent()));
                         }
                     }
                 }
@@ -178,11 +185,11 @@ public class ServerListener implements Runnable {
     }
 
     /**
-     * 发送消息
+     * 发送反馈消息，而不是聊天消息
      *
      * @param serverMessage 服务器消息
      */
-    private void sendMessage(ServerMessage serverMessage) {
+    private void sendFeedBack(ServerMessage serverMessage) {
         try {
             if (serverMessage == null) {
                 System.out.println("消息传入错误");
@@ -199,7 +206,6 @@ public class ServerListener implements Runnable {
                 }
             }
         } catch (IOException e) {
-            // TODO 如果断开连接，broken pipe异常如何处理？
             if (socket.isConnected()) {
                 synchronized (serverListenerCallBacks) {
                     for (ServerListenerCallBack item :
@@ -212,21 +218,47 @@ public class ServerListener implements Runnable {
     }
 
     /**
-     * 强制下线
+     * 发送聊天消息，仅当类型为 Msg_* 时使用
+     *
+     * @param serverMessage 反馈的聊天消息
      */
-    public void ForcedOffLine() {
-        sendMessage(new ServerMessage(ServerMessage.MessageType.Require_ForcedOffLine, null, ID, ""));
+    private void sendChatMessage(ServerMessage serverMessage) {
+        if (serverMessage.getMessageType().equals(ServerMessage.MessageType.Msg_Private)) {
+            sendMessage(serverMessage.getReceiverID(), serverMessage);
+        } else if (serverMessage.getMessageType().equals(ServerMessage.MessageType.Msg_Group)) {
+            BigInteger groupID = serverMessage.getReceiverID();
+            // TODO 按照群内成员发送消息
+            // 按照群数据遍历成员
+        } else if (serverMessage.getMessageType().equals(ServerMessage.MessageType.Msg_Test)) {
+            sendMessage(serverMessage.getReceiverID(), serverMessage);
+        }
     }
 
     /**
-     * 是否正在监听
+     * 按照接收者发送消息
+     * <p>
+     * 之所以要加一个receiverID，是因为如果是群消息，
+     * 需要按照群内成员挨个发送消息
+     * </p>
+     *
+     * @param serverMessage
      */
-    private boolean listening = true;
+    private void sendMessage(BigInteger receiverID, ServerMessage serverMessage) {
+        ServerListener serverListener = ServerListenerManager.getInstance().getServerListener(receiverID);
+        if (serverListener != null) {
+            // 该用户已上线，TODO 按照消息要求发送
+        } else {
+            //缓存未读
+            MessageCache.getInstance().addMessage(serverMessage.getReceiverID(), serverMessage);
+        }
+    }
 
     /**
-     * 服务对象ID
+     * 强制下线
      */
-    private BigInteger ID;
+    public void ForcedOffLine() {
+        sendFeedBack(new ServerMessage(ServerMessage.MessageType.Require_ForcedOffLine, null, ID, ""));
+    }
 
     /**
      * 获取服务对象ID
@@ -237,20 +269,6 @@ public class ServerListener implements Runnable {
         return ID;
     }
 
-    /**
-     * 服务对象套接字
-     * // TODO 暂时用final，以后考虑优化的话会复用监听给不同的Client
-     */
-    private final Socket socket;
-
-    ObjectOutputStream objOut;
-
-    ObjectInputStream objIn;
-
-    /**
-     * 监听订阅队列
-     */
-    final private ArrayList<ServerListenerCallBack> serverListenerCallBacks;
 
     /**
      * 添加监听订阅
@@ -278,5 +296,29 @@ public class ServerListener implements Runnable {
             serverListenerCallBacks.remove(serverListenerCallBack);
         }
     }
+
+    /**
+     * 服务对象ID
+     */
+    private BigInteger ID;
+
+    /**
+     * 是否正在监听
+     */
+    private boolean listening = true;
+
+    /**
+     * 服务对象套接字
+     */
+    private final Socket socket;
+
+    ObjectOutputStream objOut;
+
+    ObjectInputStream objIn;
+
+    /**
+     * 监听订阅队列
+     */
+    final private CopyOnWriteArrayList<ServerListenerCallBack> serverListenerCallBacks;
 
 }

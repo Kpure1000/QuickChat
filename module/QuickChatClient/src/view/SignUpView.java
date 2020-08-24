@@ -209,7 +209,6 @@ public class SignUpView extends JFrame {
                     signUp.Close();
                 }
                 super.windowClosed(e);
-                signInView.setVisible(true);
             }
         });
     }

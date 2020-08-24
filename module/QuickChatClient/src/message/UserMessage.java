@@ -51,7 +51,10 @@ public class UserMessage implements Serializable {
          * 请求在线列表
          */
         Require_OnLineList,
-
+        /**
+         * 请求缓存的未读消息
+         */
+        Require_UnReadMessage,
         /**
          * 请求加好友
          */

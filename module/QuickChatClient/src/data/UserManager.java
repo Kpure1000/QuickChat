@@ -31,7 +31,7 @@ public class UserManager {
     }
 
     /**
-     * 设置用户信息
+     * 成功登录时，设置用户信息
      *
      * @param userInfo
      */
