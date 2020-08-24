@@ -14,10 +14,9 @@ import java.net.Socket;
 public class StartServer {
     public StartServer() {
         // 流程
-        // TODO 1.加载数据
-        DataManager.getInstance().LoadData();
-        // TODO 2.允许连接
-        // 传入回调订阅，并开始接收客户端
+        // TODO加载数据
+        DataManager.getInstance().Start();
+        // 传入回调订阅，开始接收客户端
         ServerNetWork.getInstance().BeginAccept(new ServerNetWork.NetworkCallBack() {
             @Override
             public void OnServerOpen(ServerSocket serverSocket) {
@@ -38,7 +37,7 @@ public class StartServer {
                     @Override
                     public ServerListenerCallBack OnSendMessageSuccess(ServerMessage message) {
                         Debug.Log("成功地向<" + message.getReceiverID() +
-                                ">发送\'" + message.getMessageType() + "\':" + message.getContent());
+                                ">发送'" + message.getMessageType() + "':" + message.getContent());
                         return super.OnSendMessageSuccess(message);
                     }
 

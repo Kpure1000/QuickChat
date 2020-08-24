@@ -14,6 +14,11 @@ public class BasicData implements Serializable {
     protected String Name;
     protected String createTime;
 
+    public BasicData(BigInteger ID, String Name) {
+        this.ID = ID;
+        this.Name = Name;
+    }
+
     public void setID(BigInteger ID) {
         this.ID = ID;
     }

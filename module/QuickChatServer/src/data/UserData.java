@@ -1,6 +1,9 @@
 package data;
 
+import message.ServerMessage;
+
 import java.math.BigInteger;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -9,8 +12,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class UserData extends BasicData {
 
     public UserData(BigInteger ID, String name, String createTime, String password) {
-        super.ID = ID;
-        super.Name = name;
+        super(ID, name);
         super.createTime = createTime;
         this.password = password;
     }
@@ -61,6 +63,7 @@ public class UserData extends BasicData {
 
     /**
      * 是否为好友
+     *
      * @param ID 目标用户ID
      * @return
      */
@@ -78,19 +81,51 @@ public class UserData extends BasicData {
 
     /**
      * 自己是否在群内
+     *
      * @param ID 目标群组ID
      * @return
      */
-    public boolean isInGroup(BigInteger ID){
+    public boolean isInGroup(BigInteger ID) {
         return groupList.contains(ID);
     }
 
+    /**
+     * 加入群聊
+     *
+     * @param ID
+     */
     public void addGroup(BigInteger ID) {
         groupList.add(ID);
     }
 
-    public void removeGroup(BigInteger ID) {
+    /**
+     * 推出群聊
+     *
+     * @param ID
+     */
+    public void quitGroup(BigInteger ID) {
         groupList.remove(ID);
+    }
+
+    /**
+     * 添加消息记录
+     * @param chatObjID 消息对象，一般为群组或接收者
+     * @param serverMessage 反馈消息
+     */
+    public void addMessageRecord(BigInteger chatObjID, ServerMessage serverMessage) {
+        CopyOnWriteArrayList<MessageRecord> recordList =
+                messageRecordMap.getOrDefault(chatObjID, null);
+        //新建消息记录
+        MessageRecord newRecord = new MessageRecord(chatObjID);
+        newRecord.addMessageRecord(new MessageContain(serverMessage));
+        //判断是否存在对这个聊天对象的记录
+        if (recordList == null) {
+            //不存在，新建一个键
+            recordList = new CopyOnWriteArrayList<>();
+            messageRecordMap.put(chatObjID, recordList);
+        }
+        //添加记录
+        recordList.add(newRecord);
     }
 
     @Override
@@ -122,4 +157,9 @@ public class UserData extends BasicData {
      * 加入的群列表
      */
     private CopyOnWriteArrayList<BigInteger> groupList;
+
+    /**
+     * 消息记录
+     */
+    private final ConcurrentHashMap<BigInteger, CopyOnWriteArrayList<MessageRecord>> messageRecordMap = new ConcurrentHashMap<>();
 }

@@ -6,7 +6,7 @@ import java.io.*;
 
 public class DataManager {
 
-    private static DataManager instance = new DataManager();
+    private static final DataManager instance = new DataManager();
 
     public static DataManager getInstance() {
         return instance;
@@ -17,53 +17,74 @@ public class DataManager {
     }
 
     /**
-     * 初始化数据（从文件读取）
+     * 开始数据管理，加载数据
      */
-    public void LoadData() {
+    public void Start(){
+        LoadUserData();
+        LoadGroupData();
+    }
+
+    @Deprecated
+    private void LoadUserData() {
         File file = new File(userDataFileName);
         try {
             if (!file.exists()) { //  文件不存在
-                Debug.LogWarning("读取时，文件不存在");
+                Debug.LogWarning("读取用户数据时，文件不存在");
                 //创建
-                writeDefaultUserData();
+                writeInitializeData(new UserDataContain(), userDataFileName);
                 //重置
                 file = new File(userDataFileName);
             }
             //输入流初始化
             ObjectInputStream objIn = new ObjectInputStream(new FileInputStream(file));
             userDataContain = (UserDataContain) objIn.readObject();
-            userDataContain.initUserDataManager();
+            //重置数据
+            userDataContain.resetUserDataManager();
             objIn.close();
         } catch (IOException e) {
-            Debug.LogError("文件读取错误(EOF)");
+            Debug.LogError("用户数据文件读取错误(EOF)");
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
-            Debug.LogWarning("服务器数据反序列化错误");
+            Debug.LogWarning("用户数据反序列化错误");
+            //e.printStackTrace();
+        }
+    }
+
+    @Deprecated
+    private void LoadGroupData() {
+        File file = new File(groupDataFileName);
+        try {
+            if (!file.exists()) { //  文件不存在
+                Debug.LogWarning("读取群组数据时，文件不存在");
+                //创建
+                writeInitializeData(new GroupDataContain(), groupDataFileName);
+                //重置
+                file = new File(groupDataFileName);
+            }
+            //输入流初始化
+            ObjectInputStream objIn = new ObjectInputStream(new FileInputStream(file));
+            groupDataContain = (GroupDataContain) objIn.readObject();
+            objIn.close();
+        } catch (IOException e) {
+            Debug.LogError("群组数据文件读取错误(EOF)");
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            Debug.LogWarning("群组数据反序列化错误");
             //e.printStackTrace();
         }
     }
 
     /**
-     * 写入默认用户数据
+     * 写入默认数据
+     *
      * @throws IOException 输出流异常
      */
-    private void writeDefaultUserData() throws IOException {
-
-        File file = new File(userDataFileName);
-        if (!file.getParentFile().exists()) {
-            if (!file.getParentFile().mkdir()) {
-                Debug.LogError("创建目录失败");
-                return;
-            }
-        }
-        if (!file.exists()) {
-            file.createNewFile();
-        }
+    private void writeInitializeData(Object data, String fileName) throws IOException {
+        File file = new File(fileName);
+        CreateFile(file, fileName);
         if (file.exists()) {
-            //写入
-            UserDataContain newUserDataManager = new UserDataContain();
             ObjectOutputStream objOut = new ObjectOutputStream(new FileOutputStream(file));
-            objOut.writeObject(newUserDataManager);
+            objOut.writeObject(data);
             objOut.flush();
             objOut.close();
         } else {
@@ -72,58 +93,105 @@ public class DataManager {
     }
 
     /**
-     * 保存数据至文件，关闭之前调用
+     * 保存用户数据至文件，关闭之前调用
      */
-    private void writeToFile(){
-        File file = new File(userDataFileName);
+    @Deprecated
+    private void writeUserDataToFile() {
+        File userFile = new File(userDataFileName);
         try {
-            if (!file.exists()) { //  文件不存在
-                Debug.LogWarning(userDataFileName +" 文件不存在");
-                if (!file.getParentFile().exists()) { //  路径不存在
-                    if (!file.getParentFile().mkdir()) { //  路径创建失败
-                        Debug.LogError("消息记录目录创建失败");
-                    }
-                    Debug.Log("创建消息记录目录");
-                }
-                //创建空文件
-                file.createNewFile();
-            }
+            CreateFile(userFile, userDataFileName);
             //输出流初始化
-            ObjectOutputStream objOut = new ObjectOutputStream(new FileOutputStream(file));
+            ObjectOutputStream userDataOut = new ObjectOutputStream(new FileOutputStream(userFile));
             //输出一个非空记录对象到文件
-            objOut.writeObject(userDataContain);
-            Debug.Log("保存成功");
-            objOut.flush();
-            objOut.close();
-        } catch(IOException e){
+            userDataOut.writeObject(userDataContain);
+            Debug.Log("用户数据保存成功");
+            userDataOut.flush();
+            userDataOut.close();
+        } catch (IOException e) {
             Debug.LogError("文件写入错误");
             //e.printStackTrace();
         }
     }
 
+    /**
+     * 保存群组数据至文件，关闭之前调用
+     */
+    @Deprecated
+    private void writeGroupDataToFile() {
+        File groupFile = new File(groupDataFileName);
+        try {
+            CreateFile(groupFile, groupDataFileName);
+            //输出流初始化
+            ObjectOutputStream groupDataOut = new ObjectOutputStream(new FileOutputStream(groupFile));
+            //输出一个非空记录对象到文件
+            groupDataOut.writeObject(groupDataContain);
+            Debug.Log("群组数据保存成功");
+            groupDataOut.flush();
+            groupDataOut.close();
+        } catch (IOException e) {
+            Debug.LogError("文件写入错误");
+            //e.printStackTrace();
+        }
+    }
 
     /**
-     * 用户数据管理器
+     * 仅创建文件
+     *
+     * @param file
+     * @param fileName
      */
-    private UserDataContain userDataContain;
+    private void CreateFile(File file, String fileName) {
+        Debug.LogWarning(fileName + " 文件不存在");
+        if (!file.getParentFile().exists()) {
+            //  路径不存在
+            if (!file.exists()) {
+                //  文件不存在
+                try {
+                    file.createNewFile();
+                    Debug.Log("创建文件");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (!file.getParentFile().mkdir()) {
+                //  路径创建失败
+                Debug.LogError("数据目录创建失败");
+            }
+            Debug.Log("创建消息记录目录");
+        }
+    }
 
     /**
      * 获取用户数据管理器
+     *
      * @return
      */
     public UserDataContain getUserDataContain() {
         return userDataContain;
     }
 
-    //Group
+    public GroupDataContain getGroupDataContain() {
+        return groupDataContain;
+    }
 
     /**
      * 关闭数据管理器，保存数据
      */
-    public void Close(){
-        writeToFile();
-        isClosed=true;
+    public void Close() {
+        writeUserDataToFile();
+        writeGroupDataToFile();
+        isClosed = true;
     }
+
+    /**
+     * 用户数据容器
+     */
+    private UserDataContain userDataContain;
+
+    /**
+     * 群组数据容器
+     */
+    private GroupDataContain groupDataContain;
 
     private boolean isClosed;
 

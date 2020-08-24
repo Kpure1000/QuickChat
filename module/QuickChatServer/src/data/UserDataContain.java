@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 用户
+ * 用户数据容器
  */
 public class UserDataContain implements Serializable {
 
@@ -19,7 +19,10 @@ public class UserDataContain implements Serializable {
         MaxSignOutClientID = new BigInteger("1");
     }
 
-    public void initUserDataManager() {
+    /**
+     * 重置用户数据
+     */
+    public void resetUserDataManager() {
         MaxSignOutClientID = new BigInteger("1");
     }
 
@@ -55,11 +58,11 @@ public class UserDataContain implements Serializable {
 
     /**
      * 获取用户信息数据
-     * @param ID
-     * @return
+     * @param ID 目标用户ID
+     * @return 用户数据
      */
     public UserData getUserData(BigInteger ID) {
-        return userDataMap.containsKey(ID) ? userDataMap.get(ID) : null;
+        return userDataMap.getOrDefault(ID, null);
     }
 
     /**
@@ -86,7 +89,7 @@ public class UserDataContain implements Serializable {
      *
      * @return ID最大值
      */
-    public BigInteger getMaxSignOutClientID() {
+    public BigInteger getAndAddMaxDefaultID() {
         BigInteger tmpID = MaxSignOutClientID;
         //自增
         MaxSignOutClientID = MaxSignOutClientID.add(new BigInteger("1"));
@@ -96,7 +99,7 @@ public class UserDataContain implements Serializable {
     /**
      * 用户散列表
      */
-    private ConcurrentHashMap<BigInteger, UserData> userDataMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<BigInteger, UserData> userDataMap = new ConcurrentHashMap<>();
 
     /**
      * 目前最大的用户ID，用于生成新的用户ID（只需自增）

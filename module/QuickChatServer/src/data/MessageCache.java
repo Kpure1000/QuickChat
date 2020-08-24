@@ -14,7 +14,7 @@ public class MessageCache implements Serializable {
 
     private static final long serialVersionUID = 0xb395945de7076e70L;
 
-    private static MessageCache instance = new MessageCache();
+    private static final MessageCache instance = new MessageCache();
 
     private MessageCache() {
     }

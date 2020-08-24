@@ -22,7 +22,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class ClientNetwork {
 
     //预加载单例
-    private static ClientNetwork instance = new ClientNetwork();
+    private static final ClientNetwork instance = new ClientNetwork();
 
     /**
      * 获取单例

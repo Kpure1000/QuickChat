@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ServerListenerManager {
 
-    private static ServerListenerManager instance = new ServerListenerManager();
+    private static final ServerListenerManager instance = new ServerListenerManager();
 
     public static ServerListenerManager getInstance() {
         return instance;
@@ -66,13 +66,14 @@ public class ServerListenerManager {
 
     /**
      * 删除监听任务
+     *
      * @param serverListener 目标监听，一般是即将结束的Listener
      */
     public void removeListener(ServerListener serverListener) {
-        synchronized (listenerPool){
-            synchronized (exePool){
-            exePool.remove(serverListener);
-        }
+        synchronized (listenerPool) {
+            synchronized (exePool) {
+                exePool.remove(serverListener);
+            }
             listenerPool.remove(serverListener.getID());
         }
     }
@@ -90,6 +91,15 @@ public class ServerListenerManager {
     }
 
     /**
+     * 获取最大监听数目（最大在线用户数目）
+     *
+     * @return 最大数目
+     */
+    public int getMaxListenerNumber() {
+        return maxListenerNumber;
+    }
+
+    /**
      * 最多允许监听数目（也就是最大在线用户数）
      */
     private final int maxListenerNumber = 5;
@@ -98,15 +108,6 @@ public class ServerListenerManager {
      * 最大允许等待监听数目
      */
     private final int maxWaitNumber = 16;
-
-    /**
-     * 获取最大监听数目（最大在线用户数目）
-     *
-     * @return 最大数目
-     */
-    public int getMaxListenerNumber() {
-        return maxListenerNumber;
-    }
 
     /**
      * 执行池
