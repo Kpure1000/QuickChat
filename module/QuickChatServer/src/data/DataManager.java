@@ -21,7 +21,7 @@ public class DataManager {
      */
     public void Start() {
         LoadUserData();
-        LoadGroupData();
+//        LoadGroupData();
     }
 
     @Deprecated
@@ -33,6 +33,7 @@ public class DataManager {
                 //创建
                 userDataContain = new UserDataContain();
                 writeUserDataToFile();
+//                outPutToFile(new UserDataContain(),userDataFileName);
                 //重置
                 file = new File(userDataFileName);
             }
@@ -110,6 +111,30 @@ public class DataManager {
             //输出一个非空记录对象到文件
             groupDataOut.writeObject(groupDataContain);
             Debug.Log("群组数据保存成功");
+            groupDataOut.flush();
+            groupDataOut.close();
+        } catch (IOException e) {
+            Debug.LogError("文件写入错误");
+            //e.printStackTrace();
+        }
+    }
+
+    /**
+     * 测试泛型用的
+     * @param data 泛型数据
+     * @param fileName 文件名
+     * @param <T> 类型
+     */
+    @Deprecated
+    private <T> void outPutToFile(T data, String fileName){
+        File groupFile = new File(fileName);
+        CreateFile(groupFile);
+        try {
+            //输出流初始化
+            ObjectOutputStream groupDataOut = new ObjectOutputStream(new FileOutputStream(groupFile));
+            //输出一个非空记录对象到文件
+            groupDataOut.writeObject(data);
+            Debug.Log(""+data.getClass().toString()+"型数据保存成功");
             groupDataOut.flush();
             groupDataOut.close();
         } catch (IOException e) {
