@@ -19,7 +19,7 @@ public class DataManager {
     /**
      * 开始数据管理，加载数据
      */
-    public void Start(){
+    public void Start() {
         LoadUserData();
         LoadGroupData();
     }
@@ -31,7 +31,8 @@ public class DataManager {
             if (!file.exists()) { //  文件不存在
                 Debug.LogWarning("读取用户数据时，文件不存在");
                 //创建
-                writeInitializeData(new UserDataContain(), userDataFileName);
+                userDataContain = new UserDataContain();
+                writeUserDataToFile();
                 //重置
                 file = new File(userDataFileName);
             }
@@ -57,7 +58,8 @@ public class DataManager {
             if (!file.exists()) { //  文件不存在
                 Debug.LogWarning("读取群组数据时，文件不存在");
                 //创建
-                writeInitializeData(new GroupDataContain(), groupDataFileName);
+                groupDataContain = new GroupDataContain();
+                writeGroupDataToFile();
                 //重置
                 file = new File(groupDataFileName);
             }
@@ -75,31 +77,13 @@ public class DataManager {
     }
 
     /**
-     * 写入默认数据
-     *
-     * @throws IOException 输出流异常
-     */
-    private void writeInitializeData(Object data, String fileName) throws IOException {
-        File file = new File(fileName);
-        CreateFile(file, fileName);
-        if (file.exists()) {
-            ObjectOutputStream objOut = new ObjectOutputStream(new FileOutputStream(file));
-            objOut.writeObject(data);
-            objOut.flush();
-            objOut.close();
-        } else {
-            Debug.LogError("创建文件失败");
-        }
-    }
-
-    /**
      * 保存用户数据至文件，关闭之前调用
      */
     @Deprecated
     private void writeUserDataToFile() {
         File userFile = new File(userDataFileName);
+        CreateFile(userFile);
         try {
-            CreateFile(userFile, userDataFileName);
             //输出流初始化
             ObjectOutputStream userDataOut = new ObjectOutputStream(new FileOutputStream(userFile));
             //输出一个非空记录对象到文件
@@ -119,8 +103,8 @@ public class DataManager {
     @Deprecated
     private void writeGroupDataToFile() {
         File groupFile = new File(groupDataFileName);
+        CreateFile(groupFile);
         try {
-            CreateFile(groupFile, groupDataFileName);
             //输出流初始化
             ObjectOutputStream groupDataOut = new ObjectOutputStream(new FileOutputStream(groupFile));
             //输出一个非空记录对象到文件
@@ -138,12 +122,17 @@ public class DataManager {
      * 仅创建文件
      *
      * @param file
-     * @param fileName
      */
-    private void CreateFile(File file, String fileName) {
-        Debug.LogWarning(fileName + " 文件不存在");
+    private void CreateFile(File file) {
+        Debug.LogWarning(file.getName() + " 文件不存在");
         if (!file.getParentFile().exists()) {
-            //  路径不存在
+            //  路径不存在，尝试创建路径
+            if (!file.getParentFile().mkdir()) {
+                //  路径创建失败
+                Debug.LogError("数据目录创建失败");
+                return;
+            }
+            //创建好路径了，尝试创建文件
             if (!file.exists()) {
                 //  文件不存在
                 try {
@@ -153,11 +142,6 @@ public class DataManager {
                     e.printStackTrace();
                 }
             }
-            if (!file.getParentFile().mkdir()) {
-                //  路径创建失败
-                Debug.LogError("数据目录创建失败");
-            }
-            Debug.Log("创建消息记录目录");
         }
     }
 

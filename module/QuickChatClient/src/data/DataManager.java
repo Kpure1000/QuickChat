@@ -324,7 +324,7 @@ public class DataManager {
         );
         publicConfig = new PublicConfig();
         publicConfig.addServerList(new ServerInfo("127.0.0.1", 12345));
-        publicConfig.addServerList(new ServerInfo("127.0.0.2", 11111));
+        publicConfig.addServerList(new ServerInfo("127.0.0.1", 10808));
         //  Debug
         for (BigInteger item :
                 publicConfig.getIdList()) {
