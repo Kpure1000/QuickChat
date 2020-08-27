@@ -33,11 +33,13 @@ public class UserManager {
     /**
      * 成功登录时，设置用户信息
      *
-     * @param userInfo
+     * @param ID 目标ID
      */
-    public void setUserInfo(UserInfo userInfo) {
-        this.userInfo = userInfo;
-        // 更新本地私有配置
+    public void setUserInfo(BigInteger ID) {
+        this.userInfo = DataManager.getInstance().getUserInfoFromConfig(ID);
+    }
+
+    public void Close(){
         DataManager.getInstance().updatePrivateConfig(userInfo);
     }
 

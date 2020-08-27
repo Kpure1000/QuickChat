@@ -42,7 +42,7 @@ public class ClientNetwork {
      * @param netCallBack 网络回调
      */
     public synchronized void addNetCallBack(NetCallBack netCallBack) {
-        synchronized (netCallBackList) {
+//        synchronized (netCallBackList) {
             if (netCallBack != null) {
                 for (var item :
                         netCallBackList) {
@@ -52,7 +52,7 @@ public class ClientNetwork {
                 }
                 this.netCallBackList.add(netCallBack);
             }
-        }
+//        }
     }
 
     /**
@@ -61,11 +61,11 @@ public class ClientNetwork {
      * @param netCallBack 目标回调
      */
     public synchronized void removeNetCallBack(NetCallBack netCallBack) {
-        synchronized (netCallBackList) {
+//        synchronized (netCallBackList) {
             if (netCallBack != null) {
                 this.netCallBackList.removeIf(item -> item.equals(netCallBack));
             }
-        }
+//        }
     }
 
     /**
@@ -82,26 +82,26 @@ public class ClientNetwork {
             //缓存目前的服务器信息
             curHost = host;
             curPort = port;
-            synchronized (netCallBackList) {
+//            synchronized (netCallBackList) {
                 for (var item :
                         netCallBackList) {
                     //连接成功回调
                     item.OnConnectSuccess();
                 }
-            }
+//            }
             //输出流
             objOut = new ObjectOutputStream(socket.getOutputStream());
             isConnected = true;
             //创建监听线程
             beginListening(socket);
         } catch (IOException e) {
-            synchronized (netCallBackList) {
+//            synchronized (netCallBackList) {
                 for (var item :
                         netCallBackList) {
                     //连接失败回调
                     item.OnConnectFailed();
                 }
-            }
+//            }
             isConnected = false;
         }
     }
@@ -127,13 +127,13 @@ public class ClientNetwork {
                             null, null, ""));
                     //关闭监听
                     listener.Close();
-                    synchronized (netCallBackList) {
+//                    synchronized (netCallBackList) {
                         for (var item :
                                 netCallBackList) {
                             //断开连接回调
                             item.OnDisconnect();
                         }
-                    }
+//                    }
                     socket.close();
                 } catch (IOException e) {
                     Debug.LogError("Socket关闭失败");
@@ -163,11 +163,11 @@ public class ClientNetwork {
             Debug.LogError("尚未连接");
             return;
         }
-        synchronized (listener) {
+//        synchronized (listener) {
             if (listener != null) {
                 listener.addListenerCallBack(listenerCallBack);
             }
-        }
+//        }
     }
 
     /**
@@ -180,11 +180,11 @@ public class ClientNetwork {
             Debug.LogError("未连接");
             return;
         }
-        synchronized (listener) {
+//        synchronized (listener) {
             if (listener != null) {
                 listener.removeListenerCallBack(listenerCallBack);
             }
-        }
+//        }
     }
 
     /**
@@ -212,12 +212,12 @@ public class ClientNetwork {
                 objOut = new ObjectOutputStream(socket.getOutputStream());
             objOut.writeObject(userMessage);
             objOut.flush();
-            synchronized (netCallBackList) {
+//            synchronized (netCallBackList) {
                 for (NetCallBack item :
                         netCallBackList) {
                     item.OnSendMessageSuccess(userMessage);
                 }
-            }
+//            }
         } catch (IOException e) {
             if (!socket.isConnected()) {
                 //开始尝试重连，禁止sendMessage的再次调用
@@ -226,12 +226,12 @@ public class ClientNetwork {
                 new Thread(() -> {
                     while (!isConnected && retryCount < 5) {
                         retryCount++;
-                        synchronized (netCallBackList) {
+//                        synchronized (netCallBackList) {
                             for (NetCallBack item :
                                     netCallBackList) {
                                 item.OnSendMessageSuccess(userMessage);
                             }
-                        }
+//                        }
                         Debug.LogWarning("连接断开，发送失败;正在尝试重新连接...");
                         connect(curHost, curPort);
                         try {

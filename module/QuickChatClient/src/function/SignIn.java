@@ -155,14 +155,17 @@ public class SignIn extends BasicFunction {
                         Debug.Log("监听回调获取到了-登陆请求的反馈: " + fbState);
                         String[] fbStr = fbState.split("#");
                         if (String.valueOf(fbStr[0]).equals("pass")) {
-                            //更新ID记录
-                            DataManager.getInstance().updateIDRecord(ID,
-                                    signInCallBack.OnNeedPassConfigUpdate() ? password : null);
                             //登录成功
                             signInCallBack.OnSignInSuccess();
                             //本地登录
-                            // TODO 服务器反馈登录消息时，要增加一个UserInfo的详细反馈，并且传入这个setUserInfo
-                            UserManager.getInstance().setUserInfo(new UserInfo(new BigInteger(fbStr[1]), fbStr[2]));
+                            // TODO服务器反馈登录消息时，要增加一个UserInfo的详细反馈，并且传入这个setUserInfo
+                            DataManager.getInstance().updatePrivateConfig(new UserInfo(
+                                    new BigInteger(fbStr[1]), fbStr[2], fbStr[3], fbStr[4], fbStr[5], fbStr[6])
+                            );
+                            UserManager.getInstance().setUserInfo(ID);
+                            //更新ID记录
+                            DataManager.getInstance().updateIDRecordAndPasswordConfig(
+                                    ID, signInCallBack.OnNeedPassConfigUpdate() ? password : null);
                         } else if (fbState.equals("failed")) {
                             //登录失败
                             signInCallBack.OnSignInFailed();
@@ -189,26 +192,26 @@ public class SignIn extends BasicFunction {
      *
      * @param targetID 目标ID
      */
-    public void getPasswordConfig(String targetID) {
+    public void getPasswordConfig(BigInteger targetID) {
         // TODO从私人配置加载密码配置
         // 通过回调反馈记住密码配置
         signInCallBack.OnGetPassConfig(
-                DataManager.getInstance().getPasswordConfig(new BigInteger(targetID)));
+                DataManager.getInstance().getPasswordConfig(targetID));
     }
 
-    /**
-     * 按ID更新记住密码配置，仅当勾选框变化时调用
-     *
-     * @param targetID 目标ID
-     * @param config   是否记住密码
-     */
-    public void setPasswordConfig(String targetID, boolean config) {
-        var ID = new BigInteger(targetID);
-        if (DataManager.getInstance().getPasswordConfig(ID) != null) {
-            // TODO 修改私人配置
-            DataManager.getInstance().updatePasswordConfig(ID, config);
-        }
-    }
+//    /**
+//     * 按ID更新记住密码配置，仅当勾选框变化时调用
+//     *
+//     * @param targetID 目标ID
+//     * @param config   是否记住密码
+//     */
+//    public void setPasswordConfig(String targetID, boolean config) {
+//        var ID = new BigInteger(targetID);
+//        if (DataManager.getInstance().getPasswordConfig(ID) != null) {
+//            // TODO 修改私人配置
+//            DataManager.getInstance().updatePasswordConfig(ID, config);
+//        }
+//    }
 
     /**
      * 本登录功能的回调

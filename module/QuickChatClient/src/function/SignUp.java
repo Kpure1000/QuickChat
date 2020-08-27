@@ -49,7 +49,7 @@ public class SignUp extends BasicFunction {
      */
     private void sendSignUnMessage(String newName, String password) {
         if (newName != null && password != null) {
-            Debug.Log("ID:" + newName + ", PASS: " + password);
+            Debug.Log("新用户名称:" + newName + ", PASS: " + password);
             // 定义监听来获取登录反馈
             listenerCallBack = new ListenerCallBackAdapter() {
                 @Override

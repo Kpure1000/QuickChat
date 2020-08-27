@@ -31,8 +31,8 @@ public class PrivateConfig implements Serializable {
         userInfo = new UserInfo(ID, Name);
     }
 
-    public PrivateConfig(BigInteger ID, String Name, String password){
-        userInfo = new UserInfo(ID,Name,password);
+    public PrivateConfig(BigInteger ID, String Name, String password) {
+        userInfo = new UserInfo(ID, Name, password);
     }
 
     public void setUserInfo(UserInfo userInfo) {
@@ -43,24 +43,24 @@ public class PrivateConfig implements Serializable {
         return userInfo;
     }
 
-    /**
-     * 设置是否记住密码
-     *
-     * @param remembered
-     */
-    public void setRemembered(boolean remembered) {
-        isRemembered = remembered;
-        if (!isRemembered) rememberedPassword = null;
-    }
+//    /**
+//     * 设置是否记住密码
+//     *
+//     * @param remembered
+//     */
+//    public void setRemembered(boolean remembered) {
+//        isRemembered = remembered;
+//        if (!isRemembered) rememberedPassword = null;
+//    }
 
-    /**
-     * 是否记住密码
-     *
-     * @return
-     */
-    public boolean isRemembered() {
-        return isRemembered;
-    }
+//    /**
+//     * 是否记住密码
+//     *
+//     * @return
+//     */
+//    public boolean isRemembered() {
+//        return isRemembered;
+//    }
 
     /**
      * 设置记住的密码
@@ -68,9 +68,9 @@ public class PrivateConfig implements Serializable {
      * @param rememberedPassword 新密码
      */
     public void setRememberedPassword(String rememberedPassword) {
-        this.rememberedPassword = rememberedPassword;
-        if (rememberedPassword == null)
-            isRemembered = false;
+        userInfo.setPassword(rememberedPassword);
+//        if (rememberedPassword == null)
+//            isRemembered = false;
     }
 
     /**
@@ -79,9 +79,9 @@ public class PrivateConfig implements Serializable {
      * @return 记住的密码
      */
     public String getRememberedPassword() {
-        if (!isRemembered)
-            return null;
-        return rememberedPassword;
+//        if (!isRemembered)
+//            return null;
+        return userInfo.getPassword();
     }
 
     /**
@@ -99,15 +99,15 @@ public class PrivateConfig implements Serializable {
 
     private UserInfo userInfo;
 
-    /**
-     * 是否记住密码
-     */
-    private boolean isRemembered;
+//    /**
+//     * 是否记住密码
+//     */
+//    private boolean isRemembered;
 
-    /**
-     * 记住的密码,不记住的话为null
-     */
-    private String rememberedPassword;
+//    /**
+//     * 记住的密码,不记住的话为null
+//     */
+//    private String rememberedPassword;
 
     /**
      * 消息记录

@@ -82,8 +82,19 @@ public class DataManager {
      */
     public void updatePrivateConfig(UserInfo userInfo) {
         readPrivate(userInfo.getID());
+        Debug.Log("更新私有配置:");
         privateConfig = new PrivateConfig(userInfo);
         savePrivate(privateConfig.getUserInfo().getID());
+    }
+
+    /**
+     * 从本地获取用户信息
+     * @param ID
+     * @return
+     */
+    public UserInfo getUserInfoFromConfig(BigInteger ID) {
+        readPrivate(ID);
+        return privateConfig == null ? null : privateConfig.getUserInfo();
     }
 
     /**
@@ -92,27 +103,14 @@ public class DataManager {
      * @param ID       目标ID
      * @param password 记住的密码
      */
-    public void updatePasswordConfig(BigInteger ID, String password) {
+    private void updatePasswordConfig(BigInteger ID, String password) {
         readPrivate(ID);
-        Debug.Log("正在更新密码配置以及记住的密码");
-        privateConfig.setRemembered(password != null);
+        Debug.Log("DataManager#updatePasswordConfig:正在更新密码配置以及记住的密码:" + privateConfig.getUserInfo().getID() + ",new:" + password);
+//        privateConfig.setRemembered(password != null);
         privateConfig.setRememberedPassword(password);
         savePrivate(ID);
     }
 
-    /**
-     * 更新私有配置的记住密码配置
-     *
-     * @param ID     目标ID
-     * @param config 是否记住密码
-     */
-    public void updatePasswordConfig(BigInteger ID, boolean config) {
-        readPrivate(ID);
-        Debug.Log("正在更新密码配置");
-        privateConfig.setRemembered(config);
-        savePrivate(ID);
-
-    }
 
     /**
      * 更新配置的ID的历史记录，仅当该ID登录成功，否则无意义
@@ -124,19 +122,20 @@ public class DataManager {
      * @param newID          新ID
      * @param passwordConfig 记住密码配置
      */
-    public void updateIDRecord(BigInteger newID, String passwordConfig) {
+    public void updateIDRecordAndPasswordConfig(BigInteger newID, String passwordConfig) {
         // TODO新增历史ID记录，若存在则更新其私人配置
         // 判断是否存在
         for (var item :
                 publicConfig.getIdList()) {
             if (item.compareTo(newID) == 0) { //  存在记录
                 // 更新密码记录
+                Debug.Log("更新密码记录:" + newID + ", " + passwordConfig);
                 updatePasswordConfig(newID, passwordConfig);
                 return;
             }
         }
         // TODO 不存在，添加记录
-        Debug.Log("该用户首次登陆成功，添加记录");
+        Debug.Log("该用户首次登陆成功，添加记录:" + newID + ", " + passwordConfig);
         publicConfig.addIdList(newID);
         updatePasswordConfig(newID, passwordConfig);
     }
@@ -193,7 +192,6 @@ public class DataManager {
      * 保存公有配置到本地
      */
     private void savePublic() {
-        Debug.Log("保存公有配置到本地");
         try {
             File file = new File(publicConfigPath);
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
@@ -203,6 +201,7 @@ public class DataManager {
             bufferedWriter.flush();
             //关闭输出
             bufferedWriter.close();
+            Debug.Log("成功保存公有配置");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -302,6 +301,7 @@ public class DataManager {
                 objOut.writeObject(privateConfig);
                 objOut.flush();
                 objOut.close();
+                Debug.Log("成功保存私有配置:" + privateConfig.getUserInfo().getID() + ", " + privateConfig.getUserInfo().getPassword());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -353,9 +353,7 @@ public class DataManager {
      */
     private void CreatePrivateConfig(File file, BigInteger ID, String Name) throws IOException {
         //初始化私有配置
-        privateConfig = new PrivateConfig(ID, Name);
-        privateConfig.setRemembered(false);
-        //privateConfig.setRememberedPassword();
+        privateConfig = new PrivateConfig(ID, Name, null);
         //创建文件
         //对象流
         Debug.Log("创建私有配置文件" + file.getName());

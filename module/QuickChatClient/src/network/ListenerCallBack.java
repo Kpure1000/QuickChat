@@ -44,7 +44,7 @@ public interface ListenerCallBack {
     /**
      * 好友申请反馈
      *
-     * @param fbState 反馈申请结果
+     * @param serverMessage 反馈申请结果
      * @return
      */
     public ListenerCallBack OnFriendRequireCallBack(ServerMessage serverMessage);

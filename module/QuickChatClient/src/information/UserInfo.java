@@ -14,16 +14,24 @@ public class UserInfo extends BasicInfo {
         super(ID, Name);
     }
 
-    public UserInfo(BigInteger ID,String Name,String password){
-        super(ID,Name);
+    public UserInfo(BigInteger ID, String Name, String password) {
+        super(ID, Name);
         this.password = password;
+    }
+
+    public UserInfo(BigInteger ID, String Name, String createTime, String password, String email, String phoneNumber) {
+        super(ID, Name);
+        this.setCreateTime(createTime);
+        this.password = password;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
     }
 
     private String email;
 
     private String phoneNumber;
 
-    public String password;
+    private String password;
 
     public String getEmail() {
         return email;

@@ -53,6 +53,8 @@ public class SignUpView extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
                     SignUpView.this.dispose();
+                    // 返回上级
+                    signUpViewCallBack.OnAutoFilltoSignIn(null, null);
                 }
             }
         });
@@ -136,6 +138,8 @@ public class SignUpView extends JFrame {
                 );
                 // TODO回到上一登陆界面
                 SignUpView.this.dispose();
+                // 自动填充
+                signUpViewCallBack.OnAutoFilltoSignIn(newID, repass);
             }
 
             @Override
@@ -206,8 +210,6 @@ public class SignUpView extends JFrame {
                 if (signUp != null) {
                     signUp.Close();
                 }
-                // 自动填充
-                signUpViewCallBack.OnAutoFilltoSignIn(null, null);
                 super.windowClosed(e);
             }
         });

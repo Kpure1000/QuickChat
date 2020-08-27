@@ -39,8 +39,8 @@ public class SignInView extends JFrame {
         this.getContentPane().setBackground(new Color(MyDarkRgb));
         //功能标题
         JLabel title = new JLabel("登陆");
-        title.setBounds(this.getWidth()/2-170,60,350,100);
-        title.setFont(new Font("微软雅黑",Font.PLAIN,48));
+        title.setBounds(this.getWidth() / 2 - 170, 60, 350, 100);
+        title.setFont(new Font("微软雅黑", Font.PLAIN, 48));
         title.setHorizontalAlignment(SwingConstants.CENTER);
         title.setForeground(new Color(MyLightRgb));
         this.add(title);
@@ -137,20 +137,20 @@ public class SignInView extends JFrame {
             @Override
             public void OnGetIDConfig(ArrayList<BigInteger> ids) {
                 if (ids != null && ids.size() > 0) {
-                    Debug.Log("正在将ID记录写入ComboBox...");
                     for (var item :
                             ids) {
                         idBox.addItem(item);
                     }
                     //默认第一个是
+                    Debug.Log("第一个ID: " + ids.get(0).toString());
                     idText.setText(ids.get(0).toString());
-                    signIn.getPasswordConfig(ids.get(0).toString());
+                    signIn.getPasswordConfig(ids.get(0));
                 }
             }
 
             @Override
             public void OnGetPassConfig(String password) {
-                Debug.Log("正字获取密保设置:"+password);
+                Debug.Log("正字获取密保设置:" + password);
                 if (password != null) {
                     //勾选记住密码
                     passCheck.setSelected(true);
@@ -199,19 +199,19 @@ public class SignInView extends JFrame {
 
         //ID选框变化（该ID一定存在于记录中），获取该ID的记住密码配置
         idBox.addItemListener(e -> {
-            Debug.Log("更新输入框");
+            Debug.Log("下拉框ID" + e.getItem().toString());
             //更新输入框
             idText.setText(e.getItem().toString());
             //根据历史ID获取密码配置
-            signIn.getPasswordConfig(e.getItem().toString());
+            signIn.getPasswordConfig((BigInteger) e.getItem());
         });
 
-        //密码记住框 变动
-        passCheck.addItemListener(e -> {
-            // TODO 更新密码配置，不知道isSelected能不能用
-            Debug.Log("记住密码选框发生变化");
-            signIn.setPasswordConfig(idText.getText(), passCheck.isSelected());
-        });
+//        //密码记住框 变动
+//        passCheck.addItemListener(e -> {
+//            // TODO 更新密码配置，不知道isSelected能不能用
+//            Debug.Log("记住密码选框发生变化");
+//            signIn.setPasswordConfig(idText.getText(), passCheck.isSelected());
+//        });
 
         //登录按钮监听
         signInButton.addMouseListener(new MouseAdapter() {
@@ -231,7 +231,7 @@ public class SignInView extends JFrame {
                 new SignUpView(SignInView.this).setSignUpViewCallBack((newID, password) -> {
                     SignInView.this.setVisible(true);
                     errorLabel.setText("");
-                    if(newID==null || password==null){
+                    if (newID == null || password == null) {
                         return;
                     }
                     // TODO自动填充
@@ -291,7 +291,6 @@ public class SignInView extends JFrame {
                 if (signIn != null) {
                     signIn.Close();
                 }
-                SignInView.super.dispose();
             }
         });
     }

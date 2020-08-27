@@ -4,6 +4,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import function.ChatManager;
+import function.ChatManagerCallBack;
 import view.listInfoView.listUI.FriendListCell;
 import view.listInfoView.listUI.ListCell;
 import view.listInfoView.listUI.ListPanel;
@@ -44,7 +45,7 @@ public class ChatView {
     private ListPanel friendList;
 
     public ChatView() {
-        JFrame asd = new JFrame();
+        JFrame chatFrame = new JFrame();
 //        String lookAndFeel = UIManager.getSystemLookAndFeelClassName();
 //        try {
 //            UIManager.setLookAndFeel(lookAndFeel);
@@ -55,16 +56,16 @@ public class ChatView {
 //            e.printStackTrace();
 //        }
         $$$setupUI$$$();
-//        asd.setUndecorated(true);
-        asd.setVisible(true);
-        asd.setSize(800, 600);
-        asd.setLocationRelativeTo(null);
-//        asd.setAlwaysOnTop(true);
-        asd.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        asd.getContentPane().setBackground(new Color(0x999999));
-        asd.setTitle("聊天");
+//        chatFrame.setUndecorated(true);
+        chatFrame.setVisible(true);
+        chatFrame.setSize(800, 600);
+        chatFrame.setLocationRelativeTo(null);
+//        chatFrame.setAlwaysOnTop(true);
+        chatFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        chatFrame.getContentPane().setBackground(new Color(0x999999));
+        chatFrame.setTitle("聊天");
 
-        asd.add($$$getRootComponent$$$());
+        chatFrame.add($$$getRootComponent$$$());
 
         //好友列表///////////////////////
 
@@ -103,23 +104,23 @@ public class ChatView {
             // TODO 弹出好友申请列表的窗口
         });
 
-        asd.addMouseListener(new MouseAdapter() {
+        chatFrame.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) { //鼠标按下事件
                 pressedPoint = e.getPoint(); //记录鼠标坐标
             }
         });
-        asd.addMouseMotionListener(new MouseMotionAdapter() {
+        chatFrame.addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e) { // 鼠标拖拽事件
                 Point point = e.getPoint();// 获取当前坐标
-                Point locationPoint = asd.getLocation();// 获取窗体坐标
+                Point locationPoint = chatFrame.getLocation();// 获取窗体坐标
                 int x = locationPoint.x + point.x - pressedPoint.x;// 计算移动后的新坐标
                 int y = locationPoint.y + point.y - pressedPoint.y;
-                asd.setLocation(x, y);// 改变窗体位置
+                chatFrame.setLocation(x, y);// 改变窗体位置
             }
         });
 
         //重写关闭
-        asd.addWindowListener(new WindowAdapter() {
+        chatFrame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
                 // TODO 聊天窗口的关闭意味着客户端关闭，暂时这么写
@@ -129,6 +130,13 @@ public class ChatView {
         });
 
         chatManager = new ChatManager();
+
+        chatManager.setChatManagerCallBack(new ChatManagerCallBack() {
+            @Override
+            public void OnForceClose() {
+                chatFrame.dispose();
+            }
+        });
 
     }
 

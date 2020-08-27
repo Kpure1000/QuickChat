@@ -56,6 +56,7 @@ public class ServerListenerManager {
     public void updateListenerID(BigInteger oldID, BigInteger newID) {
         synchronized (listenerPool) {
             if (listenerPool.get(oldID) != null) {//如果存在
+                exePool.remove(listenerPool.get(oldID));
                 //增加新ID的监听key
                 listenerPool.put(newID, listenerPool.get(oldID));
                 //删除旧监听的值

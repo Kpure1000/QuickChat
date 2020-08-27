@@ -1,7 +1,9 @@
 package network;
 
+import data.UserManager;
 import function.Debug;
 import message.ServerMessage;
+import message.UserMessage;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -37,7 +39,7 @@ public class Listener implements Runnable {
      * @param listenerCallBack 新建回调
      */
     public void addListenerCallBack(ListenerCallBack listenerCallBack) {
-        synchronized (listenerCallBackList) {
+        Debug.Log("监听准备加入列表");
             if (listenerCallBack != null) {
                 for (ListenerCallBack item :
                         listenerCallBackList) {
@@ -54,7 +56,8 @@ public class Listener implements Runnable {
                     listenerCallBack.OnListeningStart();
                 }
             }
-        }
+
+        Debug.Log("监听加入列表完毕");
     }
 
     /**
@@ -63,11 +66,9 @@ public class Listener implements Runnable {
      * @param listenerCallBack 目标回调
      */
     public void removeListenerCallBack(ListenerCallBack listenerCallBack) {
-        synchronized (listenerCallBackList) {
             if (listenerCallBack != null) {
                 listenerCallBackList.remove(listenerCallBack);
             }
-        }
     }
 
     /**
@@ -76,9 +77,7 @@ public class Listener implements Runnable {
     public void Close() {
         // TODO 关闭监听
         listening = false;
-        synchronized (listenerCallBackList) {
             listenerCallBackList.clear();
-        }
         Debug.Log("准备关闭监听");
     }
 
@@ -97,7 +96,7 @@ public class Listener implements Runnable {
                 if (serverMessage.getContent() == null) {
                     break;
                 }
-                synchronized (listenerCallBackList) {
+//                synchronized (listenerCallBackList) {
                     switch (serverMessage.getMessageType()) {
                         case Fb_SignIn -> { //  登录反馈
                             // 在这里调用有关回调即可
@@ -143,9 +142,11 @@ public class Listener implements Runnable {
                                 if (item != null) {
                                     item.OnForcedOffLine();
                                 }
-                                Debug.Log("由于检测到账户不安全，已被强制下线");
-                                Close();
                             }
+                            Debug.Log("由于检测到账户不安全，已被强制下线");
+                            ClientNetwork.getInstance().sendMessage(new UserMessage(UserMessage.MessageType.Require_Offline,
+                                    UserManager.getInstance().getUserInfo().getID(),null,""));
+                            Close();
                         }
                         case Msg_Private -> {
                             for (var item :
@@ -172,7 +173,7 @@ public class Listener implements Runnable {
                             }
                         }
                     } //  end of switch
-                } //  end of synchronized
+//                } //  end of synchronized
             } //  end of while(listening)
         } catch (SocketException e) {
             Debug.LogWarning("Socket已关闭，应该是某窗口关闭导致的，Listener线程马上退出");

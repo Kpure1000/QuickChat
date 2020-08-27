@@ -20,6 +20,18 @@ public class BasicInfo implements Serializable {
         this.Name = Name;
     }
 
+    public BigInteger getID() {
+        return ID;
+    }
+
+    public String getName() {
+        return Name;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
     /**
      * 用户不可修改ID，因此在此删除，不过在服务器端不会删除该方法
      *
@@ -30,21 +42,19 @@ public class BasicInfo implements Serializable {
         this.ID = ID;
     }
 
-    public BigInteger getID() {
-        return ID;
-    }
-
-    public String getName() {
-        return Name;
-    }
-
     public void setName(String name) {
         Name = name;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
     }
 
     private BigInteger ID;
 
     private String Name;
+
+    private String createTime;
 
     @Override
     public String toString() {

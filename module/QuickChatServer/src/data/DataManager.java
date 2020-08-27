@@ -149,8 +149,8 @@ public class DataManager {
      * @param file
      */
     private void CreateFile(File file) {
-        Debug.LogWarning(file.getName() + " 文件不存在");
         if (!file.getParentFile().exists()) {
+            Debug.LogWarning(file.getName() + " 文件不存在");
             //  路径不存在，尝试创建路径
             if (!file.getParentFile().mkdir()) {
                 //  路径创建失败

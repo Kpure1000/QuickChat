@@ -52,7 +52,7 @@ public class ServerListener implements Runnable {
             try {
                 // 反序列化消息
                 UserMessage msg = (UserMessage) objIn.readObject();
-                synchronized (serverListenerCallBacks) {
+//                synchronized (serverListenerCallBacks) {
                     switch (msg.getMessageType()) {
                         case Check_SignIn_ID -> {
                             //  按照ID登陆
@@ -61,19 +61,17 @@ public class ServerListener implements Runnable {
                             String passIn = msgContent[1];
                             // 检查是否已经登录
                             if (ServerListenerManager.getInstance().getServerListener(idIn) != null) {
-                                // 反馈 登录成功
-                                sendFeedBack(new ServerMessage(ServerMessage.MessageType.Fb_SignIn,
-                                        idIn, null, "pass"));
                                 // 强制之前登陆的用户下线
                                 ServerListenerManager.getInstance().getServerListener(idIn).ForcedOffLine();
-                            } else if (DataManager.getInstance().getUserDataContain().checkPassword_ID(idIn, passIn)) {
+                            }
+                            if (DataManager.getInstance().getUserDataContain().checkPassword_ID(idIn, passIn)) {
                                 // 根据库检查用户信息
                                 // 更新ID
                                 ServerListenerManager.getInstance().updateListenerID(ID, idIn);
                                 this.ID = idIn;
                                 // TODO反馈验证通过
                                 ServerMessage message = new ServerMessage(ServerMessage.MessageType.Fb_SignIn,
-                                        null, ID, "pass#" +
+                                        idIn, ID, "pass#" +
                                         DataManager.getInstance().getUserDataContain().getUserData(ID).toString()
                                 );
                                 sendFeedBack(message);
@@ -144,7 +142,7 @@ public class ServerListener implements Runnable {
                                     msg.getSenderID(), msg.getReceiverID(), msg.getContent()));
                         }
                     }
-                }
+//                }
             } catch (SocketException e) {
                 Debug.LogError("监听服务Socket异常, at ID: " + ID.toString());
                 break;
@@ -165,13 +163,13 @@ public class ServerListener implements Runnable {
      */
     public void Close() {
         listening = false;
-        synchronized (serverListenerCallBacks) {
+//        synchronized (serverListenerCallBacks) {
             for (ServerListenerCallBack item :
                     serverListenerCallBacks) {
                 item.OnUserOffLine(ID);
             }
             serverListenerCallBacks.clear();
-        }
+//        }
         //删除监听
         ServerListenerManager.getInstance().removeListener(this);
         try {
@@ -208,21 +206,21 @@ public class ServerListener implements Runnable {
                 objOut = new ObjectOutputStream(serverListener.getSocket().getOutputStream());
             objOut.writeObject(serverMessage);
             objOut.flush();
-            synchronized (serverListenerCallBacks) {
+//            synchronized (serverListenerCallBacks) {
                 for (ServerListenerCallBack item :
                         serverListenerCallBacks) {
                     item.OnSendMessageSuccess(serverMessage);
                 }
-            }
+//            }
             return true;
         } catch (IOException e) {
             if (serverListener.getSocket().isConnected()) {
-                synchronized (serverListenerCallBacks) {
+//                synchronized (serverListenerCallBacks) {
                     for (ServerListenerCallBack item :
                             serverListenerCallBacks) {
                         item.OnSendMessageFailed(serverMessage);
                     }
-                }
+//                }
             }
             return false;
         }
@@ -313,14 +311,14 @@ public class ServerListener implements Runnable {
      * @param serverListenerCallBack 监听
      */
     public void addServerListenerCallBack(ServerListenerCallBack serverListenerCallBack) {
-        synchronized (serverListenerCallBacks) {
+//        synchronized (serverListenerCallBacks) {
             for (ServerListenerCallBack item :
                     serverListenerCallBacks) {
                 if (item.equals(serverListenerCallBack))
                     return;
             }
             serverListenerCallBacks.add(serverListenerCallBack);
-        }
+//        }
     }
 
     /**
@@ -329,9 +327,9 @@ public class ServerListener implements Runnable {
      * @param serverListenerCallBack 监听
      */
     public void removeServerListenerCallBack(ServerListenerCallBack serverListenerCallBack) {
-        synchronized (serverListenerCallBacks) {
+//        synchronized (serverListenerCallBacks) {
             serverListenerCallBacks.remove(serverListenerCallBack);
-        }
+//        }
     }
 
     /**
