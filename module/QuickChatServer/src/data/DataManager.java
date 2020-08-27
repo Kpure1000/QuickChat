@@ -21,7 +21,7 @@ public class DataManager {
      */
     public void Start() {
         LoadUserData();
-//        LoadGroupData();
+        LoadGroupData();
     }
 
     @Deprecated

@@ -1,6 +1,5 @@
 package data;
 
-import com.esotericsoftware.kryo.NotNull;
 import information.UserInfo;
 
 import java.io.Serializable;

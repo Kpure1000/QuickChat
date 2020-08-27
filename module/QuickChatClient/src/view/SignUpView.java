@@ -41,7 +41,7 @@ public class SignUpView extends JFrame {
         title.setForeground(new Color(MyLightRgb));
         this.add(title);
         //第零层
-        JLabel closeLabel = new JLabel("X");
+        JLabel closeLabel = new JLabel("返回");
         closeLabel.setBackground(new Color(MyDarkRgb));
         closeLabel.setForeground(new Color(MyLightRgb));
         closeLabel.setFont(new Font("微软雅黑", Font.ROMAN_BASELINE, 20));
@@ -136,8 +136,6 @@ public class SignUpView extends JFrame {
                 );
                 // TODO回到上一登陆界面
                 SignUpView.this.dispose();
-                // 自动填充
-                signUpViewCallBack.OnAutoFilltoSignIn(newID, repass);
             }
 
             @Override
@@ -208,6 +206,8 @@ public class SignUpView extends JFrame {
                 if (signUp != null) {
                     signUp.Close();
                 }
+                // 自动填充
+                signUpViewCallBack.OnAutoFilltoSignIn(null, null);
                 super.windowClosed(e);
             }
         });
