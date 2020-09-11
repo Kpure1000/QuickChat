@@ -60,7 +60,6 @@ public class ChatView {
         chatFrame.setVisible(true);
         chatFrame.setSize(800, 600);
         chatFrame.setLocationRelativeTo(null);
-//        chatFrame.setAlwaysOnTop(true);
         chatFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         chatFrame.getContentPane().setBackground(new Color(0x999999));
         chatFrame.setTitle("聊天");
@@ -252,8 +251,6 @@ public class ChatView {
         settingPanel.add(topSettingPanel, BorderLayout.EAST);
         BT_MyInfo = new JButton();
         BT_MyInfo.setAutoscrolls(true);
-        BT_MyInfo.setBackground(new Color(-7733417));
-        BT_MyInfo.setForeground(new Color(-12763327));
         BT_MyInfo.setHideActionText(false);
         BT_MyInfo.setHorizontalAlignment(0);
         BT_MyInfo.setOpaque(true);

@@ -219,8 +219,6 @@
                     <constraints/>
                     <properties>
                       <autoscrolls value="true"/>
-                      <background color="-7733417"/>
-                      <foreground color="-12763327"/>
                       <hideActionText value="false"/>
                       <horizontalAlignment value="0"/>
                       <opaque value="true"/>

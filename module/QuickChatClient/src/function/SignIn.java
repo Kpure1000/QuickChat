@@ -162,6 +162,7 @@ public class SignIn extends BasicFunction {
                             DataManager.getInstance().updatePrivateConfig(new UserInfo(
                                     new BigInteger(fbStr[1]), fbStr[2], fbStr[3], fbStr[4], fbStr[5], fbStr[6])
                             );
+                            //用户管理器 登录的用户作为当前用户
                             UserManager.getInstance().setUserInfo(ID);
                             //更新ID记录
                             DataManager.getInstance().updateIDRecordAndPasswordConfig(
