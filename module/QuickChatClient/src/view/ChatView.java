@@ -7,6 +7,8 @@ import function.ChatManager;
 import function.ChatManagerCallBack;
 import function.Debug;
 import message.ServerMessage;
+import message.UserMessage;
+import network.ClientNetwork;
 import view.listInfoView.listUI.FriendListCell;
 import view.listInfoView.listUI.ListCell;
 import view.listInfoView.listUI.ListPanel;
@@ -73,26 +75,29 @@ public class ChatView {
         //好友列表///////////////////////
 
         friendList = new ListPanel();
-        for (int i = 0; i < 20; i++) {
-            FriendListCell newCell = new FriendListCell(
-                    new ImageIcon("image/h1.jpg"), new BigInteger(Integer.toString(i)), "好友" + (i + 1),
-                    "富强民主文明和谐", friendListCell -> {
-                friendList.setLastSelectedCell(friendListCell);
-                LB_ChatObjTitle.setText(friendListCell.getFormatName());
-                chatManager.SelectChatObject(friendListCell.getID());
-            });
-            newCell.setColor(new Color(0xE5E5E5),
-                    new Color(0x9C9C9C));
-            newCell.setEnabled(i % 3 == 0);
-            newCell.setNotice(i % 4 == 0);
-            //加入列表
-            friendList.insertCell(newCell);
-        }
+//        for (int i = 0; i < 20; i++) {
+//            FriendListCell newCell = new FriendListCell(
+//                    new ImageIcon("image/h1.jpg"), new BigInteger(Integer.toString(i)), "好友" + (i + 1),
+//                    "富强民主文明和谐", friendListCell -> {
+//                friendList.setLastSelectedCell(friendListCell);
+//                LB_ChatObjTitle.setText(friendListCell.getFormatName());
+//                chatManager.SelectChatObject(friendListCell.getID());
+//            });
+//            newCell.setColor(new Color(0xE5E5E5),
+//                    new Color(0x9C9C9C));
+//            newCell.setEnabled(i % 3 == 0);
+//            newCell.setNotice(i % 4 == 0);
+//            //加入列表
+//            friendList.insertCell(newCell);
+//        }
         ((GridLayout) friendList.getLayout()).setVgap(5);
         JSP_FriendList.setViewportView(friendList);
         LB_ChatObjTitle.setText("<html><font size=\"5\" style = \"color:#89FF57\">请选择聊天对象</font></html>");
 
-        BT_MyInfo.addActionListener(e -> friendList.sortListCell(compByNotice));
+        BT_MyInfo.addActionListener(e -> {
+            friendList.sortListCell(compByNotice);
+            chatManager.requireList();
+        });
 
         BT_AddFriend.addActionListener(e -> friendList.sortListCell(compByEnable));
 
@@ -138,6 +143,7 @@ public class ChatView {
         chatManager.setChatManagerCallBack(new ChatManagerCallBack() {
             @Override
             public void OnForceClose() {
+                JOptionPane.showMessageDialog(chatFrame, "强制下线通知", "强制下线通知", JOptionPane.WARNING_MESSAGE);
                 chatFrame.dispose();
             }
 
@@ -161,7 +167,7 @@ public class ChatView {
 
             @Override
             public void OnReceiveOnLineList(ArrayList<BigInteger> idList) {
-                friendList.removeAll();
+                friendList.RemoveAllCell();
                 Debug.Log("获取到列表:");
                 for (var item :
                         idList) {

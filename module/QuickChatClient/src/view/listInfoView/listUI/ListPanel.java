@@ -1,5 +1,7 @@
 package view.listInfoView.listUI;
 
+import function.Debug;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -41,6 +43,12 @@ public class ListPanel extends JPanel {
             item.setHighlight(item.equals(lastSelectedCell));
         }
         this.lastSelectedCell = lastSelectedCell;
+    }
+
+    public void RemoveAllCell() {
+        this.removeAll();
+        listCells.clear();
+        updateLayout();
     }
 
     /**
@@ -113,13 +121,16 @@ public class ListPanel extends JPanel {
      * 更新布局（主要是更新行数）
      */
     private void updateLayout() {
-        gridLayout.setRows(listCells.size());
+        gridLayout.setRows(Math.max(MinRowNumbers, listCells.size()));
+        this.updateUI();
     }
 
     /**
      * 网格布局器
      */
     private GridLayout gridLayout;
+
+    private final int MinRowNumbers = 10;
 
     /**
      * 获取元素列表

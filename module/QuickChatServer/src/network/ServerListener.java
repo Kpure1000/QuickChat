@@ -2,6 +2,7 @@ package network;
 
 import data.*;
 import function.Debug;
+import function.UserManager;
 import message.ServerMessage;
 import message.UserMessage;
 
@@ -62,7 +63,7 @@ public class ServerListener implements Runnable {
                         // 检查是否已经登录
                         if (ServerListenerManager.getInstance().getServerListener(idIn) != null) {
                             // 强制之前登陆的用户下线
-                            Debug.Log("用户"+idIn+"已经在线，强制下线");
+                            Debug.Log("用户" + idIn + "已经在线，强制下线");
                             ServerListenerManager.getInstance().getServerListener(idIn).ForcedOffLine();
                         }
                         if (DataManager.getInstance().getUserDataContain().checkPassword_ID(idIn, passIn)) {
@@ -75,13 +76,17 @@ public class ServerListener implements Runnable {
                                     idIn, ID, "pass#" +
                                     DataManager.getInstance().getUserDataContain().getUserData(ID).toString()
                             );
-                            sendFeedBack(message);
-                            // TODO 用户管理器中该用户在线，更新列表
-
+                            //  call back
                             for (ServerListenerCallBack item :
                                     serverListenerCallBacks) {
                                 item.OnUserSignIn(idIn);
                             }
+                            sendFeedBack(message);
+                            //  Set online
+                            UserManager.getInstance().UserOnline(idIn);
+                            //  Notice client update online list
+                            sendMessage(new ServerMessage(ServerMessage.MessageType.Fb_OnlineList,
+                                    null, null, UserManager.getInstance().getOnlineListStr()));
                         } else {
                             // TODO反馈验证失败
                             sendFeedBack(new ServerMessage(ServerMessage.MessageType.Fb_SignIn,
@@ -108,21 +113,17 @@ public class ServerListener implements Runnable {
                     case Require_Offline -> {
                         this.Close();
                         // TODO 下线请求，暂时这么写
+                        sendMessage(new ServerMessage(ServerMessage.MessageType.Fb_OnlineList,
+                                null, null, UserManager.getInstance().getOnlineListStr()));
                         return;
                     }
                     case Require_OnLineList -> {
                         // TODO 在线列表请求
-                        var idList = ServerListenerManager.getInstance().getOnLineIDList();
-                        StringBuilder idListStr = new StringBuilder();
-                        for (int i = 0; i < idList.size(); i++) {
-                            idListStr.append(idList.get(i));
-                            idListStr.append('#');
-//                            if (i < idList.size() - 1) {
-//                                idListStr.append('#');
-//                            }
-                        }
-                        sendFeedBack(new ServerMessage(ServerMessage.MessageType.Fb_OnlineList,
-                                null, msg.getSenderID(), idListStr.toString()));
+                        Debug.Log("收到" + msg.getSenderID() + "的在线列表请求");
+//                        sendFeedBack(new ServerMessage(ServerMessage.MessageType.Fb_OnlineList,
+//                                null, msg.getSenderID(), UserManager.getInstance().getOnlineListStr()));
+                        sendMessage(new ServerMessage(ServerMessage.MessageType.Fb_OnlineList,
+                                null, null, UserManager.getInstance().getOnlineListStr()));
                     }
                     case Require_ApplyFriend -> {
                         // TODO 好友申请
@@ -157,15 +158,21 @@ public class ServerListener implements Runnable {
                 DataManager.getInstance().SaveToFile();
 //                }
             } catch (SocketException e) {
-                Debug.LogError("监听服务Socket异常, at ID: " + ID.toString());
+                if (listening) {
+                    Debug.LogError("监听服务Socket异常, at ID: " + ID.toString());
+                }
                 break;
             } catch (IOException e) {
-                Debug.LogError("监听服务输入输出异常, at ID: " + ID.toString());
-                e.printStackTrace();
+                if (listening) {
+                    Debug.LogError("监听服务输入输出异常, at ID: " + ID.toString());
+//                    e.printStackTrace();
+                }
                 break;
             } catch (ClassNotFoundException e) {
-                Debug.LogError("反序列化异常, at ID: " + ID.toString());
-                //e.printStackTrace();
+                if (listening) {
+                    Debug.LogError("反序列化异常, at ID: " + ID.toString());
+                    //e.printStackTrace();
+                }
                 break;
             }
         }
@@ -175,6 +182,7 @@ public class ServerListener implements Runnable {
      * 关闭该监听
      */
     public void Close() {
+        UserManager.getInstance().UserOffline(ID);
         listening = false;
 //        synchronized (serverListenerCallBacks) {
         for (ServerListenerCallBack item :
@@ -195,28 +203,19 @@ public class ServerListener implements Runnable {
     }
 
     /**
-     * 给自己管理的用户反馈消息
-     *
-     * @param serverMessage 服务器消息
-     */
-    private void sendFeedBack(ServerMessage serverMessage) {
-        sendFeedBack(this, serverMessage);
-    }
-
-    /**
      * 给指定用户监听任务 发送消息
      *
-     * @param serverListener 用户所在的监听
      * @param serverMessage  反馈的信息
      */
-    private boolean sendFeedBack(ServerListener serverListener, ServerMessage serverMessage) {
+    private boolean sendFeedBack(ServerMessage serverMessage) {
         try {
             if (serverMessage == null) {
                 System.out.println("消息传入错误");
                 return false;
             }
-            if (objOut == null) // 加载对象输出流
-                objOut = new ObjectOutputStream(serverListener.getSocket().getOutputStream());
+            if (objOut == null) { // 加载对象输出流
+                objOut = new ObjectOutputStream(this.getSocket().getOutputStream());
+            }
             objOut.writeObject(serverMessage);
             objOut.flush();
 //            synchronized (serverListenerCallBacks) {
@@ -227,7 +226,7 @@ public class ServerListener implements Runnable {
 //            }
             return true;
         } catch (IOException e) {
-            if (serverListener.getSocket().isConnected()) {
+            if (this.getSocket().isConnected()) {
 //                synchronized (serverListenerCallBacks) {
                 for (ServerListenerCallBack item :
                         serverListenerCallBacks) {
@@ -289,20 +288,44 @@ public class ServerListener implements Runnable {
         ServerListener serverListener = ServerListenerManager.getInstance().getServerListener(receiverID);
         if (serverListener != null) {
             // 该用户已上线，TODO 按照消息要求发送
-            return sendFeedBack(serverListener, serverMessage);
+            return serverListener.sendFeedBack(serverMessage);
         } else {
             //缓存未读
-            MessageCache.getInstance().addMessage(serverMessage.getReceiverID(), serverMessage);
+            Debug.LogWarning("该用户未上线，先缓存");
+            MessageCache.getInstance().addMessage(receiverID, serverMessage);
             return false;
         }
+    }
+
+    /**
+     * 发送广播
+     *
+     * @param serverMessage msg
+     * @return all success
+     */
+    private boolean sendMessage(ServerMessage serverMessage) {
+        boolean isSuccess = true;
+        Debug.Log("开始广播:");
+        for (BigInteger onlineID :
+                UserManager.getInstance().getOnlineList()) {
+            Debug.Log("广播给" + onlineID);
+            serverMessage.setReceiverID(onlineID);
+            if (!sendMessage(onlineID, serverMessage)) {
+                isSuccess = false;
+            }
+        }
+        return isSuccess;
     }
 
     /**
      * 强制下线
      */
     public void ForcedOffLine() {
-        sendFeedBack(new ServerMessage(ServerMessage.
-                MessageType.Require_ForcedOffLine, null, ID, ""));
+        // close self
+        UserManager.getInstance().UserOffline(ID);
+        sendFeedBack(new ServerMessage(ServerMessage.MessageType.Require_ForcedOffLine,
+                null, ID, ""));
+        this.Close();
     }
 
     /**

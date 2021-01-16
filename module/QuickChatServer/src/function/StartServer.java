@@ -36,8 +36,8 @@ public class StartServer {
                 serverListenerCallBack = new ServerListenerCallBackAdapter() {
                     @Override
                     public ServerListenerCallBack OnSendMessageSuccess(ServerMessage message) {
-//                        Debug.Log("成功地向<" + message.getReceiverID() +
-//                                ">发送'" + message.getMessageType() + "':" + message.getContent());
+                        Debug.Log("成功地向<" + message.getReceiverID() +
+                                ">发送'" + message.getMessageType() + "':" + message.getContent());
                         return super.OnSendMessageSuccess(message);
                     }
 

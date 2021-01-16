@@ -43,15 +43,15 @@ public class ClientNetwork {
      */
     public synchronized void addNetCallBack(NetCallBack netCallBack) {
 //        synchronized (netCallBackList) {
-            if (netCallBack != null) {
-                for (var item :
-                        netCallBackList) {
-                    if (item == netCallBack) {
-                        return;
-                    }
+        if (netCallBack != null) {
+            for (var item :
+                    netCallBackList) {
+                if (item == netCallBack) {
+                    return;
                 }
-                this.netCallBackList.add(netCallBack);
             }
+            this.netCallBackList.add(netCallBack);
+        }
 //        }
     }
 
@@ -62,9 +62,9 @@ public class ClientNetwork {
      */
     public synchronized void removeNetCallBack(NetCallBack netCallBack) {
 //        synchronized (netCallBackList) {
-            if (netCallBack != null) {
-                this.netCallBackList.removeIf(item -> item.equals(netCallBack));
-            }
+        if (netCallBack != null) {
+            this.netCallBackList.removeIf(item -> item.equals(netCallBack));
+        }
 //        }
     }
 
@@ -83,11 +83,11 @@ public class ClientNetwork {
             curHost = host;
             curPort = port;
 //            synchronized (netCallBackList) {
-                for (var item :
-                        netCallBackList) {
-                    //连接成功回调
-                    item.OnConnectSuccess();
-                }
+            for (var item :
+                    netCallBackList) {
+                //连接成功回调
+                item.OnConnectSuccess();
+            }
 //            }
             //输出流
             objOut = new ObjectOutputStream(socket.getOutputStream());
@@ -96,11 +96,11 @@ public class ClientNetwork {
             beginListening(socket);
         } catch (IOException e) {
 //            synchronized (netCallBackList) {
-                for (var item :
-                        netCallBackList) {
-                    //连接失败回调
-                    item.OnConnectFailed();
-                }
+            for (var item :
+                    netCallBackList) {
+                //连接失败回调
+                item.OnConnectFailed();
+            }
 //            }
             isConnected = false;
         }
@@ -123,16 +123,16 @@ public class ClientNetwork {
             if (isConnected) {
                 try {
                     //发送下线消息
-                    sendMessage(new UserMessage(UserMessage.MessageType.Require_Offline,
+                    ClientNetwork.getInstance().sendMessage(new UserMessage(UserMessage.MessageType.Require_Offline,
                             null, null, ""));
                     //关闭监听
                     listener.Close();
 //                    synchronized (netCallBackList) {
-                        for (var item :
-                                netCallBackList) {
-                            //断开连接回调
-                            item.OnDisconnect();
-                        }
+                    for (var item :
+                            netCallBackList) {
+                        //断开连接回调
+                        item.OnDisconnect();
+                    }
 //                    }
                     socket.close();
                 } catch (IOException e) {
@@ -164,9 +164,9 @@ public class ClientNetwork {
             return;
         }
 //        synchronized (listener) {
-            if (listener != null) {
-                listener.addListenerCallBack(listenerCallBack);
-            }
+        if (listener != null) {
+            listener.addListenerCallBack(listenerCallBack);
+        }
 //        }
     }
 
@@ -181,9 +181,9 @@ public class ClientNetwork {
             return;
         }
 //        synchronized (listener) {
-            if (listener != null) {
-                listener.removeListenerCallBack(listenerCallBack);
-            }
+        if (listener != null) {
+            listener.removeListenerCallBack(listenerCallBack);
+        }
 //        }
     }
 
@@ -213,10 +213,10 @@ public class ClientNetwork {
             objOut.writeObject(userMessage);
             objOut.flush();
 //            synchronized (netCallBackList) {
-                for (NetCallBack item :
-                        netCallBackList) {
-                    item.OnSendMessageSuccess(userMessage);
-                }
+            for (NetCallBack item :
+                    netCallBackList) {
+                item.OnSendMessageSuccess(userMessage);
+            }
 //            }
         } catch (IOException e) {
             if (!socket.isConnected()) {
@@ -227,10 +227,10 @@ public class ClientNetwork {
                     while (!isConnected && retryCount < 5) {
                         retryCount++;
 //                        synchronized (netCallBackList) {
-                            for (NetCallBack item :
-                                    netCallBackList) {
-                                item.OnSendMessageSuccess(userMessage);
-                            }
+                        for (NetCallBack item :
+                                netCallBackList) {
+                            item.OnSendMessageSuccess(userMessage);
+                        }
 //                        }
                         Debug.LogWarning("连接断开，发送失败;正在尝试重新连接...");
                         connect(curHost, curPort);
@@ -249,8 +249,8 @@ public class ClientNetwork {
                     retryCount = 0;
                 }).start();
             } else {
-                Debug.Log("输入输出流异常");
-                e.printStackTrace();
+                Debug.LogError("输入输出流异常");
+//                e.printStackTrace();
             }
         }
     }

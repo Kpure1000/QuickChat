@@ -82,7 +82,7 @@ public class ChatManager extends BasicFunction {
 
             @Override
             public ListenerCallBack OnReceiveTestMsg(ServerMessage serverMessage) {
-                Debug.Log("收到" + serverMessage.getSenderID() + "的测试消息: " + serverMessage.getContent());
+//                Debug.Log("收到" + serverMessage.getSenderID() + "的测试消息: " + serverMessage.getContent());
                 chatManagerCallBack.OnReceiveTestMsg(serverMessage);
                 return this;
             }

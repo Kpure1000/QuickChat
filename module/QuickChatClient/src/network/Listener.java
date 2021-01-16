@@ -126,6 +126,7 @@ public class Listener implements Runnable {
                             }
                         }
                         case Fb_OnlineList -> {
+                            Debug.Log("收到在线请求的回复");
                             for (var item :
                                     listenerCallBackList) {
                                 if (item != null) {
