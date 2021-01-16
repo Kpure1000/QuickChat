@@ -129,9 +129,7 @@ public class Listener implements Runnable {
                             for (var item :
                                     listenerCallBackList) {
                                 if (item != null) {
-                                    item.OnReceiveOnLineList(
-                                            // TODO 应该是缺少一个ArrayList
-                                    );
+                                    item.OnReceiveOnLineList(serverMessage);
                                 }
                             }
                         }

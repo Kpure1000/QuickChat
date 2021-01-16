@@ -89,7 +89,7 @@
                         <properties/>
                         <border type="none"/>
                         <children>
-                          <component id="9b2db" class="javax.swing.JTextArea" binding="textArea1" default-binding="true">
+                          <component id="9b2db" class="javax.swing.JTextArea" binding="textInput">
                             <constraints/>
                             <properties>
                               <background color="-1379847"/>

@@ -41,7 +41,7 @@ public abstract class ListenerCallBackAdapter implements ListenerCallBack {
     /**
      * {@inheritDoc}
      *
-     * @param fbState 反馈申请结果
+     * @param serverMessage 反馈申请结果
      * @return
      */
     @Override
@@ -88,7 +88,7 @@ public abstract class ListenerCallBackAdapter implements ListenerCallBack {
      * @return
      */
     @Override
-    public ListenerCallBack OnReceiveOnLineList() {
+    public ListenerCallBack OnReceiveOnLineList(ServerMessage serverMessage) {
         return this;
     }
 

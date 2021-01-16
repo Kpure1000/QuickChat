@@ -53,95 +53,108 @@ public class ServerListener implements Runnable {
                 // 反序列化消息
                 UserMessage msg = (UserMessage) objIn.readObject();
 //                synchronized (serverListenerCallBacks) {
-                    switch (msg.getMessageType()) {
-                        case Check_SignIn_ID -> {
-                            //  按照ID登陆
-                            String[] msgContent = msg.getContent().split("#");
-                            BigInteger idIn = new BigInteger(msgContent[0]);
-                            String passIn = msgContent[1];
-                            // 检查是否已经登录
-                            if (ServerListenerManager.getInstance().getServerListener(idIn) != null) {
-                                // 强制之前登陆的用户下线
-                                ServerListenerManager.getInstance().getServerListener(idIn).ForcedOffLine();
-                            }
-                            if (DataManager.getInstance().getUserDataContain().checkPassword_ID(idIn, passIn)) {
-                                // 根据库检查用户信息
-                                // 更新ID
-                                ServerListenerManager.getInstance().updateListenerID(ID, idIn);
-                                this.ID = idIn;
-                                // TODO反馈验证通过
-                                ServerMessage message = new ServerMessage(ServerMessage.MessageType.Fb_SignIn,
-                                        idIn, ID, "pass#" +
-                                        DataManager.getInstance().getUserDataContain().getUserData(ID).toString()
-                                );
-                                sendFeedBack(message);
-                                // TODO 用户管理器中该用户在线，更新列表
-
-                                for (ServerListenerCallBack item :
-                                        serverListenerCallBacks) {
-                                    item.OnUserSignIn(idIn);
-                                }
-                            } else {
-                                // TODO反馈验证失败
-                                sendFeedBack(new ServerMessage(ServerMessage.MessageType.Fb_SignIn,
-                                        null, this.ID, "failed"));
-                            }
+                switch (msg.getMessageType()) {
+                    case Check_SignIn_ID -> {
+                        //  按照ID登陆
+                        String[] msgContent = msg.getContent().split("#");
+                        BigInteger idIn = new BigInteger(msgContent[0]);
+                        String passIn = msgContent[1];
+                        // 检查是否已经登录
+                        if (ServerListenerManager.getInstance().getServerListener(idIn) != null) {
+                            // 强制之前登陆的用户下线
+                            Debug.Log("用户"+idIn+"已经在线，强制下线");
+                            ServerListenerManager.getInstance().getServerListener(idIn).ForcedOffLine();
                         }
+                        if (DataManager.getInstance().getUserDataContain().checkPassword_ID(idIn, passIn)) {
+                            // 根据库检查用户信息
+                            // 更新ID
+                            ServerListenerManager.getInstance().updateListenerID(ID, idIn);
+                            this.ID = idIn;
+                            // TODO反馈验证通过
+                            ServerMessage message = new ServerMessage(ServerMessage.MessageType.Fb_SignIn,
+                                    idIn, ID, "pass#" +
+                                    DataManager.getInstance().getUserDataContain().getUserData(ID).toString()
+                            );
+                            sendFeedBack(message);
+                            // TODO 用户管理器中该用户在线，更新列表
+
+                            for (ServerListenerCallBack item :
+                                    serverListenerCallBacks) {
+                                item.OnUserSignIn(idIn);
+                            }
+                        } else {
+                            // TODO反馈验证失败
+                            sendFeedBack(new ServerMessage(ServerMessage.MessageType.Fb_SignIn,
+                                    null, this.ID, "failed"));
+                        }
+                    }
 //                    case Check_SignIn_Email -> {
 //                    }
 //                    case Check_SignIn_Phone -> {
 //                    }
-                        case Require_SignUp -> {
-                            //  注册
-                            String[] msgContent = msg.getContent().split("#");
-                            String newName = msgContent[0];
-                            String password = msgContent[1];
-                            // 创建新用户
-                            BigInteger newID = DataManager.getInstance().getUserDataContain().
-                                    CreateNewUser(newName, password);
-                            // TODO反馈注册信息
-                            // 将新生成的ID作为 receiverID 发送
-                            sendFeedBack(new ServerMessage(ServerMessage.MessageType.Fb_SignUp,
-                                    null, newID, ""));
-                        }
-                        case Require_Offline -> {
-                            // TODO 下线请求，暂时这么写
-                            Close();
-                            return;
-                        }
-                        case Require_OnLineList -> {
-                            // TODO 在线列表请求
-
-                        }
-                        case Require_ApplyFriend -> {
-                            // TODO 好友申请
-
-                        }
-                        case Require_DeleteFriend -> {
-                        }
-                        case Require_CreateGroup -> {
-                        }
-                        case Require_DeleteGroup -> {
-                        }
-                        case Require_JoinGroup -> {
-                        }
-                        case Reply_FriendApply -> {
-                        }
-                        case Reply_GroupApply -> {
-                        }
-                        case Msg_Private -> {
-                            sendChatMessage(new ServerMessage(ServerMessage.MessageType.Msg_Private,
-                                    msg.getSenderID(), msg.getReceiverID(), msg.getContent()));
-                        }
-                        case Msg_Group -> {
-                            sendChatMessage(new ServerMessage(ServerMessage.MessageType.Msg_Group,
-                                    msg.getSenderID(), msg.getReceiverID(), msg.getContent()));
-                        }
-                        case Msg_Test -> {
-                            sendChatMessage(new ServerMessage(ServerMessage.MessageType.Msg_Test,
-                                    msg.getSenderID(), msg.getReceiverID(), msg.getContent()));
-                        }
+                    case Require_SignUp -> {
+                        //  注册
+                        String[] msgContent = msg.getContent().split("#");
+                        String newName = msgContent[0];
+                        String password = msgContent[1];
+                        // 创建新用户
+                        BigInteger newID = DataManager.getInstance().getUserDataContain().
+                                CreateNewUser(newName, password);
+                        // TODO反馈注册信息
+                        // 将新生成的ID作为 receiverID 发送
+                        sendFeedBack(new ServerMessage(ServerMessage.MessageType.Fb_SignUp,
+                                null, newID, ""));
                     }
+                    case Require_Offline -> {
+                        this.Close();
+                        // TODO 下线请求，暂时这么写
+                        return;
+                    }
+                    case Require_OnLineList -> {
+                        // TODO 在线列表请求
+                        var idList = ServerListenerManager.getInstance().getOnLineIDList();
+                        StringBuilder idListStr = new StringBuilder();
+                        for (int i = 0; i < idList.size(); i++) {
+                            idListStr.append(idList.get(i));
+                            idListStr.append('#');
+//                            if (i < idList.size() - 1) {
+//                                idListStr.append('#');
+//                            }
+                        }
+                        sendFeedBack(new ServerMessage(ServerMessage.MessageType.Fb_OnlineList,
+                                null, msg.getSenderID(), idListStr.toString()));
+                    }
+                    case Require_ApplyFriend -> {
+                        // TODO 好友申请
+
+                    }
+                    case Require_DeleteFriend -> {
+                    }
+                    case Require_CreateGroup -> {
+                    }
+                    case Require_DeleteGroup -> {
+                    }
+                    case Require_JoinGroup -> {
+                    }
+                    case Reply_FriendApply -> {
+                    }
+                    case Reply_GroupApply -> {
+                    }
+                    case Msg_Private -> {
+                        sendChatMessage(new ServerMessage(ServerMessage.MessageType.Msg_Private,
+                                msg.getSenderID(), msg.getReceiverID(), msg.getContent()));
+                    }
+                    case Msg_Group -> {
+                        sendChatMessage(new ServerMessage(ServerMessage.MessageType.Msg_Group,
+                                msg.getSenderID(), msg.getReceiverID(), msg.getContent()));
+                    }
+                    case Msg_Test -> {
+//                        Debug.Log("收到来自" + msg.getSenderID() + "的测试消息: " + msg.getContent());
+                        sendChatMessage(new ServerMessage(ServerMessage.MessageType.Msg_Test,
+                                msg.getSenderID(), msg.getSenderID(), msg.getContent()));
+                    }
+                }
+                DataManager.getInstance().SaveToFile();
 //                }
             } catch (SocketException e) {
                 Debug.LogError("监听服务Socket异常, at ID: " + ID.toString());
@@ -164,11 +177,11 @@ public class ServerListener implements Runnable {
     public void Close() {
         listening = false;
 //        synchronized (serverListenerCallBacks) {
-            for (ServerListenerCallBack item :
-                    serverListenerCallBacks) {
-                item.OnUserOffLine(ID);
-            }
-            serverListenerCallBacks.clear();
+        for (ServerListenerCallBack item :
+                serverListenerCallBacks) {
+            item.OnUserOffLine(ID);
+        }
+        serverListenerCallBacks.clear();
 //        }
         //删除监听
         ServerListenerManager.getInstance().removeListener(this);
@@ -207,19 +220,19 @@ public class ServerListener implements Runnable {
             objOut.writeObject(serverMessage);
             objOut.flush();
 //            synchronized (serverListenerCallBacks) {
-                for (ServerListenerCallBack item :
-                        serverListenerCallBacks) {
-                    item.OnSendMessageSuccess(serverMessage);
-                }
+            for (ServerListenerCallBack item :
+                    serverListenerCallBacks) {
+                item.OnSendMessageSuccess(serverMessage);
+            }
 //            }
             return true;
         } catch (IOException e) {
             if (serverListener.getSocket().isConnected()) {
 //                synchronized (serverListenerCallBacks) {
-                    for (ServerListenerCallBack item :
-                            serverListenerCallBacks) {
-                        item.OnSendMessageFailed(serverMessage);
-                    }
+                for (ServerListenerCallBack item :
+                        serverListenerCallBacks) {
+                    item.OnSendMessageFailed(serverMessage);
+                }
 //                }
             }
             return false;
@@ -312,12 +325,12 @@ public class ServerListener implements Runnable {
      */
     public void addServerListenerCallBack(ServerListenerCallBack serverListenerCallBack) {
 //        synchronized (serverListenerCallBacks) {
-            for (ServerListenerCallBack item :
-                    serverListenerCallBacks) {
-                if (item.equals(serverListenerCallBack))
-                    return;
-            }
-            serverListenerCallBacks.add(serverListenerCallBack);
+        for (ServerListenerCallBack item :
+                serverListenerCallBacks) {
+            if (item.equals(serverListenerCallBack))
+                return;
+        }
+        serverListenerCallBacks.add(serverListenerCallBack);
 //        }
     }
 
@@ -328,7 +341,7 @@ public class ServerListener implements Runnable {
      */
     public void removeServerListenerCallBack(ServerListenerCallBack serverListenerCallBack) {
 //        synchronized (serverListenerCallBacks) {
-            serverListenerCallBacks.remove(serverListenerCallBack);
+        serverListenerCallBacks.remove(serverListenerCallBack);
 //        }
     }
 

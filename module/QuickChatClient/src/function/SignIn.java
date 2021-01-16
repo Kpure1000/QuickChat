@@ -155,8 +155,6 @@ public class SignIn extends BasicFunction {
                         Debug.Log("监听回调获取到了-登陆请求的反馈: " + fbState);
                         String[] fbStr = fbState.split("#");
                         if (String.valueOf(fbStr[0]).equals("pass")) {
-                            //登录成功
-                            signInCallBack.OnSignInSuccess();
                             //本地登录
                             // TODO服务器反馈登录消息时，要增加一个UserInfo的详细反馈，并且传入这个setUserInfo
                             DataManager.getInstance().updatePrivateConfig(new UserInfo(
@@ -167,6 +165,8 @@ public class SignIn extends BasicFunction {
                             //更新ID记录
                             DataManager.getInstance().updateIDRecordAndPasswordConfig(
                                     ID, signInCallBack.OnNeedPassConfigUpdate() ? password : null);
+                            //登录成功
+                            signInCallBack.OnSignInSuccess();
                         } else if (fbState.equals("failed")) {
                             //登录失败
                             signInCallBack.OnSignInFailed();

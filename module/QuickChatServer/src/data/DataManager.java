@@ -192,6 +192,11 @@ public class DataManager {
         isClosed = true;
     }
 
+    public void SaveToFile(){
+        writeUserDataToFile();
+        writeGroupDataToFile();
+    }
+
     /**
      * 用户数据容器
      */

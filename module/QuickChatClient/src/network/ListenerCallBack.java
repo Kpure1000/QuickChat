@@ -78,7 +78,7 @@ public interface ListenerCallBack {
      *
      * @return ListenerCallBack
      */
-    public ListenerCallBack OnReceiveOnLineList(); //  TODO 缺参数
+    public ListenerCallBack OnReceiveOnLineList(ServerMessage serverMessage); //  TODO 缺参数
 
     /**
      * 强制下线

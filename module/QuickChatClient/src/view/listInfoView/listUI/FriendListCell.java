@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.math.BigInteger;
 
 /**
  * 好友列表单元
@@ -23,11 +24,12 @@ public class FriendListCell extends ListCell {
      * @param message          最新消息
      * @param selectedCallBack 被点击选择的回调接口
      */
-    public FriendListCell(ImageIcon icon, String name, String message, SelectedCallBack selectedCallBack) {
+    public FriendListCell(ImageIcon icon, BigInteger id, String name, String message, SelectedCallBack selectedCallBack) {
 
         super();
 
         this.cellIcon = icon;
+        this.id = id;
         this.cellName = name;
         this.cellMessage = message;
         this.selectedCallBack = selectedCallBack;
@@ -36,7 +38,7 @@ public class FriendListCell extends ListCell {
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                selectedCallBack.OnSelected(FriendListCell.this);
+                FriendListCell.this.selectedCallBack.OnSelected(FriendListCell.this);
                 //取消提醒状态
                 hasNewMessage = false;
             }
@@ -75,6 +77,10 @@ public class FriendListCell extends ListCell {
         return cellIcon;
     }
 
+    public BigInteger getID() {
+        return id;
+    }
+
     /**
      * 获取HTML化的所有文本
      *
@@ -102,6 +108,8 @@ public class FriendListCell extends ListCell {
     public void setCellIcon(ImageIcon cellIcon) {
         this.cellIcon = cellIcon;
     }
+
+    private BigInteger id;
 
     private String cellName;
 

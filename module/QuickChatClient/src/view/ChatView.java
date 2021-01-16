@@ -5,6 +5,8 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import function.ChatManager;
 import function.ChatManagerCallBack;
+import function.Debug;
+import message.ServerMessage;
 import view.listInfoView.listUI.FriendListCell;
 import view.listInfoView.listUI.ListCell;
 import view.listInfoView.listUI.ListPanel;
@@ -12,6 +14,8 @@ import view.listInfoView.listUI.ListPanel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Comparator;
 
 /**
@@ -22,7 +26,7 @@ public class ChatView {
     private JEditorPane editorPane1;
     private JButton BT_Info;
     private JButton BT_History;
-    private JTextArea textArea1;
+    private JTextArea textInput;
     private JPanel topSettingPanel;
     private JButton BT_AddFriend;
     private JButton BT_AddGroup;
@@ -71,10 +75,11 @@ public class ChatView {
         friendList = new ListPanel();
         for (int i = 0; i < 20; i++) {
             FriendListCell newCell = new FriendListCell(
-                    new ImageIcon("image/h1.jpg"), "好友" + (i + 1),
+                    new ImageIcon("image/h1.jpg"), new BigInteger(Integer.toString(i)), "好友" + (i + 1),
                     "富强民主文明和谐", friendListCell -> {
                 friendList.setLastSelectedCell(friendListCell);
                 LB_ChatObjTitle.setText(friendListCell.getFormatName());
+                chatManager.SelectChatObject(friendListCell.getID());
             });
             newCell.setColor(new Color(0xE5E5E5),
                     new Color(0x9C9C9C));
@@ -135,8 +140,70 @@ public class ChatView {
             public void OnForceClose() {
                 chatFrame.dispose();
             }
+
+            @Override
+            public void OnReceivePrivateMsg(ServerMessage serverMessage) {
+                chatContent += "\nPrivate: " + serverMessage.getContent();
+                editorPane1.setText(chatContent);
+            }
+
+            @Override
+            public void OnReceiveGroupMsg(ServerMessage serverMessage) {
+                chatContent += "\nGroup: " + serverMessage.getContent();
+                editorPane1.setText(chatContent);
+            }
+
+            @Override
+            public void OnReceiveTestMsg(ServerMessage serverMessage) {
+                chatContent += "\nTest: " + serverMessage.getContent();
+                editorPane1.setText(chatContent);
+            }
+
+            @Override
+            public void OnReceiveOnLineList(ArrayList<BigInteger> idList) {
+                friendList.removeAll();
+                Debug.Log("获取到列表:");
+                for (var item :
+                        idList) {
+                    Debug.Log("好友: " + item);
+                    FriendListCell newCell = new FriendListCell(
+                            new ImageIcon("image/h1.jpg"), item, item.toString(),
+                            "富强民主文明和谐", friendListCell -> {
+                        friendList.setLastSelectedCell(friendListCell);
+                        LB_ChatObjTitle.setText(friendListCell.getFormatName());
+                        chatManager.SelectChatObject(friendListCell.getID());
+                    });
+                    newCell.setColor(new Color(0xE5E5E5),
+                            new Color(0x9C9C9C));
+                    newCell.setEnabled(true);
+                    newCell.setNotice(false);
+                    //加入列表
+                    friendList.insertCell(newCell);
+                }
+            }
         });
 
+        textInput.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (KeyEvent.VK_ENTER == e.getKeyChar()) {
+                    if (textInput.getText().length() > 0 && !textInput.getText().equals("\n")) {
+                        chatManager.sendMessage(textInput.getText());
+                        textInput.setText("");
+                    }
+                }
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+        });
     }
 
     /**
@@ -194,12 +261,12 @@ public class ChatView {
         panel4.add(BT_History);
         final JScrollPane scrollPane1 = new JScrollPane();
         panel3.add(scrollPane1, BorderLayout.CENTER);
-        textArea1 = new JTextArea();
-        textArea1.setBackground(new Color(-1379847));
-        Font textArea1Font = this.$$$getFont$$$("Microsoft YaHei", -1, 18, textArea1.getFont());
-        if (textArea1Font != null) textArea1.setFont(textArea1Font);
-        textArea1.setForeground(new Color(-16777216));
-        scrollPane1.setViewportView(textArea1);
+        textInput = new JTextArea();
+        textInput.setBackground(new Color(-1379847));
+        Font textInputFont = this.$$$getFont$$$("Microsoft YaHei", -1, 18, textInput.getFont());
+        if (textInputFont != null) textInput.setFont(textInputFont);
+        textInput.setForeground(new Color(-16777216));
+        scrollPane1.setViewportView(textInput);
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new BorderLayout(0, 0));
         splitPane2.setLeftComponent(panel5);

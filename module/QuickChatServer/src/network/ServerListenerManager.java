@@ -1,6 +1,7 @@
 package network;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -98,6 +99,10 @@ public class ServerListenerManager {
      */
     public int getMaxListenerNumber() {
         return maxListenerNumber;
+    }
+
+    public ArrayList<BigInteger> getOnLineIDList(){
+        return new ArrayList<>(listenerPool.keySet());
     }
 
     /**

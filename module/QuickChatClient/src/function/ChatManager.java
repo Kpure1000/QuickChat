@@ -9,6 +9,7 @@ import network.ListenerCallBack;
 import network.ListenerCallBackAdapter;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 
 /**
  * 聊天管理功能
@@ -22,9 +23,6 @@ import java.math.BigInteger;
 public class ChatManager extends BasicFunction {
 
     public ChatManager() {
-
-
-
     }
 
     @Override
@@ -37,15 +35,28 @@ public class ChatManager extends BasicFunction {
         ClientNetwork.getInstance().Disconnect();
     }
 
+    public void SelectChatObject(BigInteger id){
+        curChatObject = id;
+    }
 
     /**
-     * 发送消息
+     * 发送聊天消息
      *
      * @param content
      */
     public void sendMessage(String content) {
-        ClientNetwork.getInstance().sendMessage(new UserMessage(UserMessage.MessageType.Msg_Test,
-                UserManager.getInstance().getUserInfo().getID(), curChatObject, content));
+        if (curChatObject != null) {
+            ClientNetwork.getInstance().sendMessage(new UserMessage(UserMessage.MessageType.Msg_Test,
+                    UserManager.getInstance().getUserInfo().getID(), curChatObject, content));
+        }
+    }
+
+    /**
+     * 请求在线列表
+     */
+    public void requireList() {
+        ClientNetwork.getInstance().sendMessage(new UserMessage(UserMessage.MessageType.Require_OnLineList,
+                UserManager.getInstance().getUserInfo().getID(), null, null));
     }
 
     public void setChatManagerCallBack(ChatManagerCallBack chatManagerCallBack) {
@@ -59,27 +70,41 @@ public class ChatManager extends BasicFunction {
 
             @Override
             public ListenerCallBack OnReceivePrivateMsg(ServerMessage serverMessage) {
+                chatManagerCallBack.OnReceivePrivateMsg(serverMessage);
                 return this;
             }
 
             @Override
             public ListenerCallBack OnReceiveGroupMsg(ServerMessage serverMessage) {
+                chatManagerCallBack.OnReceiveGroupMsg(serverMessage);
                 return this;
             }
 
             @Override
             public ListenerCallBack OnReceiveTestMsg(ServerMessage serverMessage) {
+                Debug.Log("收到" + serverMessage.getSenderID() + "的测试消息: " + serverMessage.getContent());
+                chatManagerCallBack.OnReceiveTestMsg(serverMessage);
                 return this;
             }
 
             @Override
-            public ListenerCallBack OnReceiveOnLineList() {
+            public ListenerCallBack OnReceiveOnLineList(ServerMessage serverMessage) {
+                // TODO 解析列表 id#id#id
+                Debug.Log("收到在线列表反馈: " + serverMessage.getContent());
+                String userListStr = serverMessage.getContent();
+                String[] idStrList = userListStr.split("#");
+                ArrayList<BigInteger> idList = new ArrayList<>();
+                for (String id :
+                        idStrList) {
+                    idList.add(new BigInteger(id));
+                }
+                chatManagerCallBack.OnReceiveOnLineList(idList);
                 return this;
             }
 
             @Override
             public ListenerCallBack OnForcedOffLine() {
-                if(chatManagerCallBack!=null) {
+                if (chatManagerCallBack != null) {
                     chatManagerCallBack.OnForceClose();
                 }
                 return this;
@@ -87,6 +112,8 @@ public class ChatManager extends BasicFunction {
         };
 
         ClientNetwork.getInstance().addListenerCallBack(listenerCallBack);
+
+        requireList();
     }
 
     /**
