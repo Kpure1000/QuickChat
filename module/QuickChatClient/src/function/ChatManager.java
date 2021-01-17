@@ -27,11 +27,10 @@ public class ChatManager extends BasicFunction {
 
     @Override
     public void Close() {
-        Debug.Log("关闭聊天界面");
+//        Debug.Log("关闭聊天界面");
         DataManager.getInstance().Close();
         ClientNetwork.getInstance().removeListenerCallBack(listenerCallBack);
         super.Close();
-        // TODO 还要弄一个ChatManagerCallBack
         ClientNetwork.getInstance().Disconnect();
     }
 
@@ -61,10 +60,10 @@ public class ChatManager extends BasicFunction {
 
     public void setChatManagerCallBack(ChatManagerCallBack chatManagerCallBack) {
         this.chatManagerCallBack = chatManagerCallBack;
-        listenerCallBack = new ListenerCallBackAdapter() {
+        ClientNetwork.getInstance().addListenerCallBack(listenerCallBack = new ListenerCallBackAdapter() {
             @Override
             public ListenerCallBack OnListeningStart() {
-                Debug.Log("聊天开始监听");
+//                Debug.Log("聊天开始监听");
                 return this;
             }
 
@@ -109,11 +108,8 @@ public class ChatManager extends BasicFunction {
                 }
                 return this;
             }
-        };
+        });
 
-        ClientNetwork.getInstance().addListenerCallBack(listenerCallBack);
-
-        requireList();
     }
 
     /**
