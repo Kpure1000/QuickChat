@@ -29,12 +29,12 @@ public class UserData extends BasicData {
         return email;
     }
 
-    @Deprecated
+//    @Deprecated
     public CopyOnWriteArrayList<BigInteger> getFriendList() {
         return friendList;
     }
 
-    @Deprecated
+//    @Deprecated
     public CopyOnWriteArrayList<BigInteger> getGroupList() {
         return groupList;
     }
@@ -71,10 +71,18 @@ public class UserData extends BasicData {
         return friendList.contains(ID);
     }
 
+    /**
+     * 添加好友
+     * @param ID
+     */
     public void addFriend(BigInteger ID) {
         friendList.add(ID);
     }
 
+    /**
+     * 删除好友
+     * @param ID
+     */
     public void removeFriend(BigInteger ID) {
         friendList.remove(ID);
     }
@@ -99,7 +107,7 @@ public class UserData extends BasicData {
     }
 
     /**
-     * 推出群聊
+     * 退出群聊
      *
      * @param ID
      */

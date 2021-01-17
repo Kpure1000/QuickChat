@@ -16,14 +16,14 @@ public class UserDataContain implements Serializable {
 
     public UserDataContain() {
         maxID = new BigInteger("10000");
-        MaxSignOutClientID = new BigInteger("1");
+        MaxSignOutClientID = new BigInteger("0");
     }
 
     /**
      * 重置用户数据
      */
     public void resetUserDataManager() {
-        MaxSignOutClientID = new BigInteger("1");
+        MaxSignOutClientID = new BigInteger("0");
     }
 
     /**
@@ -85,14 +85,14 @@ public class UserDataContain implements Serializable {
     }
 
     /**
-     * 获取目前未登录客户端的最大ID，并令该值自增
+     * 获取目前未登录的<b>临时</b>客户端的最大ID，并令该值自减
      *
      * @return ID最大值
      */
     public BigInteger getAndAddMaxDefaultID() {
         BigInteger tmpID = MaxSignOutClientID;
         //自增
-        MaxSignOutClientID = MaxSignOutClientID.add(new BigInteger("1"));
+        MaxSignOutClientID = MaxSignOutClientID.add(new BigInteger("-1"));
         return tmpID;
     }
 
@@ -107,7 +107,7 @@ public class UserDataContain implements Serializable {
     private BigInteger maxID;
 
     /**
-     * 这是未登录的客户端
+     * 这是未登录的临时客户端ID
      */
     private BigInteger MaxSignOutClientID;
 

@@ -63,8 +63,6 @@
                           <component id="32b4e" class="javax.swing.JButton" binding="BT_Emoji">
                             <constraints/>
                             <properties>
-                              <background color="-9273713"/>
-                              <foreground color="-1379847"/>
                               <horizontalAlignment value="0"/>
                               <horizontalTextPosition value="0"/>
                               <text value="表情"/>
@@ -74,8 +72,6 @@
                           <component id="abe78" class="javax.swing.JButton" binding="BT_History">
                             <constraints/>
                             <properties>
-                              <background color="-9273713"/>
-                              <foreground color="-1379847"/>
                               <horizontalAlignment value="0"/>
                               <horizontalTextPosition value="0"/>
                               <text value="历史记录"/>
@@ -166,8 +162,6 @@
                               <component id="d3c95" class="javax.swing.JButton" binding="BT_Info">
                                 <constraints/>
                                 <properties>
-                                  <background color="-7733417"/>
-                                  <foreground color="-12763327"/>
                                   <horizontalAlignment value="0"/>
                                   <horizontalTextPosition value="0"/>
                                   <text value="查看资料"/>
@@ -230,8 +224,6 @@
                     <constraints/>
                     <properties>
                       <autoscrolls value="true"/>
-                      <background color="-7733417"/>
-                      <foreground color="-12763327"/>
                       <hideActionText value="false"/>
                       <horizontalAlignment value="0"/>
                       <opaque value="true"/>
@@ -243,8 +235,6 @@
                     <constraints/>
                     <properties>
                       <autoscrolls value="true"/>
-                      <background color="-7733417"/>
-                      <foreground color="-12763327"/>
                       <hideActionText value="false"/>
                       <horizontalAlignment value="0"/>
                       <opaque value="true"/>
@@ -256,8 +246,6 @@
                     <constraints/>
                     <properties>
                       <autoscrolls value="true"/>
-                      <background color="-7733417"/>
-                      <foreground color="-12763327"/>
                       <hideActionText value="false"/>
                       <horizontalAlignment value="0"/>
                       <opaque value="true"/>
