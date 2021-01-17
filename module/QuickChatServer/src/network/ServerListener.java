@@ -150,7 +150,6 @@ public class ServerListener implements Runnable {
                                 msg.getSenderID(), msg.getReceiverID(), msg.getContent()));
                     }
                     case Msg_Test -> {
-//                        Debug.Log("收到来自" + msg.getSenderID() + "的测试消息: " + msg.getContent());
                         sendChatMessage(new ServerMessage(ServerMessage.MessageType.Msg_Test,
                                 msg.getSenderID(), msg.getSenderID(), msg.getContent()));
                     }

@@ -3,20 +3,28 @@ package view;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import data.DataManager;
+import data.MessageContent;
+import data.UserManager;
 import function.ChatManager;
 import function.ChatManagerCallBack;
 import function.Debug;
 import message.ServerMessage;
+import message.UserMessage;
 import view.listInfoView.listUI.FriendListCell;
 import view.listInfoView.listUI.ListCell;
 import view.listInfoView.listUI.ListPanel;
 
 import javax.swing.*;
+import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
 import java.awt.event.*;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 聊天主页
@@ -84,7 +92,10 @@ public class ChatView {
         friendList = new ListPanel();
         ((GridLayout) friendList.getLayout()).setVgap(5);
         JSP_FriendList.setViewportView(friendList);
-        LB_ChatObjTitle.setText("<html><font size=\"5\" style = \"color:#89FF57\">请选择聊天对象</font></html>");
+        LB_ChatObjTitle.setText(DefaultChatObjectName);
+
+        editorPane1.setEditorKit(new HTMLEditorKit());
+        editorPane1.setContentType("text/html");
 
         BT_MyInfo.addActionListener(e -> {
             friendList.sortListCell(compByNotice);
@@ -138,53 +149,139 @@ public class ChatView {
             }
 
             @Override
-            public void OnReceivePrivateMsg(ServerMessage serverMessage) {
-                chatContent += "\nPrivate: " + serverMessage.getContent();
+            public void OnSendMessageSuccess(UserMessage userMessage) {
+                Debug.Log("发送" + userMessage.getMessageType().toString()
+                        + "消息" + userMessage.getContent() + "给" + userMessage.getReceiverID());
+                chatContent += formatMessageFromClient(userMessage);
                 editorPane1.setText(chatContent);
+                //  请求更新列表
+                chatManager.requireList();
+            }
+
+            @Override
+            public void OnReceivePrivateMsg(ServerMessage serverMessage) {
+                Debug.Log("收到来自" + serverMessage.getSenderID() + "的"
+                        + serverMessage.getMessageType().toString() + "消息: " + serverMessage.getContent());
+                chatContent += formatMessageFromServer(serverMessage);
+                editorPane1.setText(chatContent);
+                //  请求更新列表
+                chatManager.requireList();
             }
 
             @Override
             public void OnReceiveGroupMsg(ServerMessage serverMessage) {
-                chatContent += "\nGroup: " + serverMessage.getContent();
+                Debug.Log("收到来自" + serverMessage.getSenderID() + "的"
+                        + serverMessage.getMessageType().toString() + "消息: " + serverMessage.getContent());
+                chatContent += formatMessageFromServer(serverMessage);
                 editorPane1.setText(chatContent);
+                //  请求更新列表
+                chatManager.requireList();
             }
 
             @Override
             public void OnReceiveTestMsg(ServerMessage serverMessage) {
-                chatContent += "\nTest: " + serverMessage.getContent();
+                Debug.Log("收到来自" + serverMessage.getSenderID() + "的"
+                        + serverMessage.getMessageType().toString() + "消息: " + serverMessage.getContent());
+                chatContent += formatMessageFromServer(serverMessage);
                 editorPane1.setText(chatContent);
             }
 
             @Override
             public void OnReceiveOnLineList(ArrayList<BigInteger> idList) {
+                //  清空原有列表
                 friendList.RemoveAllCell();
-                Debug.Log("获取到列表:");
+                //  获取列表
+                boolean curChatObjectIsOnline = false; //  当前聊天对象是否仍然在线
                 for (var item :
                         idList) {
-                    Debug.Log("好友: " + item);
-                    FriendListCell newCell = new FriendListCell(
-                            new ImageIcon("image/h1.jpg"), item, item.toString(),
-                            "富强民主文明和谐", friendListCell -> {
-                        friendList.setLastSelectedCell(friendListCell);
-                        LB_ChatObjTitle.setText(friendListCell.getFormatName());
-                        chatManager.SelectChatObject(friendListCell.getID());
-                    });
-                    newCell.setColor(new Color(0xE5E5E5),
-                            new Color(0x9C9C9C));
-                    newCell.setEnabled(true);
-                    newCell.setNotice(false);
-                    //加入列表
-                    friendList.insertCell(newCell);
+                    if (item.compareTo(UserManager.getInstance().getUserInfo().getID()) != 0) { //  不包括自己
+                        //  获取与这个聊天对象有关的消息记录
+                        var record = DataManager.getInstance().getMessageRecord(item);
+                        CopyOnWriteArrayList<MessageContent> recList = new CopyOnWriteArrayList<>();
+                        if (record != null) {
+                            recList = record.getMessageContents();
+                        }
+                        //  获取Top消息
+                        String topMsg = (recList.size() > 0 ? recList.get(recList.size() - 1).getContent() : "无消息");
+                        //  根据ID构建新的列表Cell
+                        FriendListCell newCell = new FriendListCell(
+                                new ImageIcon("image/h1.jpg"),
+                                item,                               //  ID
+                                item.toString(),                    //  Name TODO 列表cell名称暂时为ID
+                                topMsg,                             //  Top消息
+                                friendListCell -> {                 //  cell被选择时候的回调
+                                    //  设置聊天对象的名字（聊天区域顶部）
+                                    LB_ChatObjTitle.setText(friendListCell.getFormatName());
+                                    //  设置目前聊天对象的ID
+                                    chatManager.SelectChatObject(friendListCell.getID());
+                                    //  清空消息显示内容
+                                    //  TODO 这样效率可能较低，可能要考虑把内存中所有读取过的字符串记录放在一个池中
+                                    chatContent = "";
+                                    if (record != null) {
+                                        Debug.Log("刷新记录框，记录: " + record.getChatObjectID()
+                                                + "记录数量: " + record.getMessageContents().size());
+                                        StringBuilder chatContentBuilder = new StringBuilder();
+                                        var curID = UserManager.getInstance().getUserInfo().getID();
+                                        for (var content :
+                                                record.getMessageContents()) {
+                                            if (content.getSenderID().compareTo(curID) == 0) {
+                                                //  如果是自己发的
+                                                chatContentBuilder.append(
+                                                        formatMessageFromClient(content.getSendTime(), content.getSenderID(),
+                                                                content.getReceiverID(), content.getContent()));
+                                            } else {
+                                                //  如果是接收到的
+                                                chatContentBuilder.append(
+                                                        formatMessageFromServer(content.getSendTime(),
+                                                                content.getSenderID(), content.getReceiverID(),
+                                                                content.getContent()));
+                                            }
+                                        }
+                                        chatContent += chatContentBuilder.toString();
+                                    }
+                                    editorPane1.setText(chatContent);
+                                }             //  cell被选择时候的回调
+                        );
+                        newCell.setColor(new Color(0xE5E5E5),
+                                new Color(0x9C9C9C));
+                        newCell.setEnabled(true);
+                        newCell.setNotice(false);
+                        //加入列表
+                        friendList.insertCell(newCell);
+                        if (chatManager.getCurChatObject() != null &&
+                                item.compareTo(chatManager.getCurChatObject()) == 0) {
+                            curChatObjectIsOnline = true;
+                        }
+                    }
+                }
+                //  设置高光为上一次被选中的那个
+                if (friendList.getLastID() != null) {
+                    friendList.setLastSelectedCell(friendList.getLastID());
+                } else {
+                    friendList.setLastSelectedCell(null);
+                }
+                if (!curChatObjectIsOnline) {
+                    //  如果当前对象下线，则清空聊天对象以及窗口
+                    chatContent = "";
+                    //  TODO 设置最后一次被选择的项，这里会不会有问题还不确定
+                    //  设置聊天对象的名字（聊天区域顶部）
+                    LB_ChatObjTitle.setText(DefaultChatObjectName);
+                    //  设置目前聊天对象的ID
+                    chatManager.SelectChatObject(null);
+                    editorPane1.setText(chatContent);
                 }
             }
         });
 
+        //  发送消息
         textInput.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
                 if (KeyEvent.VK_ENTER == e.getKeyChar()) {
-                    if (textInput.getText().length() > 0 && !textInput.getText().equals("\n")) {
-                        chatManager.sendMessage(textInput.getText());
+                    var inputStr = textInput.getText();
+                    if (inputStr.trim().length() > 0 && !inputStr.equals("\n")) {
+                        inputStr = inputStr.replace('\n', '\0');
+                        chatManager.sendMessage(inputStr);
                         textInput.setText("");
                     }
                 }
@@ -373,10 +470,38 @@ public class ChatView {
         return panel1;
     }
 
+    public static String formatMessageFromServer(ServerMessage serverMessage) {
+        return formatMessageFromServer(serverMessage.getFeedbackTime(), serverMessage.getSenderID(),
+                serverMessage.getReceiverID(), serverMessage.getContent());
+    }
 
-    ChatManager chatManager;
+    public static String formatMessageFromServer(Date feedbackTime, BigInteger senderID, BigInteger receiverID, String content) {
+        return "<div align=\"left\" style=\"color:#aaaaaa\"><font size=\"4\">" +
+                "<i>(" + timeFormat.format(feedbackTime) + ") </i>  " +
+                "<b>" + senderID + " 对 " + receiverID + " 说:" + "</b><br/>" +
+                "<font size=\"5\" style=\"color:#ffffff\">" + content + "</font>" +
+                "</font></div><br/>";
+    }
 
-    String chatContent = "";
+    public static String formatMessageFromClient(UserMessage userMessage) {
+        return formatMessageFromClient(new Date(), userMessage.getSenderID(), userMessage.getReceiverID(), userMessage.getContent());
+    }
+
+    public static String formatMessageFromClient(Date feedbackTime, BigInteger senderID, BigInteger receiverID, String content) {
+        return "<div align=\"right\" style=\"color:#aaaaaa\"><font size=\"4\">" +
+                "<i>(" + timeFormat.format(feedbackTime) + ") </i>  " +
+                "<b>" + senderID + " 对 " + receiverID + " 说:" + "</b><br/>" +
+                "<font size=\"5\" style=\"color:#ffffff\">" + content + "</font>" +
+                "</font></div><br/>";
+    }
+
+    private static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+
+    private ChatManager chatManager;
+
+    private String chatContent = "";
+
+    private final String DefaultChatObjectName = "<html><font size=\"5\" style = \"color:#89FF57\">请选择聊天对象</font></html>";
 
     /**
      * 比较-优先提醒

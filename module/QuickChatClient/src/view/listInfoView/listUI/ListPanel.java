@@ -4,6 +4,7 @@ import function.Debug;
 
 import javax.swing.*;
 import java.awt.*;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -35,14 +36,20 @@ public class ListPanel extends JPanel {
     /**
      * 设置高光
      *
-     * @param lastSelectedCell
+     * @param lastID
      */
-    public void setLastSelectedCell(ListCell lastSelectedCell) {
-        for (ListCell item :
-                listCells) {
-            item.setHighlight(item.equals(lastSelectedCell));
+    public void setLastSelectedCell(BigInteger lastID) {
+        if(lastID!=null) {
+            for (FriendListCell item :
+                    listCells) {
+                item.setHighlight(item.getID().compareTo(lastID) == 0);
+            }
         }
-        this.lastSelectedCell = lastSelectedCell;
+        this.lastID = lastID;
+    }
+
+    public BigInteger getLastID() {
+        return lastID;
     }
 
     public void RemoveAllCell() {
@@ -56,7 +63,7 @@ public class ListPanel extends JPanel {
      *
      * @param listCell 元素
      */
-    public void insertCell(ListCell listCell) {
+    public void insertCell(FriendListCell listCell) {
         this.add(listCell);
         listCells.add(listCell);
         updateLayout();
@@ -68,7 +75,7 @@ public class ListPanel extends JPanel {
      * @param index    索引
      * @param listCell 元素
      */
-    public void insertCell(int index, ListCell listCell) {
+    public void insertCell(int index, FriendListCell listCell) {
         if (index >= 0 && index < this.getComponents().length) {
             this.add(listCell, index);
         }
@@ -84,7 +91,7 @@ public class ListPanel extends JPanel {
      * @param listCell       元素
      * @param cellComparable 比较方法
      */
-    public void insertCellSorted(ListCell listCell, Comparable<ListCell> cellComparable) {
+    public void insertCellSorted(ListCell listCell, Comparable<FriendListCell> cellComparable) {
         this.add(listCell);
         updateLayout();
     }
@@ -137,7 +144,7 @@ public class ListPanel extends JPanel {
      *
      * @return
      */
-    public CopyOnWriteArrayList<ListCell> getListCells() {
+    public CopyOnWriteArrayList<FriendListCell> getListCells() {
         return listCells;
     }
 
@@ -146,7 +153,7 @@ public class ListPanel extends JPanel {
      *
      * @param listCells
      */
-    public void setListCells(CopyOnWriteArrayList<ListCell> listCells) {
+    public void setListCells(CopyOnWriteArrayList<FriendListCell> listCells) {
         this.listCells = listCells;
         updateLayout();
     }
@@ -154,11 +161,11 @@ public class ListPanel extends JPanel {
     /**
      * 装有列表元素的真实列表
      */
-    private CopyOnWriteArrayList<ListCell> listCells = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<FriendListCell> listCells = new CopyOnWriteArrayList<>();
 
     /**
      * 上一个被选中的单元
      */
-    private ListCell lastSelectedCell;
+    private BigInteger lastID;
 
 }

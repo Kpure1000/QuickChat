@@ -1,5 +1,6 @@
 package data;
 
+import message.ServerMessage;
 import message.UserMessage;
 
 import java.io.Serializable;
@@ -11,7 +12,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * 消息记录.
  * <p>
- *     定义了消息记录的格式
+ * 定义了消息记录的格式
  * </p>
  */
 public class MessageRecord implements Serializable {
@@ -21,11 +22,15 @@ public class MessageRecord implements Serializable {
      */
     private static final long serialVersionUID = 0x5c6ef4645425fa6L;
 
-    public MessageRecord(){
-
+    public MessageRecord(BigInteger chatObjectID) {
+        this.ChatObjectID = chatObjectID;
     }
 
-
+    /**
+     * 获取聊天对象的ID
+     *
+     * @return
+     */
     public BigInteger getChatObjectID() {
         return ChatObjectID;
     }
@@ -44,47 +49,24 @@ public class MessageRecord implements Serializable {
     }
 
 
-
     /**
      * 添加用户的消息记录
      *
-     * @param message 格式化消息
+     * @param content 消息记录内容
      */
-    public void addMessageRecord(UserMessage message) {
+    public void addMessageRecord(MessageContent content) {
         synchronized (messageContents) {
-            if (message != null) {
-                MessageContent contentTmp = FormatUserMessage(message);
-                if (contentTmp != null)
-                    messageContents.add(contentTmp);
+            if (content != null) {
+                messageContents.add(content);
             }
-        }
-    }
-
-    /**
-     * 格式化消息
-     *
-     * @param message
-     * @return 返回格式化的消息内容，如果不是聊天消息，则返回空
-     */
-    public static MessageContent FormatUserMessage(UserMessage message) {
-        if (message.getMessageType() == UserMessage.MessageType.Msg_Private) {
-            // TODO 私聊记录
-            return new MessageContent(message.getSenderID(), null,
-                    false, false, message.getContent());
-        } else if (message.getMessageType() == UserMessage.MessageType.Msg_Group) {
-            // TODO 群聊记录
-            return new MessageContent(message.getSenderID(), null,
-                    false, false, message.getContent());
-        } else {
-            return null;
         }
     }
 
     /**
      * 消息对象ID
      * <p>
-     *     这是相对自己的聊天对象的ID，包括私聊用户ID和群聊群组ID，
-     *     消息记录以此作为区分
+     * 这是相对自己的聊天对象的ID，包括私聊用户ID和群聊群组ID，
+     * 消息记录以此作为区分
      * </p>
      */
     private BigInteger ChatObjectID;

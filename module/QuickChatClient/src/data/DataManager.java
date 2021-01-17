@@ -3,6 +3,7 @@ package data;
 import com.alibaba.fastjson.JSON;
 import function.Debug;
 import information.UserInfo;
+import message.UserMessage;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -42,7 +43,7 @@ public class DataManager {
     public void Close() {
         savePublic();
         if (privateConfig != null) {
-            savePrivate(privateConfig.getUserInfo().getID());
+            savePrivate();
         }
     }
 
@@ -83,12 +84,13 @@ public class DataManager {
     public void updatePrivateConfig(UserInfo userInfo) {
         readPrivate(userInfo.getID());
         Debug.Log("更新私有配置:");
-        privateConfig = new PrivateConfig(userInfo);
-        savePrivate(privateConfig.getUserInfo().getID());
+        privateConfig.setUserInfo(userInfo);
+        savePrivate();
     }
 
     /**
      * 从本地获取用户信息
+     *
      * @param ID
      * @return
      */
@@ -108,7 +110,7 @@ public class DataManager {
         Debug.Log("DataManager#updatePasswordConfig:正在更新密码配置以及记住的密码:" + privateConfig.getUserInfo().getID() + ",new:" + password);
 //        privateConfig.setRemembered(password != null);
         privateConfig.setRememberedPassword(password);
-        savePrivate(ID);
+        savePrivate();
     }
 
 
@@ -138,6 +140,27 @@ public class DataManager {
         Debug.Log("该用户首次登陆成功，添加记录:" + newID + ", " + passwordConfig);
         publicConfig.addIdList(newID);
         updatePasswordConfig(newID, passwordConfig);
+    }
+
+    /**
+     * 获取关于目标聊天对象的聊天记录
+     *
+     * @param chatObjectID 目标聊天对象ID
+     * @return 记录，如果不存在则返回null
+     */
+    public MessageRecord getMessageRecord(BigInteger chatObjectID) {
+        Debug.Log("消息记录表长度: " + privateConfig.getMessageRecords().size());
+        for (var item :
+                privateConfig.getMessageRecords()) {
+            if (item.getChatObjectID().compareTo(chatObjectID) == 0) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    public void addMessageRecord(BigInteger chatObjectID, MessageContent messageContent) {
+        privateConfig.addMessageRecord(chatObjectID, messageContent);
     }
 
     //////////////////////////////////
@@ -246,7 +269,7 @@ public class DataManager {
         }
         try {
             File file = new File(privateConfigPath + ID.toString() + privateConfigExtend);
-            if (!file.exists()) {
+            if (!file.exists()) { //  如果不存在该配置
                 initPrivate(ID, "");
             }
             ObjectInputStream objIn = new ObjectInputStream(new FileInputStream(file));
@@ -277,11 +300,13 @@ public class DataManager {
                 }
             }
             if (!file.exists()) {
+                //新建一个文件
                 file.createNewFile();
             }
             if (file.exists()) {
-                //新建一个文件
+                //  新建一个空配置
                 CreatePrivateConfig(file, ID, Name);
+                Debug.Log("初次创建" + ID + "的私人配置，成功");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -290,18 +315,18 @@ public class DataManager {
 
     /**
      * 保存私人配置
-     *
-     * @param ID 私人ID索引
      */
-    private void savePrivate(BigInteger ID) {
+    private void savePrivate() {
         if (privateConfig != null) {
             try {
-                File file = new File(privateConfigPath + ID.toString() + privateConfigExtend);
+                File file = new File(privateConfigPath + privateConfig.getUserInfo().getID().toString()
+                        + privateConfigExtend);
                 ObjectOutputStream objOut = new ObjectOutputStream(new FileOutputStream(file));
                 objOut.writeObject(privateConfig);
                 objOut.flush();
                 objOut.close();
-                Debug.Log("成功保存私有配置:" + privateConfig.getUserInfo().getID() + ", " + privateConfig.getUserInfo().getPassword());
+                Debug.Log("成功保存私有配置:" + privateConfig.getUserInfo().getID()
+                        + ",记录" + privateConfig.getMessageRecords().size() + "项");
             } catch (IOException e) {
                 e.printStackTrace();
             }

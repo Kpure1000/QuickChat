@@ -2,6 +2,7 @@ package message;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.Date;
 
 /**
  * 发自服务器的消息
@@ -23,6 +24,15 @@ public class ServerMessage implements Serializable {
         this.senderID = senderID;
         this.receiverID = receiverID;
         this.content = content;
+        this.feedbackTime = new Date();
+    }
+
+    public ServerMessage(MessageType messageType, BigInteger senderID, BigInteger receiverID, String content, Date feedbackTime) {
+        this.messageType = messageType;
+        this.senderID = senderID;
+        this.receiverID = receiverID;
+        this.content = content;
+        this.feedbackTime = feedbackTime;
     }
 
     public enum MessageType {
@@ -110,5 +120,15 @@ public class ServerMessage implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    private Date feedbackTime;
+
+    public Date getFeedbackTime() {
+        return feedbackTime;
+    }
+
+    public void setFeedbackTime(Date feedbackTime) {
+        this.feedbackTime = feedbackTime;
     }
 }

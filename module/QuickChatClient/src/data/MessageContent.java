@@ -1,8 +1,10 @@
 package data;
 
+import message.UserMessage;
+
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.sql.Time;
+import java.util.Date;
 
 /**
  * 消息内容.
@@ -24,19 +26,43 @@ public class MessageContent implements Serializable {
      * @param isRead   是否已读
      * @param content  内容
      */
-    public MessageContent(BigInteger senderID, Time sendTime, boolean isSent, boolean isRead, String content) {
+    public MessageContent(MessageContent.MessageType messageType, BigInteger senderID, BigInteger receiverID, Date sendTime, boolean isSent, boolean isRead, String content) {
+        this.messageType = messageType;
         this.senderID = senderID;
+        this.receiverID = receiverID;
         this.sendTime = sendTime;
         this.isSent = isSent;
         this.isRead = isRead;
         this.content = content;
     }
 
+    private MessageContent.MessageType messageType;
     private BigInteger senderID;
-    private Time sendTime;// TODO 这里可能不是用Time
+    private BigInteger receiverID;
+    private Date sendTime;// TODO 这里可能不是用Time
     private boolean isSent;//是否成功发送
     private boolean isRead;//是否已读
     private String content;//内容
+
+    public MessageContent.MessageType getMessageType() {
+        return messageType;
+    }
+
+    public BigInteger getSenderID() {
+        return senderID;
+    }
+
+    public BigInteger getReceiverID() {
+        return receiverID;
+    }
+
+    public Date getSendTime() {
+        return sendTime;
+    }
+
+    public String getContent() {
+        return content;
+    }
 
     @Override
     public String toString() {
@@ -47,5 +73,11 @@ public class MessageContent implements Serializable {
                 ", 是否已读：" + isRead +
                 ", 内容：'" + content + '\'' +
                 "}\r\n";
+    }
+
+    public enum MessageType {
+        Msg_Private,
+        Msg_Group,
+        Msg_Test
     }
 }

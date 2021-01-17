@@ -1,5 +1,6 @@
 package data;
 
+import function.Debug;
 import information.UserInfo;
 
 import java.io.Serializable;
@@ -39,28 +40,14 @@ public class PrivateConfig implements Serializable {
         this.userInfo = userInfo;
     }
 
+    /**
+     * 获取用户信息
+     *
+     * @return
+     */
     public UserInfo getUserInfo() {
         return userInfo;
     }
-
-//    /**
-//     * 设置是否记住密码
-//     *
-//     * @param remembered
-//     */
-//    public void setRemembered(boolean remembered) {
-//        isRemembered = remembered;
-//        if (!isRemembered) rememberedPassword = null;
-//    }
-
-//    /**
-//     * 是否记住密码
-//     *
-//     * @return
-//     */
-//    public boolean isRemembered() {
-//        return isRemembered;
-//    }
 
     /**
      * 设置记住的密码
@@ -93,21 +80,39 @@ public class PrivateConfig implements Serializable {
         return messageRecords;
     }
 
+    /**
+     * 添加消息记录，如果不存在该对象则新建一个Record
+     *
+     * @param chatObjectID
+     * @param messageContent
+     */
+    public void addMessageRecord(BigInteger chatObjectID, MessageContent messageContent) {
+        for (var rec :
+                messageRecords) {
+            if (chatObjectID.compareTo(rec.getChatObjectID()) == 0) {
+                //  找到目标对象的记录，直接添加内容
+                rec.addMessageRecord(messageContent);
+
+                Debug.Log("存入消息: 给" + messageContent.getSenderID() + ", 总消息数: "
+                        + rec.getMessageContents().size());
+                return;
+            }
+        }
+        //  不存在该对象，新建一个record，再添加内容
+        Debug.Log("不存在该对象记录，因此创建一个");
+        MessageRecord newRecord = new MessageRecord(chatObjectID);
+        newRecord.addMessageRecord(messageContent);
+        messageRecords.add(newRecord);
+
+        Debug.Log("在新记录中存入消息: 给" + messageContent.getSenderID() + ", 总消息数: "
+                + newRecord.getMessageContents().size());
+    }
+
     public void setMessageRecords(CopyOnWriteArrayList<MessageRecord> messageRecords) {
         this.messageRecords = messageRecords;
     }
 
     private UserInfo userInfo;
-
-//    /**
-//     * 是否记住密码
-//     */
-//    private boolean isRemembered;
-
-//    /**
-//     * 记住的密码,不记住的话为null
-//     */
-//    private String rememberedPassword;
 
     /**
      * 消息记录
