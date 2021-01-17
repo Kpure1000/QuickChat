@@ -53,8 +53,9 @@ public class SignIn extends BasicFunction {
 
     @Override
     public void Close() {
-        //删除监听回调
+        DataManager.getInstance().Close();
         ClientNetwork.getInstance().removeListenerCallBack(listenerCallBack);
+        super.Close();
     }
 
     /**

@@ -56,7 +56,10 @@ public class SignInView extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
                     SignInView.this.dispose();
-                    DataManager.getInstance().Close();
+                    if (signIn != null) {
+                        signIn.Close();
+                        signIn = null;
+                    }
                     ClientNetwork.getInstance().Disconnect();
                 }
             }
@@ -286,10 +289,9 @@ public class SignInView extends JFrame {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
-                Debug.Log("关闭了登录窗口");
-                // TODO 关闭所有进程之前释放功能资源
                 if (signIn != null) {
                     signIn.Close();
+                    signIn = null;
                 }
             }
         });

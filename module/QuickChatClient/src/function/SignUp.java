@@ -14,7 +14,7 @@ public class SignUp extends BasicFunction {
     public void Close() {
         //删除自己的监听
         ClientNetwork.getInstance().removeListenerCallBack(listenerCallBack);
-        // TODO应该返回上一个登陆界面
+        super.Close();
     }
 
     /**

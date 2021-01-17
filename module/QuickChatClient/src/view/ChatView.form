@@ -69,12 +69,12 @@
                               <verticalAlignment value="0"/>
                             </properties>
                           </component>
-                          <component id="abe78" class="javax.swing.JButton" binding="BT_History">
+                          <component id="abe78" class="javax.swing.JButton" binding="BT_SendFile">
                             <constraints/>
                             <properties>
                               <horizontalAlignment value="0"/>
                               <horizontalTextPosition value="0"/>
-                              <text value="历史记录"/>
+                              <text value="发送文件"/>
                               <verticalAlignment value="0"/>
                             </properties>
                           </component>
@@ -217,7 +217,7 @@
                       <horizontalAlignment value="0"/>
                       <opaque value="true"/>
                       <selected value="false"/>
-                      <text value="更新列表"/>
+                      <text value="我的信息"/>
                     </properties>
                   </component>
                   <component id="d38c0" class="javax.swing.JButton" binding="BT_AddFriend">

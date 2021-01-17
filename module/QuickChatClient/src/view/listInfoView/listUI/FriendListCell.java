@@ -87,7 +87,7 @@ public class FriendListCell extends ListCell {
      * @return
      */
     public String getFormatText() {
-        return "<html><font size=\"4\" style = \"color:#000000\">" + cellName + "</font><br/>" +
+        return "<html><font size=\"5\" style = \"color:#000000\">" + cellName + "</font><br/>" +
                 "<font size=\"3\" style = \"color:#000000\">" + cellMessage + "</font></html>";
     }
 
@@ -97,7 +97,7 @@ public class FriendListCell extends ListCell {
      * @return
      */
     public String getFormatName() {
-        return "<html><font size=\"5\" style = \"color:#89FF57\">" + cellName + "</font></html>";
+        return "<html><font size=\"6\" style = \"color:#89FF57\">" + cellName + "</font></html>";
     }
 
     /**

@@ -7,8 +7,6 @@ import function.ChatManager;
 import function.ChatManagerCallBack;
 import function.Debug;
 import message.ServerMessage;
-import message.UserMessage;
-import network.ClientNetwork;
 import view.listInfoView.listUI.FriendListCell;
 import view.listInfoView.listUI.ListCell;
 import view.listInfoView.listUI.ListPanel;
@@ -26,12 +24,18 @@ import java.util.Comparator;
 public class ChatView {
     private JPanel panel1;
     private JEditorPane editorPane1;
+    /**
+     * chat object info
+     */
     private JButton BT_Info;
-    private JButton BT_History;
+    private JButton BT_SendFile;
     private JTextArea textInput;
     private JPanel topSettingPanel;
     private JButton BT_AddFriend;
     private JButton BT_AddGroup;
+    /**
+     * 设置，目前只有修改密码功能
+     */
     private JButton BT_Setting;
     private JScrollPane JSP_FriendList;
     /**
@@ -42,6 +46,9 @@ public class ChatView {
     private JPanel quitPanel;
     private JPanel settingPanel;
     private JPanel topPanel;
+    /**
+     * self info
+     */
     private JButton BT_MyInfo;
     private JButton BT_Emoji;
     private JLabel topLabel;
@@ -75,21 +82,6 @@ public class ChatView {
         //好友列表///////////////////////
 
         friendList = new ListPanel();
-//        for (int i = 0; i < 20; i++) {
-//            FriendListCell newCell = new FriendListCell(
-//                    new ImageIcon("image/h1.jpg"), new BigInteger(Integer.toString(i)), "好友" + (i + 1),
-//                    "富强民主文明和谐", friendListCell -> {
-//                friendList.setLastSelectedCell(friendListCell);
-//                LB_ChatObjTitle.setText(friendListCell.getFormatName());
-//                chatManager.SelectChatObject(friendListCell.getID());
-//            });
-//            newCell.setColor(new Color(0xE5E5E5),
-//                    new Color(0x9C9C9C));
-//            newCell.setEnabled(i % 3 == 0);
-//            newCell.setNotice(i % 4 == 0);
-//            //加入列表
-//            friendList.insertCell(newCell);
-//        }
         ((GridLayout) friendList.getLayout()).setVgap(5);
         JSP_FriendList.setViewportView(friendList);
         LB_ChatObjTitle.setText("<html><font size=\"5\" style = \"color:#89FF57\">请选择聊天对象</font></html>");
@@ -102,8 +94,6 @@ public class ChatView {
         BT_AddFriend.addActionListener(e -> friendList.sortListCell(compByEnable));
 
         ////////////////////////////////
-
-        BT_AddFriend.setBackground(new Color(0x89FF57));
 
         BT_Info.addActionListener(e -> {
             // TODO 弹出显示信息的窗口
@@ -250,21 +240,17 @@ public class ChatView {
         panel4.setBackground(new Color(-1379847));
         panel3.add(panel4, BorderLayout.NORTH);
         BT_Emoji = new JButton();
-        BT_Emoji.setBackground(new Color(-9273713));
-        BT_Emoji.setForeground(new Color(-1379847));
         BT_Emoji.setHorizontalAlignment(0);
         BT_Emoji.setHorizontalTextPosition(0);
         BT_Emoji.setText("表情");
         BT_Emoji.setVerticalAlignment(0);
         panel4.add(BT_Emoji);
-        BT_History = new JButton();
-        BT_History.setBackground(new Color(-9273713));
-        BT_History.setForeground(new Color(-1379847));
-        BT_History.setHorizontalAlignment(0);
-        BT_History.setHorizontalTextPosition(0);
-        BT_History.setText("历史记录");
-        BT_History.setVerticalAlignment(0);
-        panel4.add(BT_History);
+        BT_SendFile = new JButton();
+        BT_SendFile.setHorizontalAlignment(0);
+        BT_SendFile.setHorizontalTextPosition(0);
+        BT_SendFile.setText("发送文件");
+        BT_SendFile.setVerticalAlignment(0);
+        panel4.add(BT_SendFile);
         final JScrollPane scrollPane1 = new JScrollPane();
         panel3.add(scrollPane1, BorderLayout.CENTER);
         textInput = new JTextArea();
@@ -301,8 +287,6 @@ public class ChatView {
         panel8.setBackground(new Color(-12763327));
         panel6.add(panel8, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         BT_Info = new JButton();
-        BT_Info.setBackground(new Color(-7733417));
-        BT_Info.setForeground(new Color(-12763327));
         BT_Info.setHorizontalAlignment(0);
         BT_Info.setHorizontalTextPosition(0);
         BT_Info.setText("查看资料");
@@ -328,12 +312,10 @@ public class ChatView {
         BT_MyInfo.setHorizontalAlignment(0);
         BT_MyInfo.setOpaque(true);
         BT_MyInfo.setSelected(false);
-        BT_MyInfo.setText("更新列表");
+        BT_MyInfo.setText("我的信息");
         topSettingPanel.add(BT_MyInfo);
         BT_AddFriend = new JButton();
         BT_AddFriend.setAutoscrolls(true);
-        BT_AddFriend.setBackground(new Color(-7733417));
-        BT_AddFriend.setForeground(new Color(-12763327));
         BT_AddFriend.setHideActionText(false);
         BT_AddFriend.setHorizontalAlignment(0);
         BT_AddFriend.setOpaque(true);
@@ -342,8 +324,6 @@ public class ChatView {
         topSettingPanel.add(BT_AddFriend);
         BT_AddGroup = new JButton();
         BT_AddGroup.setAutoscrolls(true);
-        BT_AddGroup.setBackground(new Color(-7733417));
-        BT_AddGroup.setForeground(new Color(-12763327));
         BT_AddGroup.setHideActionText(false);
         BT_AddGroup.setHorizontalAlignment(0);
         BT_AddGroup.setOpaque(true);
@@ -352,8 +332,6 @@ public class ChatView {
         topSettingPanel.add(BT_AddGroup);
         BT_Setting = new JButton();
         BT_Setting.setAutoscrolls(true);
-        BT_Setting.setBackground(new Color(-7733417));
-        BT_Setting.setForeground(new Color(-12763327));
         BT_Setting.setHideActionText(false);
         BT_Setting.setHorizontalAlignment(0);
         BT_Setting.setOpaque(true);
