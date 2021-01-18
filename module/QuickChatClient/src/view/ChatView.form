@@ -56,7 +56,7 @@
                       <grid id="63525" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="2">
                         <constraints border-constraint="North"/>
                         <properties>
-                          <background color="-1379847"/>
+                          <background color="-2039067"/>
                         </properties>
                         <border type="none"/>
                         <children>
@@ -88,7 +88,7 @@
                           <component id="9b2db" class="javax.swing.JTextArea" binding="textInput">
                             <constraints/>
                             <properties>
-                              <background color="-1379847"/>
+                              <background color="-1052689"/>
                               <font name="Microsoft YaHei" size="18"/>
                               <foreground color="-16777216"/>
                             </properties>
@@ -162,7 +162,6 @@
                               <component id="d3c95" class="javax.swing.JButton" binding="BT_Info">
                                 <constraints/>
                                 <properties>
-                                  <background color="-12763327"/>
                                   <horizontalAlignment value="0"/>
                                   <horizontalTextPosition value="0"/>
                                   <text value="查看资料"/>
@@ -213,49 +212,49 @@
                   <component id="44be1" class="javax.swing.JButton" binding="BT_MyInfo">
                     <constraints/>
                     <properties>
-                      <autoscrolls value="true"/>
-                      <background color="-11513259"/>
                       <hideActionText value="false"/>
                       <horizontalAlignment value="0"/>
-                      <opaque value="true"/>
-                      <selected value="false"/>
                       <text value="我的信息"/>
                     </properties>
                   </component>
                   <component id="d38c0" class="javax.swing.JButton" binding="BT_AddFriend">
                     <constraints/>
                     <properties>
-                      <autoscrolls value="true"/>
-                      <background color="-11579052"/>
                       <hideActionText value="false"/>
                       <horizontalAlignment value="0"/>
-                      <opaque value="true"/>
-                      <selected value="false"/>
                       <text value="添加好友"/>
                     </properties>
                   </component>
                   <component id="4b01f" class="javax.swing.JButton" binding="BT_AddGroup">
                     <constraints/>
                     <properties>
-                      <autoscrolls value="true"/>
-                      <background color="-11579052"/>
                       <hideActionText value="false"/>
                       <horizontalAlignment value="0"/>
-                      <opaque value="true"/>
-                      <selected value="false"/>
                       <text value="添加群聊"/>
                     </properties>
                   </component>
                   <component id="dabef" class="javax.swing.JButton" binding="BT_Setting">
                     <constraints/>
                     <properties>
-                      <autoscrolls value="true"/>
-                      <background color="-11579052"/>
                       <hideActionText value="false"/>
                       <horizontalAlignment value="0"/>
-                      <opaque value="true"/>
-                      <selected value="false"/>
                       <text value="设置"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <grid id="10d23" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints border-constraint="Center"/>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="8d6c7" class="javax.swing.JLabel" binding="LB_Self">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="我自己"/>
                     </properties>
                   </component>
                 </children>

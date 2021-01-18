@@ -21,6 +21,7 @@ public class ListPanel extends JPanel {
     public ListPanel() {
         gridLayout = new GridLayout(0, 1);
         this.setLayout(gridLayout);
+        this.setBackground(new Color(0xefefef));
     }
 
     /**

@@ -20,5 +20,7 @@ public interface ChatManagerCallBack {
 
     public void OnReceiveTestMsg(ServerMessage serverMessage);
 
+    public void OnMakeNotice(ServerMessage serverMessage);
+
     public void OnReceiveOnLineList(ArrayList<BigInteger>idList);
 }

@@ -173,7 +173,7 @@ public class WelcomeView extends JFrame {
     }
 
     //UI
-    private final int MyLightRgb = 0x89FF57;
+    private final int MyLightRgb = 0xbfbfbf; //  0x89FF57;
     private final int MyDarkRgb = 0x3d3f41;
     private int topX = 50, topY = 120;
 

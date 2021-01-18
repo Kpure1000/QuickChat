@@ -1,5 +1,6 @@
 package data;
 
+import function.Debug;
 import message.ServerMessage;
 
 import java.math.BigInteger;
@@ -29,12 +30,12 @@ public class UserData extends BasicData {
         return email;
     }
 
-//    @Deprecated
+    //    @Deprecated
     public CopyOnWriteArrayList<BigInteger> getFriendList() {
         return friendList;
     }
 
-//    @Deprecated
+    //    @Deprecated
     public CopyOnWriteArrayList<BigInteger> getGroupList() {
         return groupList;
     }
@@ -73,6 +74,7 @@ public class UserData extends BasicData {
 
     /**
      * 添加好友
+     *
      * @param ID
      */
     public void addFriend(BigInteger ID) {
@@ -81,6 +83,7 @@ public class UserData extends BasicData {
 
     /**
      * 删除好友
+     *
      * @param ID
      */
     public void removeFriend(BigInteger ID) {
@@ -117,23 +120,30 @@ public class UserData extends BasicData {
 
     /**
      * 添加消息记录
-     * @param chatObjID 消息对象，一般为群组或接收者
+     *
+     * @param chatObjID     消息对象，一般为群组或接收者
      * @param serverMessage 反馈消息
      */
-    public void addMessageRecord(BigInteger chatObjID, ServerMessage serverMessage) {
-        CopyOnWriteArrayList<MessageRecord> recordList =
-                messageRecordMap.getOrDefault(chatObjID, null);
-        //新建消息记录
-        MessageRecord newRecord = new MessageRecord(chatObjID);
-        newRecord.addMessageRecord(new MessageContain(serverMessage));
-        //判断是否存在对这个聊天对象的记录
-        if (recordList == null) {
-            //不存在，新建一个键
-            recordList = new CopyOnWriteArrayList<>();
-            messageRecordMap.put(chatObjID, recordList);
+    public void addMessageRecord(BigInteger chatObjectID, MessageContent messageContent) {
+        for (var rec :
+                messageRecords) {
+            if (chatObjectID.compareTo(rec.getChatObjectID()) == 0) {
+                //  找到目标对象的记录，直接添加内容
+                rec.addMessageRecord(messageContent);
+
+                Debug.Log("存入消息: 给" + messageContent.getSenderID() + ", 总消息数: "
+                        + rec.getMessageContents().size());
+                return;
+            }
         }
-        //添加记录
-        recordList.add(newRecord);
+        //  不存在该对象，新建一个record，再添加内容
+        Debug.Log("不存在该对象记录，因此创建一个");
+        MessageRecord newRecord = new MessageRecord(chatObjectID);
+        newRecord.addMessageRecord(messageContent);
+        messageRecords.add(newRecord);
+
+        Debug.Log("在新记录中存入消息: 给" + messageContent.getSenderID() + ", 总消息数: "
+                + newRecord.getMessageContents().size());
     }
 
     @Override
@@ -169,5 +179,5 @@ public class UserData extends BasicData {
     /**
      * 消息记录
      */
-    private final ConcurrentHashMap<BigInteger, CopyOnWriteArrayList<MessageRecord>> messageRecordMap = new ConcurrentHashMap<>();
+    private final CopyOnWriteArrayList<MessageRecord> messageRecords = new CopyOnWriteArrayList<>();
 }

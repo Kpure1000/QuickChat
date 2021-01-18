@@ -19,7 +19,7 @@ public class SignUpView extends JFrame {
     private JCheckBox passCheck;
     private JLabel errorLabel;
 
-    private final int MyLightRgb = 0x89FF57;
+    private final int MyLightRgb = 0xbfbfbf; //  0x89FF57;
     private final int MyDarkRgb = 0x3d3f41;
     ////
 

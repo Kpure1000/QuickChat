@@ -89,7 +89,7 @@ public class GroupData extends BasicData {
      * @param serverMessage 反馈消息
      */
     public void addMessageRecord(ServerMessage serverMessage) {
-        messageRecord.addMessageRecord(new MessageContain(serverMessage));
+        messageRecord.addMessageRecord(new MessageContent(serverMessage));
     }
 
     /**

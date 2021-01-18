@@ -1,8 +1,5 @@
 package data;
 
-import message.ServerMessage;
-import message.UserMessage;
-
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -38,21 +35,25 @@ public class MessageRecord implements Serializable {
      *
      * @return 消息容器列表
      */
-    public CopyOnWriteArrayList<MessageContain> getMessageContains() {
-        return messageContains;
+    public CopyOnWriteArrayList<MessageContent> getMessageContains() {
+        return messageContents;
     }
 
 
     /**
      * 添加消息记录
-     * @param messageContain 消息容器
+     * @param messageContent 消息容器
      */
-    public void addMessageRecord(MessageContain messageContain) {
-        synchronized (messageContains) {
-            if (messageContain != null) {
-                messageContains.add(messageContain);
+    public void addMessageRecord(MessageContent messageContent) {
+        synchronized (messageContents) {
+            if (messageContent != null) {
+                messageContents.add(messageContent);
             }
         }
+    }
+
+    public CopyOnWriteArrayList<MessageContent> getMessageContents() {
+        return messageContents;
     }
 
     /**
@@ -68,7 +69,7 @@ public class MessageRecord implements Serializable {
     /**
      * 消息内容列表
      */
-    final private CopyOnWriteArrayList<MessageContain> messageContains = new CopyOnWriteArrayList<>();
+    final private CopyOnWriteArrayList<MessageContent> messageContents = new CopyOnWriteArrayList<>();
 
 
 }

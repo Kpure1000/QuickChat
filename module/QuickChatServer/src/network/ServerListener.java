@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Date;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -143,15 +144,15 @@ public class ServerListener implements Runnable {
                     }
                     case Msg_Private -> {
                         sendChatMessage(new ServerMessage(ServerMessage.MessageType.Msg_Private,
-                                msg.getSenderID(), msg.getReceiverID(), msg.getContent()));
+                                msg.getSenderID(), msg.getReceiverID(), msg.getContent(), new Date()));
                     }
                     case Msg_Group -> {
                         sendChatMessage(new ServerMessage(ServerMessage.MessageType.Msg_Group,
-                                msg.getSenderID(), msg.getReceiverID(), msg.getContent()));
+                                msg.getSenderID(), msg.getReceiverID(), msg.getContent(), new Date()));
                     }
                     case Msg_Test -> {
                         sendChatMessage(new ServerMessage(ServerMessage.MessageType.Msg_Test,
-                                msg.getSenderID(), msg.getSenderID(), msg.getContent()));
+                                msg.getSenderID(), msg.getSenderID(), msg.getContent(), new Date()));
                     }
                 }
                 DataManager.getInstance().SaveToFile();
@@ -204,7 +205,7 @@ public class ServerListener implements Runnable {
     /**
      * 给指定用户监听任务 发送消息
      *
-     * @param serverMessage  反馈的信息
+     * @param serverMessage 反馈的信息
      */
     private boolean sendFeedBack(ServerMessage serverMessage) {
         try {
@@ -249,26 +250,15 @@ public class ServerListener implements Runnable {
             if (sendMessage(serverMessage.getReceiverID(), serverMessage)) {
                 //如果发送成功，保存记录
                 DataManager.getInstance().getUserDataContain().
-                        getUserData(serverMessage.getSenderID()).//按照发送者ID索引
-                        addMessageRecord(serverMessage.getReceiverID(), serverMessage);//消息对象为接收者
+                        getUserData(serverMessage.getSenderID()).addMessageRecord(serverMessage.getReceiverID(),
+                        new MessageContent(serverMessage));
             }
         } else if (serverMessage.getMessageType().equals(ServerMessage.MessageType.Msg_Group)) {
-            BigInteger groupID = serverMessage.getReceiverID();
             BigInteger senderID = serverMessage.getSenderID();
-            GroupDataContain groupDataContain = DataManager.getInstance().getGroupDataContain();
             UserDataContain userDataContain = DataManager.getInstance().getUserDataContain();
-            // 按照群数据遍历成员，依次发送消息
-            for (BigInteger item :
-                    groupDataContain.getMemberList(groupID)) {
-                if (sendMessage(item, serverMessage)) {
-                    //如果发送成功，保存记录
-                    userDataContain.getUserData(senderID).//按照发送者ID索引
-                            addMessageRecord(groupID, serverMessage);//消息对象为群组
-                }
-            }
-            //保存群消息记录
-            groupDataContain.getGroupData(groupID).
-                    addMessageRecord(serverMessage);
+            sendMessage(serverMessage);
+            userDataContain.getUserData(senderID).addMessageRecord(serverMessage.getReceiverID(),
+                    new MessageContent(serverMessage));
         } else if (serverMessage.getMessageType().equals(ServerMessage.MessageType.Msg_Test)) {
             sendMessage(serverMessage.getReceiverID(), serverMessage);
         }

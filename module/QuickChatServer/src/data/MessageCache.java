@@ -31,7 +31,7 @@ public class MessageCache implements Serializable {
      */
     public void addMessage(BigInteger receiverID, ServerMessage serverMessage) {
         if (messageCacheMap.containsKey(receiverID)) {
-            messageCacheMap.get(receiverID).add(new MessageContain(serverMessage));
+            messageCacheMap.get(receiverID).add(new MessageContent(serverMessage));
         }
     }
 
@@ -42,7 +42,7 @@ public class MessageCache implements Serializable {
     public void addMessage(ServerMessage serverMessage) {
         BigInteger id = serverMessage.getReceiverID();
         if (messageCacheMap.containsKey(id)) {
-            messageCacheMap.get(id).add(new MessageContain(serverMessage));
+            messageCacheMap.get(id).add(new MessageContent(serverMessage));
         }
     }
 
@@ -51,7 +51,7 @@ public class MessageCache implements Serializable {
      * @param receiverID 上线的接收者用户
      * @return
      */
-    public Queue<MessageContain> pollMessage(BigInteger receiverID) {
+    public Queue<MessageContent> pollMessage(BigInteger receiverID) {
         return messageCacheMap.getOrDefault(receiverID, null);
     }
 
@@ -59,5 +59,5 @@ public class MessageCache implements Serializable {
      * 消息缓存哈希队列
      */
     private final ConcurrentHashMap<BigInteger,
-            ConcurrentLinkedQueue<MessageContain>> messageCacheMap = new ConcurrentHashMap<>();
+            ConcurrentLinkedQueue<MessageContent>> messageCacheMap = new ConcurrentHashMap<>();
 }

@@ -103,7 +103,7 @@ public class ChatManager extends BasicFunction {
                             UserManager.getInstance().getUserInfo().getID(), curChatObject, new Date(),
                             false, false, content));
                 }
-            } else if (curChatObject.compareTo(new BigInteger("9999")) == 0) { //  ID为9999，TODO 目前仅一个广播群
+            } else if (curChatObject.compareTo(new BigInteger("9999")) == 0) { //  群聊, ID为9999
                 ClientNetwork.getInstance().sendMessage(new UserMessage(UserMessage.MessageType.Msg_Group,
                         UserManager.getInstance().getUserInfo().getID(), curChatObject, content));
                 //  发送者为自己，直接存入消息记录
@@ -138,7 +138,12 @@ public class ChatManager extends BasicFunction {
                         MessageContent.MessageType.Msg_Private,
                         serverMessage.getSenderID(), UserManager.getInstance().getUserInfo().getID(), serverMessage.getFeedbackTime(),
                         false, false, serverMessage.getContent()));
-                if (curChatObject != null) chatManagerCallBack.OnReceivePrivateMsg(serverMessage);
+                if (curChatObject != null) {
+                    if (serverMessage.getSenderID().compareTo(curChatObject) == 0) {
+                        chatManagerCallBack.OnReceivePrivateMsg(serverMessage);
+                    }
+                }
+                chatManagerCallBack.OnMakeNotice(serverMessage);
                 requireList();
                 return this;
             }
@@ -150,7 +155,12 @@ public class ChatManager extends BasicFunction {
                         MessageContent.MessageType.Msg_Group,
                         serverMessage.getSenderID(), UserManager.getInstance().getUserInfo().getID(), serverMessage.getFeedbackTime(),
                         false, false, serverMessage.getContent()));
-                if (curChatObject != null) chatManagerCallBack.OnReceivePrivateMsg(serverMessage);
+                if (curChatObject != null) {
+                    if (serverMessage.getSenderID().compareTo(curChatObject) == 0) {
+                        chatManagerCallBack.OnReceiveGroupMsg(serverMessage);
+                    }
+                }
+                chatManagerCallBack.OnMakeNotice(serverMessage);
                 requireList();
                 return this;
             }
@@ -162,7 +172,12 @@ public class ChatManager extends BasicFunction {
                         MessageContent.MessageType.Msg_Test,
                         serverMessage.getSenderID(), UserManager.getInstance().getUserInfo().getID(), serverMessage.getFeedbackTime(),
                         false, false, serverMessage.getContent()));
-                if (curChatObject != null) chatManagerCallBack.OnReceivePrivateMsg(serverMessage);
+                if (curChatObject != null) {
+                    if (serverMessage.getSenderID().compareTo(curChatObject) == 0) {
+                        chatManagerCallBack.OnReceiveTestMsg(serverMessage);
+                    }
+                }
+                chatManagerCallBack.OnMakeNotice(serverMessage);
                 requireList();
                 return this;
             }
