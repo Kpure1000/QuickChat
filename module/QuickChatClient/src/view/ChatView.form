@@ -162,6 +162,7 @@
                               <component id="d3c95" class="javax.swing.JButton" binding="BT_Info">
                                 <constraints/>
                                 <properties>
+                                  <background color="-12763327"/>
                                   <horizontalAlignment value="0"/>
                                   <horizontalTextPosition value="0"/>
                                   <text value="查看资料"/>
@@ -213,6 +214,7 @@
                     <constraints/>
                     <properties>
                       <autoscrolls value="true"/>
+                      <background color="-11513259"/>
                       <hideActionText value="false"/>
                       <horizontalAlignment value="0"/>
                       <opaque value="true"/>
@@ -224,6 +226,7 @@
                     <constraints/>
                     <properties>
                       <autoscrolls value="true"/>
+                      <background color="-11579052"/>
                       <hideActionText value="false"/>
                       <horizontalAlignment value="0"/>
                       <opaque value="true"/>
@@ -235,6 +238,7 @@
                     <constraints/>
                     <properties>
                       <autoscrolls value="true"/>
+                      <background color="-11579052"/>
                       <hideActionText value="false"/>
                       <horizontalAlignment value="0"/>
                       <opaque value="true"/>
@@ -246,6 +250,7 @@
                     <constraints/>
                     <properties>
                       <autoscrolls value="true"/>
+                      <background color="-11579052"/>
                       <hideActionText value="false"/>
                       <horizontalAlignment value="0"/>
                       <opaque value="true"/>

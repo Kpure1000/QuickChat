@@ -49,6 +49,7 @@ public class ChatManager extends BasicFunction {
                         || msg.getMessageType() == UserMessage.MessageType.Msg_Test) {
                     //  反馈成功发送了的聊天消息
                     chatManagerCallBack.OnSendMessageSuccess(msg);
+                    requireList();
                 }
             }
 
@@ -132,34 +133,37 @@ public class ChatManager extends BasicFunction {
 
             @Override
             public ListenerCallBack OnReceivePrivateMsg(ServerMessage serverMessage) {
-                chatManagerCallBack.OnReceivePrivateMsg(serverMessage);
-                //  发送者为对方，直接存入消息记录
-                DataManager.getInstance().addMessageRecord(curChatObject, new MessageContent(
+                //  直接存入消息记录
+                DataManager.getInstance().addMessageRecord(serverMessage.getSenderID(), new MessageContent(
                         MessageContent.MessageType.Msg_Private,
                         serverMessage.getSenderID(), UserManager.getInstance().getUserInfo().getID(), serverMessage.getFeedbackTime(),
                         false, false, serverMessage.getContent()));
+                if (curChatObject != null) chatManagerCallBack.OnReceivePrivateMsg(serverMessage);
+                requireList();
                 return this;
             }
 
             @Override
             public ListenerCallBack OnReceiveGroupMsg(ServerMessage serverMessage) {
-                chatManagerCallBack.OnReceiveGroupMsg(serverMessage);
-                //  发送者为对方，直接存入消息记录
-                DataManager.getInstance().addMessageRecord(curChatObject, new MessageContent(
+                //  直接存入消息记录
+                DataManager.getInstance().addMessageRecord(serverMessage.getSenderID(), new MessageContent(
                         MessageContent.MessageType.Msg_Group,
                         serverMessage.getSenderID(), UserManager.getInstance().getUserInfo().getID(), serverMessage.getFeedbackTime(),
                         false, false, serverMessage.getContent()));
+                if (curChatObject != null) chatManagerCallBack.OnReceivePrivateMsg(serverMessage);
+                requireList();
                 return this;
             }
 
             @Override
             public ListenerCallBack OnReceiveTestMsg(ServerMessage serverMessage) {
-                chatManagerCallBack.OnReceiveTestMsg(serverMessage);
-                //  发送者为对方，直接存入消息记录
-                DataManager.getInstance().addMessageRecord(curChatObject, new MessageContent(
+                //  直接存入消息记录
+                DataManager.getInstance().addMessageRecord(serverMessage.getSenderID(), new MessageContent(
                         MessageContent.MessageType.Msg_Test,
                         serverMessage.getSenderID(), UserManager.getInstance().getUserInfo().getID(), serverMessage.getFeedbackTime(),
                         false, false, serverMessage.getContent()));
+                if (curChatObject != null) chatManagerCallBack.OnReceivePrivateMsg(serverMessage);
+                requireList();
                 return this;
             }
 

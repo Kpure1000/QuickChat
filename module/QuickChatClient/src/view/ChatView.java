@@ -65,6 +65,9 @@ public class ChatView {
     private Point pressedPoint;
     private ListPanel friendList;
 
+    //////// system tray
+    private SystemTray systemTray;
+
     public ChatView() {
         JFrame chatFrame = new JFrame();
 //        String lookAndFeel = UIManager.getSystemLookAndFeelClassName();
@@ -81,11 +84,14 @@ public class ChatView {
         chatFrame.setVisible(true);
         chatFrame.setSize(800, 600);
         chatFrame.setLocationRelativeTo(null);
-        chatFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+//        chatFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        chatFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         chatFrame.getContentPane().setBackground(new Color(0x999999));
         chatFrame.setTitle("聊天");
 
         chatFrame.add($$$getRootComponent$$$());
+
+        InitTray();
 
         //好友列表///////////////////////
 
@@ -132,10 +138,23 @@ public class ChatView {
         //重写关闭
         chatFrame.addWindowListener(new WindowAdapter() {
             @Override
+            public void windowClosing(WindowEvent e) {
+                int isClose = JOptionPane.showConfirmDialog(chatFrame,
+                        "直接关闭/最小化至系统托盘?", "Close?", JOptionPane.YES_NO_OPTION);
+                if (isClose == JOptionPane.YES_OPTION) {
+                    Debug.Log("确认关闭");
+                    chatFrame.dispose();
+                } else {
+                    Debug.Log("取消关闭");
+                }
+            }
+
+            @Override
             public void windowClosed(WindowEvent e) {
-                // TODO 聊天窗口的关闭意味着客户端关闭，暂时这么写
+                Debug.Log("关闭完成");
                 chatManager.Close();
                 super.windowClosed(e);
+                System.exit(0);
             }
         });
 
@@ -150,40 +169,43 @@ public class ChatView {
 
             @Override
             public void OnSendMessageSuccess(UserMessage userMessage) {
-                Debug.Log("发送" + userMessage.getMessageType().toString()
-                        + "消息" + userMessage.getContent() + "给" + userMessage.getReceiverID());
+//                Debug.Log("发送" + userMessage.getMessageType().toString()
+//                        + "消息" + userMessage.getContent() + "给" + userMessage.getReceiverID());
                 chatContent += formatMessageFromClient(userMessage);
                 editorPane1.setText(chatContent);
-                //  请求更新列表
-                chatManager.requireList();
             }
 
             @Override
             public void OnReceivePrivateMsg(ServerMessage serverMessage) {
-                Debug.Log("收到来自" + serverMessage.getSenderID() + "的"
-                        + serverMessage.getMessageType().toString() + "消息: " + serverMessage.getContent());
-                chatContent += formatMessageFromServer(serverMessage);
-                editorPane1.setText(chatContent);
-                //  请求更新列表
-                chatManager.requireList();
+//                Debug.Log("收到来自" + serverMessage.getSenderID() + "的"
+//                        + serverMessage.getMessageType().toString() + "消息: " + serverMessage.getContent());
+                if (chatManager.getCurChatObject() != null &&
+                        serverMessage.getSenderID().compareTo(chatManager.getCurChatObject()) == 0) {
+                    chatContent += formatMessageFromServer(serverMessage);
+                    editorPane1.setText(chatContent);
+                }
             }
 
             @Override
             public void OnReceiveGroupMsg(ServerMessage serverMessage) {
-                Debug.Log("收到来自" + serverMessage.getSenderID() + "的"
-                        + serverMessage.getMessageType().toString() + "消息: " + serverMessage.getContent());
-                chatContent += formatMessageFromServer(serverMessage);
-                editorPane1.setText(chatContent);
-                //  请求更新列表
-                chatManager.requireList();
+//                Debug.Log("收到来自" + serverMessage.getSenderID() + "的"
+//                        + serverMessage.getMessageType().toString() + "消息: " + serverMessage.getContent());
+                if (chatManager.getCurChatObject() != null &&
+                        serverMessage.getSenderID().compareTo(chatManager.getCurChatObject()) == 0) {
+                    chatContent += formatMessageFromServer(serverMessage);
+                    editorPane1.setText(chatContent);
+                }
             }
 
             @Override
             public void OnReceiveTestMsg(ServerMessage serverMessage) {
-                Debug.Log("收到来自" + serverMessage.getSenderID() + "的"
-                        + serverMessage.getMessageType().toString() + "消息: " + serverMessage.getContent());
-                chatContent += formatMessageFromServer(serverMessage);
-                editorPane1.setText(chatContent);
+//                Debug.Log("收到来自" + serverMessage.getSenderID() + "的"
+//                        + serverMessage.getMessageType().toString() + "消息: " + serverMessage.getContent());
+                if (chatManager.getCurChatObject() != null &&
+                        serverMessage.getSenderID().compareTo(chatManager.getCurChatObject()) == 0) {
+                    chatContent += formatMessageFromServer(serverMessage);
+                    editorPane1.setText(chatContent);
+                }
             }
 
             @Override
@@ -214,6 +236,8 @@ public class ChatView {
                                     LB_ChatObjTitle.setText(friendListCell.getFormatName());
                                     //  设置目前聊天对象的ID
                                     chatManager.SelectChatObject(friendListCell.getID());
+                                    //  设置高光
+                                    friendList.setLastSelectedCell(friendListCell.getID());
                                     //  清空消息显示内容
                                     //  TODO 这样效率可能较低，可能要考虑把内存中所有读取过的字符串记录放在一个池中
                                     chatContent = "";
@@ -297,6 +321,60 @@ public class ChatView {
 
             }
         });
+    }
+
+    private void InitTray() {
+        if (SystemTray.isSupported()) {
+            //  获取系统托盘
+            systemTray = SystemTray.getSystemTray();
+            //  加载图片
+            Image trayImg = Toolkit.getDefaultToolkit().getImage("image/l1.jpg");
+            //  创建托盘目录
+            PopupMenu trayMenu = new PopupMenu();
+
+            MenuItem openMenu = new MenuItem("打开");
+            MenuItem exitMenu = new MenuItem("退出");
+            openMenu.addActionListener(e -> {
+                Debug.Log(openMenu.getClass().getName() + ": 点击了打开窗口选项");
+                //  TODO 打开窗口
+            });
+            exitMenu.addActionListener(e -> {
+                //  TODO 退出程序
+                Debug.Log(openMenu.getClass().getName() + ": 点击了退出程序选项");
+            });
+            trayMenu.add(openMenu);
+            trayMenu.add(exitMenu);
+
+            //  系统托盘图标
+            TrayIcon trayIcon = new TrayIcon(trayImg, "托盘图标", trayMenu);
+
+            trayIcon.setImageAutoSize(true);
+            trayIcon.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    switch (e.getButton()) {
+                        case MouseEvent.BUTTON1 -> {
+                            Debug.Log(this.toString() + ": 左键点击");
+                        }
+                        case MouseEvent.BUTTON2 -> {
+                            Debug.Log(this.toString() + ": 右键点击");
+                        }
+                    }
+                    super.mouseClicked(e);
+                }
+            });
+            try {
+                //  添加系统托盘图标到托盘
+                systemTray.add(trayIcon);
+                Debug.Log("添加系统托盘成功");
+            } catch (AWTException e) {
+                Debug.LogError("添加托盘图标失败");
+                e.printStackTrace();
+            }
+
+        } else {
+            Debug.LogError("System Tray is not supported in this SHIT OS");
+        }
     }
 
     /**
@@ -384,6 +462,7 @@ public class ChatView {
         panel8.setBackground(new Color(-12763327));
         panel6.add(panel8, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         BT_Info = new JButton();
+        BT_Info.setBackground(new Color(-12763327));
         BT_Info.setHorizontalAlignment(0);
         BT_Info.setHorizontalTextPosition(0);
         BT_Info.setText("查看资料");
@@ -405,6 +484,7 @@ public class ChatView {
         settingPanel.add(topSettingPanel, BorderLayout.EAST);
         BT_MyInfo = new JButton();
         BT_MyInfo.setAutoscrolls(true);
+        BT_MyInfo.setBackground(new Color(-11513259));
         BT_MyInfo.setHideActionText(false);
         BT_MyInfo.setHorizontalAlignment(0);
         BT_MyInfo.setOpaque(true);
@@ -413,6 +493,7 @@ public class ChatView {
         topSettingPanel.add(BT_MyInfo);
         BT_AddFriend = new JButton();
         BT_AddFriend.setAutoscrolls(true);
+        BT_AddFriend.setBackground(new Color(-11579052));
         BT_AddFriend.setHideActionText(false);
         BT_AddFriend.setHorizontalAlignment(0);
         BT_AddFriend.setOpaque(true);
@@ -421,6 +502,7 @@ public class ChatView {
         topSettingPanel.add(BT_AddFriend);
         BT_AddGroup = new JButton();
         BT_AddGroup.setAutoscrolls(true);
+        BT_AddGroup.setBackground(new Color(-11579052));
         BT_AddGroup.setHideActionText(false);
         BT_AddGroup.setHorizontalAlignment(0);
         BT_AddGroup.setOpaque(true);
@@ -429,6 +511,7 @@ public class ChatView {
         topSettingPanel.add(BT_AddGroup);
         BT_Setting = new JButton();
         BT_Setting.setAutoscrolls(true);
+        BT_Setting.setBackground(new Color(-11579052));
         BT_Setting.setHideActionText(false);
         BT_Setting.setHorizontalAlignment(0);
         BT_Setting.setOpaque(true);

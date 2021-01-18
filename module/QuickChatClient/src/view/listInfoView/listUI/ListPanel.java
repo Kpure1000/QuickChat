@@ -39,7 +39,7 @@ public class ListPanel extends JPanel {
      * @param lastID
      */
     public void setLastSelectedCell(BigInteger lastID) {
-        if(lastID!=null) {
+        if (lastID != null) {
             for (FriendListCell item :
                     listCells) {
                 item.setHighlight(item.getID().compareTo(lastID) == 0);
@@ -96,6 +96,21 @@ public class ListPanel extends JPanel {
         updateLayout();
     }
 
+    public void noticeCell(BigInteger id, String newMsg) {
+        int index = 0;
+        for (var cell :
+                listCells) {
+            if (cell.getID().compareTo(id) == 0) {
+                cell.setCellMessage(newMsg);
+                cell.setText(cell.getFormatText());
+                cell.setNotice(true);
+                this.getComponents()[index] = cell;
+            }
+            index++;
+        }
+        updateUI();
+    }
+
     /**
      * 删除元素
      *
@@ -114,8 +129,6 @@ public class ListPanel extends JPanel {
      */
     public void sortListCell(Comparator<ListCell> cellComparable) {
         listCells.sort(cellComparable);
-        var compo = this.getComponents();
-        var tmp = compo.clone();
         this.removeAll();
         for (ListCell listCell : listCells) {
             this.add(listCell);

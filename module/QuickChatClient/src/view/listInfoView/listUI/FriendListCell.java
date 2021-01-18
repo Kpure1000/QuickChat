@@ -81,6 +81,14 @@ public class FriendListCell extends ListCell {
         return id;
     }
 
+    public void setCellName(String cellName) {
+        this.cellName = cellName;
+    }
+
+    public void setCellMessage(String cellMessage) {
+        this.cellMessage = cellMessage;
+    }
+
     /**
      * 获取HTML化的所有文本
      *
