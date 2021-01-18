@@ -169,6 +169,7 @@ public class ChatView {
         chatManager.setChatManagerCallBack(new ChatManagerCallBack() {
             @Override
             public void OnForceClose() {
+                RecoveryFrame(chatFrame);
                 JOptionPane.showMessageDialog(chatFrame, "强制下线通知", "强制下线通知", JOptionPane.WARNING_MESSAGE);
                 chatFrame.dispose();
             }
@@ -214,15 +215,15 @@ public class ChatView {
                 friendList.RemoveAllCell();
                 //  获取列表
                 boolean curChatObjectIsOnline = false; //  当前聊天对象是否仍然在线
-                if (idList.size() > 0) {
-                    //  添加群聊
-                    idList.add(0, new BigInteger("9999"));
-                }
+                //  在头添加群聊
+                idList.add(0, new BigInteger("9999"));
+                //  遍历在线列表
                 for (var item :
                         idList) {
                     if (item.compareTo(UserManager.getInstance().getUserInfo().getID()) != 0) { //  不包括自己
                         //  获取与这个聊天对象有关的消息记录
                         var record = DataManager.getInstance().getMessageRecord(item);
+                        //  消息缓存
                         CopyOnWriteArrayList<MessageContent> recList = new CopyOnWriteArrayList<>();
                         if (record != null) {
                             recList = record.getMessageContents();
@@ -370,9 +371,7 @@ public class ChatView {
             try {
                 //  添加系统托盘图标到托盘
                 systemTray.add(trayIcon);
-                Debug.Log("添加系统托盘成功");
             } catch (AWTException e) {
-                Debug.LogError("添加托盘图标失败");
                 e.printStackTrace();
             }
 
@@ -512,6 +511,13 @@ public class ChatView {
         BT_Setting.setHorizontalAlignment(0);
         BT_Setting.setText("设置");
         topSettingPanel.add(BT_Setting);
+        final JPanel panel9 = new JPanel();
+        panel9.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel9.setBackground(new Color(-11513259));
+        settingPanel.add(panel9, BorderLayout.CENTER);
+        LB_Self = new JLabel();
+        LB_Self.setText("我自己");
+        panel9.add(LB_Self, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         quitPanel = new JPanel();
         quitPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         quitPanel.setBackground(new Color(-11513259));
@@ -567,29 +573,49 @@ public class ChatView {
         frame.setAlwaysOnTop(false);
     }
 
-    private static String formatMessageFromServer(ServerMessage serverMessage) {
+    private String formatMessageFromServer(ServerMessage serverMessage) {
         return formatMessageFromServer(serverMessage.getFeedbackTime(), serverMessage.getSenderID(),
                 serverMessage.getReceiverID(), serverMessage.getContent());
     }
 
-    private static String formatMessageFromServer(Date feedbackTime, BigInteger senderID, BigInteger receiverID, String content) {
-        return "<div align=\"left\" style=\"color:#aaaaaa\"><font size=\"4\">" +
-                "<i>(" + timeFormat.format(feedbackTime) + ") </i>  " +
-                "<b>" + senderID + " 对 " + receiverID + " 说:" + "</b><br/>" +
-                "<font size=\"5\" style=\"color:#ffffff\">" + content + "</font>" +
-                "</font></div><br/>";
+    private String formatMessageFromServer(Date feedbackTime, BigInteger senderID, BigInteger receiverID, String content) {
+        String ret;
+        if (chatManager.getCurChatObject().compareTo(new BigInteger("9999")) == 0) {
+            ret = "<div align=\"left\" style=\"color:#aaaaaa\"><font size=\"4\">" +
+                    "<i>(" + timeFormat.format(feedbackTime) + ") </i>  " +
+                    "<b>" + senderID + " 说:" + "</b><br/>" +
+                    "<font size=\"5\" style=\"color:#ffffff\">" + content + "</font>" +
+                    "</font></div><br/>";
+        } else {
+            ret = "<div align=\"left\" style=\"color:#aaaaaa\"><font size=\"4\">" +
+                    "<i>(" + timeFormat.format(feedbackTime) + ") </i>  " +
+                    "<b>" + senderID + " 对 " + receiverID + " 说:" + "</b><br/>" +
+                    "<font size=\"5\" style=\"color:#ffffff\">" + content + "</font>" +
+                    "</font></div><br/>";
+        }
+        return ret;
     }
 
-    private static String formatMessageFromClient(UserMessage userMessage) {
+    private String formatMessageFromClient(UserMessage userMessage) {
         return formatMessageFromClient(new Date(), userMessage.getSenderID(), userMessage.getReceiverID(), userMessage.getContent());
     }
 
-    private static String formatMessageFromClient(Date feedbackTime, BigInteger senderID, BigInteger receiverID, String content) {
-        return "<div align=\"right\" style=\"color:#aaaaaa\"><font size=\"4\">" +
-                "<i>(" + timeFormat.format(feedbackTime) + ") </i>  " +
-                "<b>" + senderID + " 对 " + receiverID + " 说:" + "</b><br/>" +
-                "<font size=\"5\" style=\"color:#ffffff\">" + content + "</font>" +
-                "</font></div><br/>";
+    private String formatMessageFromClient(Date feedbackTime, BigInteger senderID, BigInteger receiverID, String content) {
+        String ret;
+        if (chatManager.getCurChatObject().compareTo(new BigInteger("9999")) == 0) {
+            ret = "<div align=\"right\" style=\"color:#aaaaaa\"><font size=\"4\">" +
+                    "<i>(" + timeFormat.format(feedbackTime) + ") </i>  " +
+                    "<b>" + senderID + " 说:" + "</b><br/>" +
+                    "<font size=\"5\" style=\"color:#ffffff\">" + content + "</font>" +
+                    "</font></div><br/>";
+        } else {
+            ret = "<div align=\"right\" style=\"color:#aaaaaa\"><font size=\"4\">" +
+                    "<i>(" + timeFormat.format(feedbackTime) + ") </i>  " +
+                    "<b>" + senderID + " 对 " + receiverID + " 说:" + "</b><br/>" +
+                    "<font size=\"5\" style=\"color:#ffffff\">" + content + "</font>" +
+                    "</font></div><br/>";
+        }
+        return ret;
     }
 
     private static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");

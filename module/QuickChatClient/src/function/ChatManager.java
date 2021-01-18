@@ -62,7 +62,6 @@ public class ChatManager extends BasicFunction {
 
     @Override
     public void Close() {
-//        Debug.Log("关闭聊天界面");
         DataManager.getInstance().Close();
         ClientNetwork.getInstance().removeListenerCallBack(listenerCallBack);
         super.Close();
@@ -85,28 +84,31 @@ public class ChatManager extends BasicFunction {
     public void sendMessage(String content) {
         //  如果聊天对象不为空
         if (curChatObject != null) {
-            if (curChatObject.compareTo(new BigInteger("10000")) > 0) { //  ID 大于10000，是私人用户
+            if (curChatObject.compareTo(new BigInteger("10000")) > 0) {
+                //  ID 大于10000，是私人用户
                 if (curChatObject.compareTo(UserManager.getInstance().getUserInfo().getID()) == 0) { //  发给自己的测试
                     ClientNetwork.getInstance().sendMessage(new UserMessage(UserMessage.MessageType.Msg_Test,
                             UserManager.getInstance().getUserInfo().getID(), curChatObject, content));
-                    //  发送者为自己，直接存入消息记录
+                    //  存入消息记录
                     DataManager.getInstance().addMessageRecord(curChatObject, new MessageContent(
                             MessageContent.MessageType.Msg_Test,
                             UserManager.getInstance().getUserInfo().getID(), curChatObject, new Date(),
                             false, false, content));
-                } else { //  私聊消息
+                } else {
+                    //  私聊消息
                     ClientNetwork.getInstance().sendMessage(new UserMessage(UserMessage.MessageType.Msg_Private,
                             UserManager.getInstance().getUserInfo().getID(), curChatObject, content));
-                    //  发送者为自己，直接存入消息记录
+                    //  存入消息记录
                     DataManager.getInstance().addMessageRecord(curChatObject, new MessageContent(
                             MessageContent.MessageType.Msg_Private,
                             UserManager.getInstance().getUserInfo().getID(), curChatObject, new Date(),
                             false, false, content));
                 }
-            } else if (curChatObject.compareTo(new BigInteger("9999")) == 0) { //  群聊, ID为9999
+            } else if (curChatObject.compareTo(new BigInteger("9999")) == 0) {
+                //  群聊, ID为9999
                 ClientNetwork.getInstance().sendMessage(new UserMessage(UserMessage.MessageType.Msg_Group,
                         UserManager.getInstance().getUserInfo().getID(), curChatObject, content));
-                //  发送者为自己，直接存入消息记录
+                //  存入消息记录
                 DataManager.getInstance().addMessageRecord(curChatObject, new MessageContent(
                         MessageContent.MessageType.Msg_Group,
                         UserManager.getInstance().getUserInfo().getID(), curChatObject, new Date(),
@@ -150,18 +152,22 @@ public class ChatManager extends BasicFunction {
 
             @Override
             public ListenerCallBack OnReceiveGroupMsg(ServerMessage serverMessage) {
-                //  直接存入消息记录
-                DataManager.getInstance().addMessageRecord(serverMessage.getSenderID(), new MessageContent(
-                        MessageContent.MessageType.Msg_Group,
-                        serverMessage.getSenderID(), UserManager.getInstance().getUserInfo().getID(), serverMessage.getFeedbackTime(),
-                        false, false, serverMessage.getContent()));
-                if (curChatObject != null) {
-                    if (serverMessage.getSenderID().compareTo(curChatObject) == 0) {
-                        chatManagerCallBack.OnReceiveGroupMsg(serverMessage);
+                //  如果群消息不是自己发的
+                if (serverMessage.getSenderID().compareTo(UserManager.getInstance().getUserInfo().getID()) != 0) {
+                    //  直接存入消息记录
+                    DataManager.getInstance().addMessageRecord(new BigInteger("9999"), new MessageContent(
+                            MessageContent.MessageType.Msg_Group,
+                            serverMessage.getSenderID(), new BigInteger("9999"), serverMessage.getFeedbackTime(),
+                            false, false, serverMessage.getContent()));
+                    if (curChatObject != null) {
+                        //  如果当前聊天对象ID = (群聊)ID
+                        if (curChatObject.compareTo(new BigInteger("9999")) == 0) {
+                            chatManagerCallBack.OnReceiveGroupMsg(serverMessage);
+                        }
                     }
+                    chatManagerCallBack.OnMakeNotice(serverMessage);
+                    requireList();
                 }
-                chatManagerCallBack.OnMakeNotice(serverMessage);
-                requireList();
                 return this;
             }
 

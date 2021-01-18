@@ -93,7 +93,8 @@ public class PrivateConfig implements Serializable {
                 //  找到目标对象的记录，直接添加内容
                 rec.addMessageRecord(messageContent);
 
-                Debug.Log("存入消息: 给" + messageContent.getSenderID() + ", 总消息数: "
+                Debug.Log("存入消息: from" + messageContent.getSenderID()
+                        + ", to: " + messageContent.getReceiverID() + ". 总消息数: "
                         + rec.getMessageContents().size());
                 return;
             }

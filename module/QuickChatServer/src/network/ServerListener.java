@@ -64,7 +64,7 @@ public class ServerListener implements Runnable {
                         // 检查是否已经登录
                         if (ServerListenerManager.getInstance().getServerListener(idIn) != null) {
                             // 强制之前登陆的用户下线
-                            Debug.Log("用户" + idIn + "已经在线，强制下线");
+                            Debug.LogWarning("用户" + idIn + "已经在线，强制下线");
                             ServerListenerManager.getInstance().getServerListener(idIn).ForcedOffLine();
                         }
                         if (DataManager.getInstance().getUserDataContain().checkPassword_ID(idIn, passIn)) {
@@ -113,22 +113,17 @@ public class ServerListener implements Runnable {
                     }
                     case Require_Offline -> {
                         this.Close();
-                        // TODO 下线请求，暂时这么写
                         sendMessage(new ServerMessage(ServerMessage.MessageType.Fb_OnlineList,
                                 null, null, UserManager.getInstance().getOnlineListStr()));
                         return;
                     }
                     case Require_OnLineList -> {
-                        // TODO 在线列表请求
                         Debug.Log("收到" + msg.getSenderID() + "的在线列表请求");
-//                        sendFeedBack(new ServerMessage(ServerMessage.MessageType.Fb_OnlineList,
-//                                null, msg.getSenderID(), UserManager.getInstance().getOnlineListStr()));
+                        //  广播在线列表
                         sendMessage(new ServerMessage(ServerMessage.MessageType.Fb_OnlineList,
-                                null, null, UserManager.getInstance().getOnlineListStr()));
+                                msg.getSenderID(), null, UserManager.getInstance().getOnlineListStr()));
                     }
                     case Require_ApplyFriend -> {
-                        // TODO 好友申请
-
                     }
                     case Require_DeleteFriend -> {
                     }
@@ -147,6 +142,7 @@ public class ServerListener implements Runnable {
                                 msg.getSenderID(), msg.getReceiverID(), msg.getContent(), new Date()));
                     }
                     case Msg_Group -> {
+                        //  发送群聊消息
                         sendChatMessage(new ServerMessage(ServerMessage.MessageType.Msg_Group,
                                 msg.getSenderID(), msg.getReceiverID(), msg.getContent(), new Date()));
                     }
@@ -256,9 +252,11 @@ public class ServerListener implements Runnable {
         } else if (serverMessage.getMessageType().equals(ServerMessage.MessageType.Msg_Group)) {
             BigInteger senderID = serverMessage.getSenderID();
             UserDataContain userDataContain = DataManager.getInstance().getUserDataContain();
-            sendMessage(serverMessage);
-            userDataContain.getUserData(senderID).addMessageRecord(serverMessage.getReceiverID(),
-                    new MessageContent(serverMessage));
+            //  发送广播
+            if (sendMessage(serverMessage)) {
+                userDataContain.getUserData(senderID).addMessageRecord(serverMessage.getReceiverID(),
+                        new MessageContent(serverMessage));
+            }
         } else if (serverMessage.getMessageType().equals(ServerMessage.MessageType.Msg_Test)) {
             sendMessage(serverMessage.getReceiverID(), serverMessage);
         }
@@ -294,10 +292,9 @@ public class ServerListener implements Runnable {
      */
     private boolean sendMessage(ServerMessage serverMessage) {
         boolean isSuccess = true;
-        Debug.Log("开始广播:");
         for (BigInteger onlineID :
                 UserManager.getInstance().getOnlineList()) {
-            Debug.Log("广播给" + onlineID);
+            //  修改消息接受对象
             serverMessage.setReceiverID(onlineID);
             if (!sendMessage(onlineID, serverMessage)) {
                 isSuccess = false;
