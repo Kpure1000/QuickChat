@@ -101,4 +101,34 @@ public abstract class ListenerCallBackAdapter implements ListenerCallBack {
     public ListenerCallBack OnForcedOffLine() {
         return this;
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return
+     */
+    @Override
+    public ListenerCallBack OnAllowSendFile(ServerMessage serverMessage) {
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return
+     */
+    @Override
+    public ListenerCallBack OnAllowReceiveFile(ServerMessage serverMessage) {
+        return this;
+    }
+
+    /**
+     *
+     * @param serverMessage
+     * @return
+     */
+    @Override
+    public ListenerCallBack OnRequireSendFile(ServerMessage serverMessage) {
+        return this;
+    }
 }

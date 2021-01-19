@@ -6,10 +6,9 @@ import function.UserManager;
 import message.ServerMessage;
 import message.UserMessage;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.math.BigInteger;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Date;
@@ -94,10 +93,6 @@ public class ServerListener implements Runnable {
                                     null, this.ID, "failed"));
                         }
                     }
-//                    case Check_SignIn_Email -> {
-//                    }
-//                    case Check_SignIn_Phone -> {
-//                    }
                     case Require_SignUp -> {
                         //  注册
                         String[] msgContent = msg.getContent().split("#");
@@ -113,6 +108,7 @@ public class ServerListener implements Runnable {
                     }
                     case Require_Offline -> {
                         this.Close();
+                        //  通知所有人自己下线
                         sendMessage(new ServerMessage(ServerMessage.MessageType.Fb_OnlineList,
                                 null, null, UserManager.getInstance().getOnlineListStr()));
                         return;
@@ -123,19 +119,141 @@ public class ServerListener implements Runnable {
                         sendMessage(new ServerMessage(ServerMessage.MessageType.Fb_OnlineList,
                                 msg.getSenderID(), null, UserManager.getInstance().getOnlineListStr()));
                     }
-                    case Require_ApplyFriend -> {
+                    case Require_SendPrivateFile -> {
+                        //  私发文件请求
+                        Debug.Log("收到: " + msg.getSenderID() + "的发送私人文件请求, 向" +
+                                "receiver: " + msg.getReceiverID() + "发送文件接收询问");
+                        //  转发请求
+                        ServerListenerManager.getInstance().getServerListener(msg.getReceiverID()).
+                                sendFeedBack(new ServerMessage(ServerMessage.MessageType.Require_SendFile,
+                                        msg.getSenderID(), msg.getReceiverID(), msg.getContent()));
                     }
-                    case Require_DeleteFriend -> {
-                    }
-                    case Require_CreateGroup -> {
-                    }
-                    case Require_DeleteGroup -> {
-                    }
-                    case Require_JoinGroup -> {
-                    }
-                    case Reply_FriendApply -> {
-                    }
-                    case Reply_GroupApply -> {
+//                    case Require_SendGroupFile -> {
+//                        //  群发文件请求
+//                        Debug.Log("收到: " + msg.getSenderID() + "的发送群聊文件请求: " + msg.getContent() + ", " +
+//                                "并广播接收 群聊 文件的请求");
+//                        //  广播请求
+//                        sendMessage(new ServerMessage(ServerMessage.MessageType.Require_SendFile,
+//                                msg.getSenderID(), msg.getReceiverID(), msg.getContent()));
+//                        //  TODO 直接打开文件接收线程
+//                        new Thread(() -> {
+//                            try {
+//                                String fileName = msg.getContent().split("#")[0];
+//                                ServerSocket fileServerSocket = new ServerSocket(18888);
+////                                Socket fileSocket = fileServerSocket.accept();
+////                                // 将文件内容从硬盘读入内存中
+////                                InputStream socketIn = fileSocket.getInputStream();
+////                                OutputStream outputStream = fileSocket.getOutputStream();
+////                                BufferedInputStream bufferedInputStream = new BufferedInputStream(socketIn);
+////                                BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(
+////                                        new FileOutputStream("~/Downloads/" + fileName)
+////                                );
+////                                // 定义每次接收文件的大小
+////                                byte[] buffer = new byte[512];
+////                                int len = 0;
+////                                // 因为文件内容较大，不能一次完毕，因此需要通过循环来分次发送
+////                                while ((len = bufferedInputStream.read(buffer)) != -1) {
+////                                    outputStream.write(buffer, 0, len);
+////                                }
+////                                outputStream.close();
+////                                socketIn.close();
+////                                fileSocket.close();
+//                                fileServerSocket.close();
+//
+//                                //  TODO 文件接收完毕，发送所有人允许接收的反馈
+//                                Debug.Log("文件接收完毕，允许所有客户端接收");
+//                                sendMessage(new ServerMessage(ServerMessage.MessageType.Fb_ReceiveFile,
+//                                        msg.getSenderID(), msg.getReceiverID(), msg.getContent()));
+//
+//                            } catch (IOException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }).start();
+//                        //  直接发送允许反馈
+//                        Debug.Log("向sender: " + msg.getSenderID() + "发送 允许发送 群组 文件反馈");
+//                        ServerListenerManager.getInstance().getServerListener(msg.getSenderID()).
+//                                sendFeedBack(new ServerMessage(ServerMessage.MessageType.Fb_SendFile,
+//                                        msg.getSenderID(), msg.getReceiverID(), msg.getContent()));
+//                    }
+                    case Reply_ReceiveFile -> {
+                        //  接收文件请求
+                        if (msg.getReceiverID() == null) {
+                            // 不允许
+                            Debug.Log("收到: " + msg.getReceiverID() + "的拒绝接收文件," +
+                                    " 向sender: " + msg.getSenderID() + "发送 拒绝 私聊文件反馈");
+                            ServerListenerManager.getInstance().getServerListener(msg.getSenderID()).
+                                    sendFeedBack(new ServerMessage(ServerMessage.MessageType.Fb_SendFile,
+                                            msg.getSenderID(), null, msg.getContent()));
+                        } else {
+                            //  打开文件接收线程
+                            Debug.Log("收到: " + msg.getReceiverID() + "的同意接收文件");
+                            new Thread(() -> {
+                                try {
+                                    String fileName = msg.getContent().split("#")[0];
+                                    String fileSpace = msg.getContent().split("#")[1];
+                                    //  开始接收
+                                    {
+                                        ServerSocket fileInServerSocket = new ServerSocket(18888);
+                                        Socket fileInSocket = fileInServerSocket.accept();
+                                        Debug.Log("发送文件客户端接入");
+                                        // 将文件内容从硬盘读入内存中
+                                        InputStream socketIn = fileInSocket.getInputStream();
+                                        BufferedInputStream bufferedInputStream0 = new BufferedInputStream(socketIn);
+                                        BufferedOutputStream bufferedOutputStream0 = new BufferedOutputStream(
+                                                new FileOutputStream("Common/FileCache/" + fileName));
+                                        // 定义每次接收文件的大小
+                                        byte[] buffer = new byte[512];
+                                        int len = 0;
+                                        // 因为文件内容较大，不能一次完毕，因此需要通过循环来分次发送
+                                        while ((len = bufferedInputStream0.read(buffer)) != -1) {
+                                            bufferedOutputStream0.write(buffer, 0, len);
+                                        }
+                                        bufferedOutputStream0.flush();
+                                        bufferedOutputStream0.close();
+                                        bufferedInputStream0.close();
+                                        socketIn.close();
+                                        fileInSocket.close();
+                                        fileInServerSocket.close();
+                                    }
+                                    //  文件接收完毕，发送允许接收的反馈
+                                    {
+                                        Debug.Log("文件接收完毕，允许客户端接收, receiver: " + msg.getReceiverID());
+                                        ServerListenerManager.getInstance().getServerListener(msg.getReceiverID()).
+                                                sendFeedBack(new ServerMessage(ServerMessage.MessageType.Fb_ReceiveFile,
+                                                        msg.getSenderID(), msg.getReceiverID(), msg.getContent()));
+                                        //  向客户端发送刚接收的文件
+                                        ServerSocket fileOutServerSocket = new ServerSocket(18888);
+                                        Socket fileOutSocket = fileOutServerSocket.accept();
+                                        Debug.Log("接收文件客户端接入");
+                                        OutputStream socketOut = fileOutSocket.getOutputStream();
+                                        BufferedOutputStream bufferedOutputStream1 = new BufferedOutputStream(socketOut);
+                                        BufferedInputStream bufferedInputStream1 = new BufferedInputStream(
+                                                new FileInputStream("Common/FileCache/" + fileName));
+                                        byte[] buffer1 = new byte[512];
+                                        int len1 = 0;
+                                        // 因为文件内容较大，不能一次完毕，因此需要通过循环来分次发送
+                                        while ((len1 = bufferedInputStream1.read(buffer1)) != -1) {
+                                            bufferedOutputStream1.write(buffer1, 0, len1);
+                                        }
+                                        bufferedOutputStream1.flush();
+                                        bufferedOutputStream1.close();
+                                        bufferedInputStream1.close();
+                                        socketOut.close();
+                                        fileOutSocket.close();
+                                        fileOutServerSocket.close();
+                                        Debug.Log("文件: " + fileName + ", sp: " + fileSpace + " 发送完毕");
+                                    }
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }).start();
+                            //  发送允许反馈
+                            Debug.Log("向sender: " + msg.getSenderID() + "发送 允许发送 私人 文件反馈");
+                            ServerListenerManager.getInstance().getServerListener(msg.getSenderID()).
+                                    sendFeedBack(new ServerMessage(ServerMessage.MessageType.Fb_SendFile,
+                                            msg.getSenderID(), msg.getReceiverID(), msg.getContent()));
+
+                        }
                     }
                     case Msg_Private -> {
                         sendChatMessage(new ServerMessage(ServerMessage.MessageType.Msg_Private,

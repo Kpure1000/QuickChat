@@ -56,6 +56,22 @@ public class ServerMessage implements Serializable {
          * 强制下线
          */
         Require_ForcedOffLine,
+
+        /**
+         * 有人请求传输文件
+         */
+        Require_SendFile,
+
+        /**
+         * 允许传输文件
+         */
+        Fb_SendFile,
+
+        /**
+         * 允许开始接收文件
+         */
+        Fb_ReceiveFile,
+
         /**
          * 私聊消息
          */

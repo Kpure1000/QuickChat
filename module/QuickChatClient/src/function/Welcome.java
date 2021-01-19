@@ -16,7 +16,6 @@ public class Welcome extends BasicFunction {
     private boolean connecting = true;
 
     public Welcome() {
-        Debug.Log("启用欢迎功能...");
         //订阅网络回调
         netCallBack_function = new NetCallBack() {
             @Override
@@ -42,12 +41,11 @@ public class Welcome extends BasicFunction {
 
             @Override
             public void OnSendMessageSuccess(UserMessage msg) {
-                Debug.Log("发送消息: " + msg.getMessageType() + ", " + msg.getContent() + " 成功!");
             }
 
             @Override
             public void OnSendMessageFailed(UserMessage msg) {
-                Debug.LogError("发送消息: " + msg.getMessageType() + ", " + msg.getContent() + " 失败!");
+                Debug.LogError("欢迎: 发送请求: " + msg.getMessageType() + ", " + msg.getContent() + " 失败!");
             }
         };
         ClientNetwork.getInstance().addNetCallBack(netCallBack_function);
@@ -62,16 +60,6 @@ public class Welcome extends BasicFunction {
         this.welcomeCallBack = welcomeCallBack;
         //获取服务器列表，反馈给UI
         welcomeCallBack.OnGetServerList(DataManager.getInstance().getServerList());
-    }
-
-    /**
-     * 获取服务器列表
-     *
-     * @return 服务器信息列表
-     */
-    @Deprecated
-    public ArrayList<ServerInfo> getServerList() {
-        return DataManager.getInstance().getServerList();
     }
 
     /**

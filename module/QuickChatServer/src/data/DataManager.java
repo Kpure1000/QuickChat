@@ -89,7 +89,7 @@ public class DataManager {
             ObjectOutputStream userDataOut = new ObjectOutputStream(new FileOutputStream(userFile));
             //输出一个非空记录对象到文件
             userDataOut.writeObject(userDataContain);
-            Debug.Log("用户数据保存成功");
+//            Debug.Log("用户数据保存成功");
             userDataOut.flush();
             userDataOut.close();
         } catch (IOException e) {
@@ -110,7 +110,7 @@ public class DataManager {
             ObjectOutputStream groupDataOut = new ObjectOutputStream(new FileOutputStream(groupFile));
             //输出一个非空记录对象到文件
             groupDataOut.writeObject(groupDataContain);
-            Debug.Log("群组数据保存成功");
+//            Debug.Log("群组数据保存成功");
             groupDataOut.flush();
             groupDataOut.close();
         } catch (IOException e) {

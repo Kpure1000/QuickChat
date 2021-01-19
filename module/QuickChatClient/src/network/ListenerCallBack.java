@@ -86,4 +86,24 @@ public interface ListenerCallBack {
      * @return ListenerCallBack
      */
     public ListenerCallBack OnForcedOffLine();
+
+    /**
+     * 允许发送文件
+     * @return
+     */
+    public ListenerCallBack OnAllowSendFile(ServerMessage serverMessage);
+
+    /**
+     * 允许接收文件
+     * @return
+     */
+    public ListenerCallBack OnAllowReceiveFile(ServerMessage serverMessage);
+
+    /**
+     * 请求是否接收文件
+     * @param serverMessage
+     * @return
+     */
+    public ListenerCallBack OnRequireSendFile(ServerMessage serverMessage);
+
 }

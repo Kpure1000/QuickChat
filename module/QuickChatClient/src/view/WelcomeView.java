@@ -1,5 +1,6 @@
 package view;
 
+import data.DataManager;
 import data.ServerInfo;
 import function.Debug;
 import function.Welcome;
@@ -105,8 +106,8 @@ public class WelcomeView extends JFrame {
 
         //选项变动时的
         hostCombo.addItemListener(e -> {
-            host = ((ServerInfo)e.getItem()).getHost();
-            port = ((ServerInfo)e.getItem()).getPort();
+            host = ((ServerInfo) e.getItem()).getHost();
+            port = ((ServerInfo) e.getItem()).getPort();
         });
 
         //欢迎功能
@@ -132,6 +133,7 @@ public class WelcomeView extends JFrame {
             public void OnConnectSuccess() {
                 // TODO连接成功
                 Debug.Log("连接成功");
+                DataManager.getInstance().setCurrentServer(new ServerInfo(host, port));
                 //创建登录窗口
                 new SignInView();
                 //关掉自己

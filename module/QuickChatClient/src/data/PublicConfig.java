@@ -12,16 +12,16 @@ public class PublicConfig implements Serializable {
      * 加入服务器
      * @param serverInfo
      */
-    public void addServerList(ServerInfo serverInfo){
+    public void addServerInfo(ServerInfo serverInfo){
         serverInfoList.add(serverInfo);
     }
 
-    /**
-     * 加入ID记录
-     * @param id
-     */
-    public void addIdList(BigInteger id){
-        idList.add(id);
+    public void addFileServerInfo(ServerInfo serverInfo){
+        fileServerInfoList.add(serverInfo);
+    }
+
+    public void setCurrentServer(ServerInfo currentServer) {
+        this.currentServer = currentServer;
     }
 
     /**
@@ -33,6 +33,26 @@ public class PublicConfig implements Serializable {
      */
     public ArrayList<ServerInfo> getServerInfoList() {
         return serverInfoList;
+    }
+
+    public void setCurrentFileServer(ServerInfo currentFileServer) {
+        this.currentFileServer = currentFileServer;
+    }
+
+    /**
+     * 获取文件服务器列表
+     * @return 文件服务器列表
+     */
+    public ArrayList<ServerInfo> getFileServerInfoList() {
+        return fileServerInfoList;
+    }
+
+    public ServerInfo getCurrentServer() {
+        return currentServer;
+    }
+
+    public ServerInfo getCurrentFileServer() {
+        return currentFileServer;
     }
 
     /**
@@ -47,7 +67,13 @@ public class PublicConfig implements Serializable {
     }
 
     /** 服务器列表*/
-    private ArrayList<ServerInfo> serverInfoList = new ArrayList<ServerInfo>();
+    private ArrayList<ServerInfo> serverInfoList = new ArrayList<>();
+
+    private ArrayList<ServerInfo> fileServerInfoList = new ArrayList<>();
+
+    private ServerInfo currentServer;
+
+    private ServerInfo currentFileServer;
 
     /** ID列表*/
     private ArrayList<BigInteger> idList = new ArrayList<BigInteger>();

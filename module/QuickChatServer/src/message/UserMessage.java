@@ -85,6 +85,21 @@ public class UserMessage implements Serializable {
         Reply_GroupApply,
 
         /**
+         * 发送个人文件
+         */
+        Require_SendPrivateFile,
+
+        /**
+         * 发送群文件
+         */
+        Require_SendGroupFile,
+
+        /**
+         * 接收文件
+         */
+        Reply_ReceiveFile,
+
+        /**
          * 私聊消息
          */
         Msg_Private,

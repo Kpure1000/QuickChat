@@ -19,6 +19,8 @@
 */bin/
 *bin/
 
+*.MF
+
 # BlueJ files
 *.ctxt
 

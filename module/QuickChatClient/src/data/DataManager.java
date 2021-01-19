@@ -3,7 +3,6 @@ package data;
 import com.alibaba.fastjson.JSON;
 import function.Debug;
 import information.UserInfo;
-import message.UserMessage;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -88,6 +87,14 @@ public class DataManager {
         savePrivate();
     }
 
+    public void setCurrentServer(ServerInfo serverInfo){
+        publicConfig.setCurrentServer(serverInfo);
+    }
+
+    public ServerInfo getCurrentServer(){
+        return publicConfig.getCurrentServer();
+    }
+
     /**
      * 从本地获取用户信息
      *
@@ -125,7 +132,7 @@ public class DataManager {
      * @param passwordConfig 记住密码配置
      */
     public void updateIDRecordAndPasswordConfig(BigInteger newID, String passwordConfig) {
-        // TODO新增历史ID记录，若存在则更新其私人配置
+        // 新增历史ID记录，若存在则更新其私人配置
         // 判断是否存在
         for (var item :
                 publicConfig.getIdList()) {
@@ -133,12 +140,15 @@ public class DataManager {
                 // 更新密码记录
                 Debug.Log("更新密码记录:" + newID + ", " + passwordConfig);
                 updatePasswordConfig(newID, passwordConfig);
+                publicConfig.getIdList().remove(item);
+                //  更新到最新一条
+                publicConfig.getIdList().add(0, newID);
                 return;
             }
         }
-        // TODO 不存在，添加记录
+        // 不存在，添加记录
         Debug.Log("该用户首次登陆成功，添加记录:" + newID + ", " + passwordConfig);
-        publicConfig.addIdList(newID);
+        publicConfig.getIdList().add(0, newID);
         updatePasswordConfig(newID, passwordConfig);
     }
 
@@ -233,7 +243,6 @@ public class DataManager {
     /**
      * 写入公有配置，仅当初次创建时使用
      */
-    @Deprecated
     private void writePublic() {
         try {
             File file = new File(publicConfigPath);
@@ -341,15 +350,18 @@ public class DataManager {
      * @param file
      * @throws IOException
      */
-    @Deprecated
     private void CreatePublicConfig(File file) throws IOException {
         Debug.Log("创建公有配置文件: " + file.getName());
         BufferedWriter bufferedWriter = new BufferedWriter(
                 new FileWriter(file)
         );
         publicConfig = new PublicConfig();
-        publicConfig.addServerList(new ServerInfo("127.0.0.1", 12345));
-        publicConfig.addServerList(new ServerInfo("127.0.0.1", 10808));
+        publicConfig.addServerInfo(new ServerInfo("127.0.0.1", 10880));
+        publicConfig.addServerInfo(new ServerInfo("119.23.225.73",10880));
+        publicConfig.addServerInfo(new ServerInfo("127.0.0.1", 10808));
+        publicConfig.addServerInfo(new ServerInfo("127.0.0.1", 12345));
+        publicConfig.addFileServerInfo(new ServerInfo("127.0.0.1", 18888));
+        publicConfig.addFileServerInfo(new ServerInfo("119.23.225.73",18888));
         //  Debug
         for (BigInteger item :
                 publicConfig.getIdList()) {

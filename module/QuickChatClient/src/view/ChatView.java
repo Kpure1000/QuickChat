@@ -5,21 +5,28 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import data.DataManager;
 import data.MessageContent;
+import data.ServerInfo;
 import data.UserManager;
 import function.ChatManager;
 import function.ChatManagerCallBack;
 import function.Debug;
 import message.ServerMessage;
 import message.UserMessage;
+import network.ClientNetwork;
+import network.ListenerCallBack;
+import network.ListenerCallBackAdapter;
 import view.listInfoView.listUI.FriendListCell;
 import view.listInfoView.listUI.ListCell;
 import view.listInfoView.listUI.ListPanel;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 import java.math.BigInteger;
+import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -50,7 +57,6 @@ public class ChatView {
      * 一定要注意，这个必须要检查字符串长度，否则会导致问题
      */
     private JLabel LB_ChatObjTitle;
-    private JButton BT_Quit;
     private JPanel quitPanel;
     private JPanel settingPanel;
     private JPanel topPanel;
@@ -61,6 +67,7 @@ public class ChatView {
     private JButton BT_Emoji;
     private JLabel topLabel;
     private JLabel LB_Self; //  TODO 自己的ID
+    private JScrollPane jsp_Text;
     //    private JTree tree1;
 //    private ChatInfoNode root;
     private Point pressedPoint;
@@ -109,22 +116,113 @@ public class ChatView {
         editorPane1.setEditorKit(new HTMLEditorKit());
         editorPane1.setContentType("text/html");
 
+        //// BUTTON ////
+
         BT_MyInfo.addActionListener(e -> {
             friendList.sortListCell(compByNotice);
             chatManager.requireList();
         });
 
-        BT_AddFriend.addActionListener(e -> friendList.sortListCell(compByEnable));
+        BT_AddFriend.addActionListener(e -> {
+        });
+        BT_AddFriend.setEnabled(false);
 
-        ////////////////////////////////
+        BT_AddGroup.addActionListener(e -> {
+        });
+        BT_AddGroup.setEnabled(false);
 
         BT_Info.addActionListener(e -> {
-            // TODO 弹出显示信息的窗口
+            //  TODO 显示对象的信息
         });
 
-        BT_AddFriend.addActionListener(e -> {
-            // TODO 弹出好友申请列表的窗口
+        BT_Setting.addActionListener(e -> {
+            //  TODO 显示自己信息
         });
+
+        BT_SendFile.addActionListener(e -> {
+            //  TODO 发送文件
+            FileSystemView fileSystemView = FileSystemView.getFileSystemView();
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setCurrentDirectory(fileSystemView.getHomeDirectory());
+            fileChooser.setDialogTitle("选择要发送的文件");
+            fileChooser.setApproveButtonText("确定");
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            int res = fileChooser.showOpenDialog(chatFrame);
+            File targetFile = new File("");
+            if (JFileChooser.APPROVE_OPTION == res) {
+                targetFile = fileChooser.getSelectedFile();
+                Debug.Log("文件: " + targetFile.getName() + ", 大小: " + targetFile.getUsableSpace());
+            }
+            finalTargetFile = targetFile;
+            //  添加发送文件的监听
+
+            //  请求发送文件
+            if (chatManager.getCurChatObject().compareTo(new BigInteger("9999")) != 0) {
+                ClientNetwork.getInstance().sendMessage(new UserMessage(
+                        UserMessage.MessageType.Require_SendPrivateFile,
+                        UserManager.getInstance().getUserInfo().getID(),
+                        chatManager.getCurChatObject(),
+                        targetFile.getName() + "#" + targetFile.getUsableSpace()
+                ));
+            } else {
+                ClientNetwork.getInstance().sendMessage(new UserMessage(
+                        UserMessage.MessageType.Require_SendGroupFile,
+                        UserManager.getInstance().getUserInfo().getID(),
+                        chatManager.getCurChatObject(),
+                        targetFile.getName() + "#" + targetFile.getUsableSpace()
+                ));
+            }
+        });
+
+        ClientNetwork.getInstance().addListenerCallBack(new ListenerCallBackAdapter() {
+            @Override
+            public ListenerCallBack OnAllowSendFile(ServerMessage serverMessage) {
+                //  收到这个反馈时，服务器已经打开了文件服务端口监听，只需直接发送即可
+                //  发送文件
+                Debug.Log("收到允许发送的反馈，开始发送文件");
+                var curServer = DataManager.getInstance().getCurrentServer();
+                new Thread(() -> {
+                    int tryCounts = 0;
+                    while (tryCounts < 10) {
+                        try {
+                            Socket fileSocket = new Socket(curServer.getHost(), 18888);
+                            //  文件读入流
+                            Debug.Log("（发送端）文件服务器连接成功");
+                            FileInputStream fileInputStream = new FileInputStream(finalTargetFile);
+                            OutputStream outputStream = fileSocket.getOutputStream();
+                            byte[] bytes = new byte[512];
+                            int len = 0;
+                            while ((len = fileInputStream.read(bytes)) != -1) {
+                                outputStream.write(bytes, 0, len);
+                            }
+                            outputStream.flush();
+                            outputStream.close();
+                            fileInputStream.close();
+                            fileSocket.close();
+                            Debug.Log("文件: " + finalTargetFile.getName() + "发送完成");
+                            return;
+                        } catch (IOException ioException) {
+                            Debug.LogError("文件服务器连接失败.");
+                            tryCounts++;
+                            ioException.printStackTrace();
+                            try {
+                                //  等一会儿再连
+                                Thread.sleep(800);
+                            } catch (InterruptedException interruptedException) {
+                                interruptedException.printStackTrace();
+                            }
+                        }
+                    }
+                }).start();
+                return super.OnAllowSendFile(serverMessage);
+            }
+        });
+
+        BT_Emoji.addActionListener(e -> {
+            //  TODO 选择表情
+        });
+
+        /////////
 
         chatFrame.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) { //鼠标按下事件
@@ -184,18 +282,27 @@ public class ChatView {
             public void OnReceivePrivateMsg(ServerMessage serverMessage) {
                 chatContent += formatMessageFromServer(serverMessage);
                 editorPane1.setText(chatContent);
+                Point p = new Point();
+                p.setLocation(0, editorPane1.getHeight() * 10);
+                jsp_Text.getViewport().setViewPosition(p);
             }
 
             @Override
             public void OnReceiveGroupMsg(ServerMessage serverMessage) {
                 chatContent += formatMessageFromServer(serverMessage);
                 editorPane1.setText(chatContent);
+                Point p = new Point();
+                p.setLocation(0, editorPane1.getHeight() * 10);
+                jsp_Text.getViewport().setViewPosition(p);
             }
 
             @Override
             public void OnReceiveTestMsg(ServerMessage serverMessage) {
                 chatContent += formatMessageFromServer(serverMessage);
                 editorPane1.setText(chatContent);
+                Point p = new Point();
+                p.setLocation(0, editorPane1.getHeight() * 10);
+                jsp_Text.getViewport().setViewPosition(p);
             }
 
             @Override
@@ -241,7 +348,7 @@ public class ChatView {
                                     //  设置聊天对象的名字（聊天区域顶部）
                                     LB_ChatObjTitle.setText(friendListCell.getFormatName());
                                     //  设置目前聊天对象的ID
-                                    chatManager.SelectChatObject(friendListCell.getID());
+                                    chatManager.setCurChatObject(friendListCell.getID());
                                     //  设置高光
                                     friendList.setLastSelectedCell(friendListCell.getID());
                                     //  清空消息显示内容
@@ -270,6 +377,12 @@ public class ChatView {
                                         chatContent += chatContentBuilder.toString();
                                     }
                                     editorPane1.setText(chatContent);
+                                    if (chatManager.getCurChatObject() != null &&
+                                            chatManager.getCurChatObject().compareTo(new BigInteger("9999")) != 0) {
+                                        //  有聊天对象，启用功能
+                                        BT_Info.setEnabled(true);
+                                        BT_SendFile.setEnabled(true);
+                                    }
                                 }             //  cell被选择时候的回调
                         );
                         newCell.setColor(new Color(0xE5E5E5),
@@ -293,15 +406,107 @@ public class ChatView {
                 if (!curChatObjectIsOnline) {
                     //  如果当前对象下线，则清空聊天对象以及窗口
                     chatContent = "";
-                    //  TODO 设置最后一次被选择的项，这里会不会有问题还不确定
                     //  设置聊天对象的名字（聊天区域顶部）
                     LB_ChatObjTitle.setText(DefaultChatObjectName);
                     //  设置目前聊天对象的ID
-                    chatManager.SelectChatObject(null);
+                    chatManager.setCurChatObject(null);
                     editorPane1.setText(chatContent);
+                    Point p = new Point();
+                    p.setLocation(0, editorPane1.getHeight() * 10);
+                    jsp_Text.getViewport().setViewPosition(p);
+                }
+                if (chatManager.getCurChatObject() == null ||
+                        chatManager.getCurChatObject().compareTo(new BigInteger("9999")) == 0) {
+                    //  无聊天对象，禁用功能
+                    BT_Info.setEnabled(false);
+                    BT_SendFile.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void OnRequireSendFile(ServerMessage serverMessage) {
+                //  不是自己发的文件请求，可以确认
+                if (serverMessage.getSenderID().compareTo(
+                        UserManager.getInstance().getUserInfo().getID()) != 0) {
+                    //  弹窗是否接收文件
+                    Debug.Log("有人要传输文件");
+                    int res = JOptionPane.showConfirmDialog(chatFrame, "是否接收文件?",
+                            "文件传输确认", JOptionPane.YES_NO_OPTION);
+                    if (res == JOptionPane.YES_OPTION) {
+                        //  允许
+                        ClientNetwork.getInstance().sendMessage(new UserMessage(
+                                UserMessage.MessageType.Reply_ReceiveFile,
+                                serverMessage.getSenderID(),
+                                serverMessage.getReceiverID(),
+                                serverMessage.getContent()
+                        ));
+                    } else {
+                        //  不允许
+                        ClientNetwork.getInstance().sendMessage(new UserMessage(
+                                UserMessage.MessageType.Reply_ReceiveFile,
+                                serverMessage.getSenderID(),
+                                null,
+                                serverMessage.getContent()
+                        ));
+                    }
+                }
+            }
+
+            @Override
+            public void OnReceiveFile(ServerMessage serverMessage) {
+                //  不是自己发的文件，可以接收
+                if (serverMessage.getSenderID().compareTo(
+                        UserManager.getInstance().getUserInfo().getID()) != 0) {
+                    //  开始接收文件
+                    Debug.Log("被允许接收文件");
+                    new Thread(() -> {
+                        String fileName = serverMessage.getContent().split("#")[0];
+                        int tryCounts = 0;
+                        while (tryCounts < 10) {
+                            try {
+                                ServerInfo curServer = DataManager.getInstance().getCurrentServer();
+                                Socket fileSocket = new Socket(curServer.getHost(), 18888);
+                                Debug.Log("（接收端）文件服务器连接成功");
+                                // 将文件内容从硬盘读入内存中
+                                InputStream socketIn = fileSocket.getInputStream();
+                                OutputStream outputStream = fileSocket.getOutputStream();
+                                BufferedInputStream bufferedInputStream = new BufferedInputStream(socketIn);
+                                BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(
+                                        new FileOutputStream(
+                                                FileSystemView.getFileSystemView().getHomeDirectory()
+                                                        + "/Downloads/" + fileName));
+                                // 定义每次接收文件的大小
+                                byte[] buffer = new byte[512];
+                                int len = 0;
+                                // 因为文件内容较大，不能一次完毕，因此需要通过循环来分次发送
+                                while ((len = bufferedInputStream.read(buffer)) != -1) {
+                                    bufferedOutputStream.write(buffer, 0, len);
+                                }
+                                bufferedOutputStream.flush();
+                                bufferedOutputStream.close();
+                                bufferedInputStream.close();
+                                outputStream.close();
+                                socketIn.close();
+                                fileSocket.close();
+                                Debug.Log("文件: " + fileName + "接收完毕");
+                                return;
+                            } catch (IOException e) {
+                                Debug.LogError("文件服务器连接失败.");
+                                tryCounts++;
+                                e.printStackTrace();
+                                try {
+                                    //  等一会儿再连
+                                    Thread.sleep(800);
+                                } catch (InterruptedException interruptedException) {
+                                    interruptedException.printStackTrace();
+                                }
+                            }
+                        }
+                    }).start();
                 }
             }
         });
+
 
         //  发送消息
         textInput.addKeyListener(new KeyListener() {
@@ -447,15 +652,15 @@ public class ChatView {
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new BorderLayout(0, 0));
         splitPane2.setLeftComponent(panel5);
-        final JScrollPane scrollPane2 = new JScrollPane();
-        scrollPane2.setHorizontalScrollBarPolicy(31);
-        scrollPane2.setVerticalScrollBarPolicy(20);
-        panel5.add(scrollPane2, BorderLayout.CENTER);
+        jsp_Text = new JScrollPane();
+        jsp_Text.setHorizontalScrollBarPolicy(31);
+        jsp_Text.setVerticalScrollBarPolicy(20);
+        panel5.add(jsp_Text, BorderLayout.CENTER);
         editorPane1 = new JEditorPane();
         editorPane1.setBackground(new Color(-11513259));
         editorPane1.setEditable(false);
         editorPane1.setForeground(new Color(-7733417));
-        scrollPane2.setViewportView(editorPane1);
+        jsp_Text.setViewportView(editorPane1);
         final JPanel panel6 = new JPanel();
         panel6.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         panel6.setBackground(new Color(-12763327));
@@ -625,6 +830,8 @@ public class ChatView {
     private String chatContent = "";
 
     private final String DefaultChatObjectName = "<html><font size=\"5\" style = \"color:#89FF57\">请选择聊天对象</font></html>";
+
+    private File finalTargetFile;
 
     /**
      * 比较-优先提醒

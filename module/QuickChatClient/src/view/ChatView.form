@@ -104,7 +104,7 @@
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <scrollpane id="af73e">
+                      <scrollpane id="af73e" binding="jsp_Text">
                         <constraints border-constraint="Center"/>
                         <properties>
                           <horizontalScrollBarPolicy value="31"/>

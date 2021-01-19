@@ -23,4 +23,8 @@ public interface ChatManagerCallBack {
     public void OnMakeNotice(ServerMessage serverMessage);
 
     public void OnReceiveOnLineList(ArrayList<BigInteger>idList);
+
+    public void OnRequireSendFile(ServerMessage serverMessage);
+
+    public void OnReceiveFile(ServerMessage serverMessage);
 }

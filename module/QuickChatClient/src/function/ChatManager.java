@@ -72,7 +72,7 @@ public class ChatManager extends BasicFunction {
         return curChatObject;
     }
 
-    public void SelectChatObject(BigInteger id) {
+    public void setCurChatObject(BigInteger id) {
         curChatObject = id;
     }
 
@@ -206,6 +206,19 @@ public class ChatManager extends BasicFunction {
                 if (chatManagerCallBack != null) {
                     chatManagerCallBack.OnForceClose();
                 }
+                return this;
+            }
+
+            @Override
+            public ListenerCallBack OnRequireSendFile(ServerMessage serverMessage) {
+                chatManagerCallBack.OnRequireSendFile(serverMessage);
+                return this;
+            }
+
+            @Override
+            public ListenerCallBack OnAllowReceiveFile(ServerMessage serverMessage) {
+                // TODO 开始创建socket接收文件
+                chatManagerCallBack.OnReceiveFile(serverMessage);
                 return this;
             }
         });
